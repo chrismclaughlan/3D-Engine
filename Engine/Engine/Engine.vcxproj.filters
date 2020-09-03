@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="graphics.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Mouse.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Keyboard.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="exception.cpp">
+      <Filter>Exception</Filter>
+    </ClCompile>
+    <ClCompile Include="win32_window.cpp">
+      <Filter>Win32\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="win32_graphics.cpp">
+      <Filter>Win32\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="win32_network.cpp">
+      <Filter>Win32\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="win32_nclient.cpp">
+      <Filter>Win32\Network\NClient</Filter>
+    </ClCompile>
+    <ClCompile Include="win32_performance.cpp">
+      <Filter>Win32\Performance</Filter>
+    </ClCompile>
+    <ClCompile Include="win32_stopwatch.cpp">
+      <Filter>Win32\Performance</Filter>
+    </ClCompile>
+    <ClCompile Include="win32_nserver.cpp">
+      <Filter>Win32\Network\NServer</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="defines.h" />
+    <ClInclude Include="types.h" />
+    <ClInclude Include="graphics.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="hwindows.h">
+      <Filter>Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Mouse.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="exception.h">
+      <Filter>Exception</Filter>
+    </ClInclude>
+    <ClInclude Include="win32_window.h">
+      <Filter>Win32\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="win32_graphics.h">
+      <Filter>Win32\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="win32_performance.h">
+      <Filter>Win32\Performance</Filter>
+    </ClInclude>
+    <ClInclude Include="win32_network.h">
+      <Filter>Win32\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="win32_nclient.h">
+      <Filter>Win32\Network\NClient</Filter>
+    </ClInclude>
+    <ClInclude Include="win32_stopwatch.h">
+      <Filter>Win32\Performance</Filter>
+    </ClInclude>
+    <ClInclude Include="time.h">
+      <Filter>Win32\Performance</Filter>
+    </ClInclude>
+    <ClInclude Include="win32_nserver.h">
+      <Filter>Win32\Network\NServer</Filter>
+    </ClInclude>
+    <ClInclude Include="network.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{467a4542-f1ae-4c9a-923d-7a5f42701b2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32">
+      <UniqueIdentifier>{79ed8b0a-bc77-4318-87d2-460bd399e13d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{e8597dbe-44fa-4c65-851b-0c6f7f97c091}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{b3bea71c-8ab5-4fa0-a23c-12ec67442db7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Exception">
+      <UniqueIdentifier>{50615f4e-493a-498d-b03d-17a6b1d6184c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32\Window">
+      <UniqueIdentifier>{918a211e-6479-4144-a136-449031ccd21f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32\Graphics">
+      <UniqueIdentifier>{a85f8a33-258d-4cbf-838c-aa74fddb2bca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32\Performance">
+      <UniqueIdentifier>{a646f4ee-0bcd-4349-be3a-803dabc1b58c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32\Network">
+      <UniqueIdentifier>{a326ce3c-264f-432e-975b-3d115684717c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32\Network\NClient">
+      <UniqueIdentifier>{6286a7a3-2093-4dde-8141-4d0d51199be9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32\Network\NServer">
+      <UniqueIdentifier>{ec92bfe8-ce4d-4062-a6d5-a0f810cfc9bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{91f5a2c0-e2ad-47a8-bbc5-36f75e63e21a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="AppIcon.ico">
+      <Filter>Resources</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

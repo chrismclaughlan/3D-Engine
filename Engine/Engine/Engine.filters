@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Win32">
+      <UniqueIdentifier>{4bf5a1fd-d39d-4019-b91f-62dbd82175bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{f312f130-fbed-4fd1-9728-8dfb956af9ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input\include">
+      <UniqueIdentifier>{aada6ce4-8710-4491-a956-fc2c28323779}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input\source">
+      <UniqueIdentifier>{7ac49b5e-c272-4e94-90b6-6cc51558abec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{9931726f-933d-4153-b8c9-9dcde4638e94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{7ffa6a9b-f830-4ef1-947a-3b4b32ebb8b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\include">
+      <UniqueIdentifier>{f30ff6dc-50bb-4ddd-87ca-cbad87c1c664}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\source">
+      <UniqueIdentifier>{46ab8b6e-ad90-4063-9047-0d5c3fa0144c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Exception">
+      <UniqueIdentifier>{a7c07452-7288-461f-a0a6-3533e78f9362}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Exception\include">
+      <UniqueIdentifier>{0686f0ee-e471-4fda-8447-31b69620edec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Exception\source">
+      <UniqueIdentifier>{32f80114-de12-4b68-8eab-5980ccec30c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32\Window">
+      <UniqueIdentifier>{0001fa04-d593-4050-9420-6a6e4b1e5a27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32\Window\source">
+      <UniqueIdentifier>{49fc316f-a326-4f37-b4b5-0b7972e53d58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32\Window\include">
+      <UniqueIdentifier>{3983189c-7d83-4bae-91ec-dad145627ea6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32\Components">
+      <UniqueIdentifier>{64846b4f-7656-49f7-8ade-dcbd14b66668}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32\Components\include">
+      <UniqueIdentifier>{9c67f503-cf63-4ecb-86f7-262121eaf11b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32\Components\source">
+      <UniqueIdentifier>{65425ad6-7e96-4a62-ac94-3ad6d28de067}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="exception.cpp">
+      <Filter>Exception\source</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics.cpp">
+      <Filter>Graphics\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Keyboard.cpp">
+      <Filter>Input\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Mouse.cpp">
+      <Filter>Input\source</Filter>
+    </ClCompile>
+    <ClCompile Include="win32_window.cpp">
+      <Filter>Win32\Window\source</Filter>
+    </ClCompile>
+    <ClCompile Include="win32_graphics.cpp">
+      <Filter>Win32\Components\source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="exception.h">
+      <Filter>Exception\include</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics.h">
+      <Filter>Graphics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="defines.h" />
+    <ClInclude Include="hwindows.h">
+      <Filter>Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard.h">
+      <Filter>Input\include</Filter>
+    </ClInclude>
+    <ClInclude Include="Mouse.h">
+      <Filter>Input\include</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="types.h" />
+    <ClInclude Include="win32_window.h">
+      <Filter>Win32\Window\include</Filter>
+    </ClInclude>
+    <ClInclude Include="win32_graphics.h">
+      <Filter>Win32\Components\include</Filter>
+    </ClInclude>
+    <ClInclude Include="win32_performance.h">
+      <Filter>Win32\Components\include</Filter>
+    </ClInclude>
+    <ClInclude Include="win.h">
+      <Filter>Win32</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="AppIcon.ico">
+      <Filter>Resources</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

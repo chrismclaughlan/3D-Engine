@@ -11,7 +11,7 @@
 
 int32 Game::run()
 {
-	meshCube.LoadObjectFile("spaceship.obj");
+	meshCube.LoadObjectFile("teapot.obj");
 
 	projectionMatrix.MakeProjection(
 		90.0f,
@@ -134,7 +134,7 @@ void Game::DoFrame()
 
 	matrixRotX.MakeRotationX(fTheta);
 	matrixRotZ.MakeRotationZ(fTheta * 0.5f);
-	matrixTranslation.MakeTranslation(0.0f, 0.0f, 8.0f);
+	matrixTranslation.MakeTranslation(0.0f, 0.0f, 5.0f);
 	matrixWorld.MakeIdentity();
 	matrixWorld = matrixRotZ * matrixRotX;
 	matrixWorld *= matrixTranslation;

@@ -8,6 +8,7 @@
 class Performance
 {
 public:
+	LARGE_INTEGER timeElapsed;
 	LARGE_INTEGER frequency;
 	LARGE_INTEGER startTime;
 	LARGE_INTEGER endTime = {};
@@ -16,6 +17,7 @@ public:
 public:
 	Performance()
 	{
+		QueryPerformanceFrequency(&timeElapsed);
 		QueryPerformanceFrequency(&frequency);
 		QueryPerformanceCounter(&startTime);
 	}

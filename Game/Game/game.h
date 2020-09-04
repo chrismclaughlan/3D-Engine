@@ -41,5 +41,15 @@ protected:
 private:
 	mesh meshCube;
 	Matrix4x4 projectionMatrix;
+	Vector vCamera;
+	Vector vLookDir;
 	float fTheta = 0.0f;
+	float fYaw = 0.0f;
+	std::chrono::time_point<std::chrono::steady_clock> timeStarted = std::chrono::high_resolution_clock::now();
+
+private:
+	// Movement
+	float moveDirX = 0.0f;
+	float moveDirY = 0.0f;
+	float moveDirZ = 0.0f;
 };

@@ -40,6 +40,8 @@ public:
 
 	static Vector IntersectPlane(Vector& plane_p, Vector& plane_n, Vector& lineStart, Vector& lineEnd);
 	static int32 TriangleClipAgainstPlane(Vector plane_p, Vector plane_n, Triangle& in_tri, Triangle& out_tri1, Triangle& out_tri2);
+
+	void reset();
 };
 
 class Matrix4x4

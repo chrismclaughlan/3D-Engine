@@ -40,7 +40,13 @@ void Game::HandleInput()
 		{
 		case VK_ESCAPE:
 		{
+			moveDirX = 0.0f;
 			moveDirY = 0.0f;
+			moveDirZ = 0.0f;
+
+			fYaw = 0.0f;
+			vCamera.reset();
+			vLookDir.reset();
 		} break;
 		case 0x57:  // 'w'
 		{
@@ -157,21 +163,19 @@ void Game::DoFrame()
 	/* ---------- Simulate ---------- */
 	//fTheta += 0.005f;
 
-	//std::chrono::time_point<std::chrono::steady_clock> timeNow = std::chrono::high_resolution_clock::now();
-	//std::chrono::duration<double> diff = timeNow - timeStarted;
-	const double secondsElapsed = 10.0f;  //diff.count();
+	std::chrono::time_point<std::chrono::steady_clock> timeNow = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> diff = timeNow - timeStarted;
+	const double secondsElapsed = diff.count();
 
 	double turningSpeed = 0.001f * secondsElapsed;
 	double movementSpeed = 0.01f * secondsElapsed;
-	//vCamera.x += movementSpeed * moveDirX;
-	vCamera.y += movementSpeed * moveDirY;
-	//vCamera.z += movementSpeed * moveDirZ;
 
 	Vector vForward;
 	vForward = vLookDir * movementSpeed;
 
-	vCamera += vForward * moveDirZ;		// forward / backward
-	fYaw += moveDirX * turningSpeed;	// left / right
+	vCamera += vForward * moveDirZ;			// forward / backward
+	fYaw += moveDirX * turningSpeed;		// left / right
+	vCamera.y += movementSpeed * moveDirY;	// up / down
 
 	Matrix4x4 matrixRotX, matrixRotZ, matrixTranslation, matrixWorld;
 

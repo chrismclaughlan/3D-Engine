@@ -40,6 +40,7 @@ protected:
 
 private:
 	mesh meshCube;
+	Texture textureCube;
 	Matrix4x4 projectionMatrix;
 	Vector vCamera;
 	Vector vLookDir;
@@ -52,4 +53,12 @@ private:
 	float moveDirX = 0.0f;
 	float moveDirY = 0.0f;
 	float moveDirZ = 0.0f;
+
+private:
+	float* pDepthBuffer = nullptr;
+
+	void TexturedTriangle(int x1, int y1, float u1, float v1, float w1,
+		int x2, int y2, float u2, float v2, float w2,
+		int x3, int y3, float u3, float v3, float w3,
+		Texture* tex);
 };

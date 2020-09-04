@@ -3,8 +3,12 @@
 #include "Engine\win32_window.h"
 #include "Engine\win32_network.h"
 #include "Engine\win32_performance.h"
+#include "Engine\vector.h"
 
 #include <iostream>
+
+class Vector;
+class Matrix4x4;
 
 class Game
 {
@@ -36,7 +40,6 @@ protected:
 
 private:
 	mesh meshCube;
-	matrix4x4 projectionMatrix;
+	Matrix4x4 projectionMatrix;
 	float fTheta = 0.0f;
-	vector3 camera = {0};
 };

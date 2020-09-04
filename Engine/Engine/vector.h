@@ -21,10 +21,10 @@ public:
 	friend Vector operator-(const Vector& a, const Vector& b);
 	friend Vector operator*(const Vector& a, const float k);
 	friend Vector operator/(const Vector& a, const float k);
-	float DotProduct(const Vector& a, const Vector& b) const;
-	float Length(const Vector& a) const;
-	Vector Normalise(const Vector& a) const;
-	Vector CrossProduct(const Vector& a, const Vector& b) const;
+	static float DotProduct(const Vector& a, const Vector& b);
+	static float Length(const Vector& a);
+	static Vector Normalise(const Vector& a);
+	static Vector CrossProduct(const Vector& a, const Vector& b);
 };
 
 class Matrix4x4

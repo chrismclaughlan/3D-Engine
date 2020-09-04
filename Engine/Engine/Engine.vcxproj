@@ -23,6 +23,7 @@
     <ClCompile Include="graphics.cpp" />
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Mouse.cpp" />
+    <ClCompile Include="vector.cpp" />
     <ClCompile Include="win32_stopwatch.cpp" />
     <ClCompile Include="win32_performance.cpp" />
     <ClCompile Include="win32_nclient.cpp" />
@@ -41,6 +42,7 @@
     <ClInclude Include="network.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="time.h" />
+    <ClInclude Include="vector.h" />
     <ClInclude Include="win32_stopwatch.h" />
     <ClInclude Include="types.h" />
     <ClInclude Include="win32_graphics.h" />

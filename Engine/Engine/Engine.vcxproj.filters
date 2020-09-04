@@ -34,6 +34,9 @@
     <ClCompile Include="win32_nserver.cpp">
       <Filter>Win32\Network\NServer</Filter>
     </ClCompile>
+    <ClCompile Include="vector.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="defines.h" />
@@ -82,6 +85,9 @@
     </ClInclude>
     <ClInclude Include="network.h">
       <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="vector.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

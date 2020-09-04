@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "types.h"
+#include "vector.h"
 
 #include <vector>
 #include <fstream>
@@ -14,14 +15,9 @@ float ratio = 1080 / nscale_y;\
 scale_x = nscale_x * ratio;\
 scale_y = nscale_y * ratio;\
 
-struct vector3
-{
-	float x, y, z;
-};
-
 struct triangle
 {
-	vector3 points[3];
+	Vector points[3];
 	int32 colour = 0x0000ff;
 };
 
@@ -39,7 +35,7 @@ struct mesh
 			return false;
 		}
 
-		std::vector<vector3> verticies;
+		std::vector<Vector> verticies;
 
 		while (!file.eof())
 		{
@@ -54,7 +50,7 @@ struct mesh
 
 			if (line[0] == 'v' && line[1] == ' ')
 			{
-				vector3 v;
+				Vector v;
 				s >> temp >> v.x >> v.y >> v.z;
 				verticies.push_back(v);
 			}
@@ -92,7 +88,7 @@ public:
 	int32 getWidth() { return width; }
 	int32 getHeight() { return height; }
 
-	void MultiplyMatrixVector(vector3& v1, vector3& v2, matrix4x4& m);  // inline
+	//void MultiplyMatrixVector(vector3& v1, vector3& v2, matrix4x4& m);  // inline
 	void DrawLineP(int32 x1, int32 y1, int32 x2, int32 y2, uint32 colour);
 	void DrawLine(float x1, float y1, float x2, float y2, uint32 colour);
 	void DrawTriangleP(int32 x1, int32 y1, int32 x2, int32 y2, int32 x3, int32 y3, uint32 colour);

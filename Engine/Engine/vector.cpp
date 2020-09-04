@@ -2,11 +2,11 @@
 #include <assert.h>
 
 Vector::Vector()
-	: x(0.0f), y(0.0f), z(0.0f), w(0.0f)
+	: x(0.0f), y(0.0f), z(0.0f), w(1.0f)
 {}
 
 Vector::Vector(float x, float y, float z)
-	: x(x), y(y), z(z), w(0.0f)
+	: x(x), y(y), z(z), w(1.0f)
 {}
 
 Vector::Vector(float x, float y, float z, float w)
@@ -74,28 +74,30 @@ Matrix4x4 operator*(const Matrix4x4& a, const Matrix4x4& b)
 	return mat;
 }
 
-float Vector::DotProduct(const Vector& a, const Vector& b) const
+float Vector::DotProduct(const Vector& a, const Vector& b)
 {
 	return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
 }
 
-float Vector::Length(const Vector& a) const
+float Vector::Length(const Vector& a)
 {
 	return sqrtf(DotProduct(a, a));
 }
 
-Vector Vector::Normalise(const Vector& a) const
+Vector Vector::Normalise(const Vector& a)
 {
 	Vector v;
 	float length = Length(a);
-	assert(length != 0);	
+	if (length == 0)
+		return Vector();
+	assert(length != 0);
 	v.x = a.x / length;
 	v.y = a.y / length;
 	v.z = a.z / length;
 	return v;
 }
 
-Vector Vector::CrossProduct(const Vector& a, const Vector& b) const
+Vector Vector::CrossProduct(const Vector& a, const Vector& b)
 {
 	Vector v;
 	v.x = (a.y * b.z) - (a.z * b.y);
@@ -115,7 +117,7 @@ Matrix4x4::Matrix4x4()
 	}
 }
 
-Vector operator*(const Matrix4x4 m, const Vector& v)
+Vector operator*(const Matrix4x4& m, const Vector& v)
 {
 	Vector vect;
 	vect.x = (v.x * m.m[0][0]) + (v.y * m.m[1][0]) + (v.z * m.m[2][0]) + (v.w * m.m[3][0]);

@@ -1,6 +1,7 @@
 #include "Engine\exception.h"
 #include "Engine\defines.h"
 #include "game.h"
+#include "vector.h"
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -11,33 +12,14 @@
 
 int32 Game::run()
 {
-	//meshCube.tris = {
-	//	// South
-	//	{0.0f, 0.0f, 0.0f,	0.0f, 1.0f, 0.0f,	1.0f, 1.0f, 0.0f},
-	//	{0.0f, 0.0f, 0.0f,	1.0f, 1.0f, 0.0f,	1.0f, 0.0f, 0.0f},
-
-	//	// East
-	//	{1.0f, 0.0f, 0.0f,	1.0f, 1.0f, 0.0f,	1.0f, 1.0f, 1.0f},
-	//	{1.0f, 0.0f, 0.0f,	1.0f, 1.0f, 1.0f,	1.0f, 0.0f, 1.0f},
-
-	//	// North
-	//	{1.0f, 0.0f, 1.0f,	1.0f, 1.0f, 1.0f,	0.0f, 1.0f, 1.0f},
-	//	{1.0f, 0.0f, 1.0f,	0.0f, 1.0f, 1.0f,	0.0f, 0.0f, 1.0f},
-
-	//	// West
-	//	{0.0f, 0.0f, 1.0f,	0.0f, 1.0f, 1.0f,	0.0f, 1.0f, 0.0f},
-	//	{0.0f, 0.0f, 1.0f,	0.0f, 1.0f, 0.0f,	0.0f, 0.0f, 0.0f},
-
-	//	// Top
-	//	{0.0f, 1.0f, 0.0f,	0.0f, 1.0f, 1.0f,	1.0f, 1.0f, 1.0f},
-	//	{0.0f, 1.0f, 0.0f,	1.0f, 1.0f, 1.0f,	1.0f, 1.0f, 0.0f},
-
-	//	// Bottom
-	//	{1.0f, 0.0f, 1.0f,	0.0f, 0.0f, 1.0f,	0.0f, 0.0f, 0.0f},
-	//	{1.0f, 0.0f, 1.0f,	0.0f, 0.0f, 0.0f,	1.0f, 0.0f, 0.0f},
-	//};
-
 	meshCube.LoadObjectFile("spaceship.obj");
+
+	//Matrix4x4 matrixProjection;
+	//matrixProjection.MakeProjection(
+	//	90.0f,
+	//	(float)win.Gfx().getHeight() / (float)win.Gfx().getWidth(),
+	//	0.1f,
+	//	1000.0f);
 
 	float fNear = 0.1f;
 	float fFar = 1000.0f;
@@ -164,25 +146,21 @@ void Game::DoFrame()
 	/* ---------- Render ---------- */
 	win.Gfx().ClearScreen(0x000000);
 
-	// 3D Cube
-
 	matrix4x4 matrixRotX, matrixRotZ;
 
-	// Ratation X
-	matrixRotX.m[0][0] = cosf(fTheta);
-	matrixRotX.m[0][1] = sinf(fTheta);
-	matrixRotX.m[1][0] = -sinf(fTheta);
-	matrixRotX.m[1][1] = cosf(fTheta);
-	matrixRotX.m[2][2] = 1;
-	matrixRotX.m[3][3] = 1;
-
-	// Rotation Z
-	matrixRotZ.m[0][0] = 1;
-	matrixRotZ.m[1][1] = cosf(fTheta * 0.5f);
-	matrixRotZ.m[1][2] = sinf(fTheta * 0.5f);
-	matrixRotZ.m[2][1] = -sinf(fTheta * 0.5f);
-	matrixRotZ.m[2][2] = cosf(fTheta * 0.5f);
+	matrixRotZ.m[0][0] = cosf(fTheta);
+	matrixRotZ.m[0][1] = sinf(fTheta);
+	matrixRotZ.m[1][0] = -sinf(fTheta);
+	matrixRotZ.m[1][1] = cosf(fTheta);
+	matrixRotZ.m[2][2] = 1;
 	matrixRotZ.m[3][3] = 1;
+
+	matrixRotX.m[0][0] = 1;
+	matrixRotX.m[1][1] = cosf(fTheta * 0.5f);
+	matrixRotX.m[1][2] = sinf(fTheta * 0.5f);
+	matrixRotX.m[2][1] = -sinf(fTheta * 0.5f);
+	matrixRotX.m[2][2] = cosf(fTheta * 0.5f);
+	matrixRotX.m[3][3] = 1;
 
 	std::vector<triangle> trianglesToRaster;
 

@@ -163,9 +163,12 @@ void Game::DoFrame()
 	/* ---------- Simulate ---------- */
 	//fTheta += 0.005f;
 
-	std::chrono::time_point<std::chrono::steady_clock> timeNow = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> diff = timeNow - timeStarted;
-	const double secondsElapsed = diff.count();
+	// TODO FIX TIMING
+
+	//std::chrono::time_point<std::chrono::steady_clock> timeNow = std::chrono::high_resolution_clock::now();
+	//std::chrono::duration<double> diff = timeNow - timeStarted;
+	//const double secondsElapsed = diff.count();
+	const double secondsElapsed = 1.0f;
 
 	double turningSpeed = 0.001f * secondsElapsed;
 	double movementSpeed = 0.01f * secondsElapsed;
@@ -178,6 +181,8 @@ void Game::DoFrame()
 	vCamera.y += movementSpeed * moveDirY;	// up / down
 
 	Matrix4x4 matrixRotX, matrixRotZ, matrixTranslation, matrixWorld;
+
+	fTheta += 0.005f;
 
 	matrixRotX.MakeRotationX(fTheta);
 	matrixRotZ.MakeRotationZ(fTheta * 0.5f);

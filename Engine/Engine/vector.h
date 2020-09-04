@@ -21,8 +21,14 @@ public:
 	friend Vector operator-(const Vector& a, const Vector& b);
 	friend Vector operator*(const Vector& a, const float k);
 	friend Vector operator/(const Vector& a, const float k);
+	friend Vector operator+=(Vector& a, const Vector& b);
+	friend Vector operator-=(Vector& a, const Vector& b);
+	friend Vector operator*=(Vector& a, const float k);
+	friend Vector operator/=(Vector& a, const float k);
+	Vector& operator-();
 	static float DotProduct(const Vector& a, const Vector& b);
 	static float Length(const Vector& a);
+	void Normalise();
 	static Vector Normalise(const Vector& a);
 	static Vector CrossProduct(const Vector& a, const Vector& b);
 };
@@ -36,8 +42,9 @@ public:
 	//Matrix4x4( ... )
 
 	friend Vector operator*(const Matrix4x4& m, const Vector& v);
+	friend Vector operator*=(const Matrix4x4& m, const Vector& v);
 	friend Matrix4x4 operator*(const Matrix4x4& a, const Matrix4x4& b);
-	//Vector MultiplyVector(Matrix4x4& m, Vector& v) const;
+	friend Matrix4x4 operator*=(Matrix4x4& a, const Matrix4x4& b);
 
 	// Returns an identity matrix TODO google
 	void MakeIdentity();

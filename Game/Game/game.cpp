@@ -134,10 +134,10 @@ void Game::DoFrame()
 
 	matrixRotX.MakeRotationX(fTheta);
 	matrixRotZ.MakeRotationZ(fTheta * 0.5f);
-	matrixTranslation.MakeTranslation(0.0f, 0.0f, 10.0f);
+	matrixTranslation.MakeTranslation(0.0f, 0.0f, 8.0f);
 	matrixWorld.MakeIdentity();
 	matrixWorld = matrixRotZ * matrixRotX;
-	matrixWorld = matrixWorld * matrixTranslation;
+	matrixWorld *= matrixTranslation;
 
 	std::vector<triangle> trianglesToRaster;
 
@@ -156,7 +156,8 @@ void Game::DoFrame()
 
 		normal = Vector::CrossProduct(line1, line2);
 
-		normal = Vector::Normalise(normal);
+		//normal = Vector::Normalise(normal);
+		normal.Normalise();
 
 		Vector vCameraRay;
 		vCameraRay = triTransformed.points[0] - vCameraRay;
@@ -166,7 +167,7 @@ void Game::DoFrame()
 		{
 			// Shade triangle
 			Vector vLightDir = { 0.0f, 1.0f, -1.0f };
-			vLightDir = Vector::Normalise(vLightDir);
+			vLightDir.Normalise();
 			float dp = std::max(0.1f, Vector::DotProduct(vLightDir, normal));
 			float triColour = ((dp * 256.0f) * 3.0f) / 5.0f;
 
@@ -175,21 +176,21 @@ void Game::DoFrame()
 			triProjected.points[2] = projectionMatrix * triTransformed.points[2];
 			triProjected.colour = triColour;
 
-			triProjected.points[0] = triProjected.points[0] / triProjected.points[0].w;
-			triProjected.points[1] = triProjected.points[1] / triProjected.points[1].w;
-			triProjected.points[2] = triProjected.points[2] / triProjected.points[2].w;
-
+			triProjected.points[0] /= triProjected.points[0].w;
+			triProjected.points[1] /= triProjected.points[1].w;
+			triProjected.points[2] /= triProjected.points[2].w;
+			
 			Vector vOffsetView = { 1, 1, 0 };
-			triProjected.points[0] = triProjected.points[0] + vOffsetView;
-			triProjected.points[1] = triProjected.points[1] + vOffsetView;
-			triProjected.points[2] = triProjected.points[2] + vOffsetView;
+			triProjected.points[0] += vOffsetView;
+			triProjected.points[1] += vOffsetView;
+			triProjected.points[2] += vOffsetView;
 
-			triProjected.points[0].x = triProjected.points[0].x * 0.5f * (float)win.Gfx().getWidth();
-			triProjected.points[0].y = triProjected.points[0].y * 0.5f * (float)win.Gfx().getHeight();
-			triProjected.points[1].x = triProjected.points[1].x * 0.5f * (float)win.Gfx().getWidth();
-			triProjected.points[1].y = triProjected.points[1].y * 0.5f * (float)win.Gfx().getHeight();
-			triProjected.points[2].x = triProjected.points[2].x * 0.5f * (float)win.Gfx().getWidth();
-			triProjected.points[2].y = triProjected.points[2].y * 0.5f * (float)win.Gfx().getHeight();
+			triProjected.points[0].x *= 0.5f * (float)win.Gfx().getWidth();
+			triProjected.points[0].y *= 0.5f * (float)win.Gfx().getHeight();
+			triProjected.points[1].x *= 0.5f * (float)win.Gfx().getWidth();
+			triProjected.points[1].y *= 0.5f * (float)win.Gfx().getHeight();
+			triProjected.points[2].x *= 0.5f * (float)win.Gfx().getWidth();
+			triProjected.points[2].y *= 0.5f * (float)win.Gfx().getHeight();
 
 			trianglesToRaster.push_back(triProjected);
 		}

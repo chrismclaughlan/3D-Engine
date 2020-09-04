@@ -61,6 +61,39 @@ Vector operator/(const Vector& a, const float k)
 	return v;
 }
 
+Vector operator+=(Vector& a, const Vector& b)
+{
+	a.x += b.x;
+	a.y += b.y;
+	a.z += b.z;
+	return a;
+}
+
+Vector operator-=(Vector& a, const Vector& b)
+{
+	a.x -= b.x;
+	a.y -= b.y;
+	a.z -= b.z;
+	return a;
+}
+
+Vector operator*=(Vector& a, const float k)
+{
+	a.x *= k;
+	a.y *= k;
+	a.z *= k;
+	return a;
+}
+
+Vector operator/=(Vector& a, const float k)
+{
+	assert(k != 0);
+	a.x /= k;
+	a.y /= k;
+	a.z /= k;
+	return a;
+}
+
 Matrix4x4 operator*(const Matrix4x4& a, const Matrix4x4& b)
 {
 	Matrix4x4 mat;
@@ -74,6 +107,26 @@ Matrix4x4 operator*(const Matrix4x4& a, const Matrix4x4& b)
 	return mat;
 }
 
+Matrix4x4 operator*=(Matrix4x4& a, const Matrix4x4& b)
+{
+	for (int c = 0; c < 4; c++)
+	{
+		for (int r = 0; r < 4; r++)
+		{
+			a.m[r][c] = (a.m[r][0] * b.m[0][c]) + (a.m[r][1] * b.m[1][c]) + (a.m[r][2] * b.m[2][c]) + (a.m[r][3] * b.m[3][c]);
+		}
+	}
+	return a;
+}
+
+Vector& Vector::operator-()
+{
+	x = -x;
+	y = -y;
+	z = -z;
+	return *this;
+}
+
 float Vector::DotProduct(const Vector& a, const Vector& b)
 {
 	return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
@@ -82,6 +135,17 @@ float Vector::DotProduct(const Vector& a, const Vector& b)
 float Vector::Length(const Vector& a)
 {
 	return sqrtf(DotProduct(a, a));
+}
+
+void Vector::Normalise()
+{
+	float length = Length(*this);
+	if (length == 0)
+		return;
+	assert(length != 0);
+	x /= length;
+	y /= length;
+	z /= length;
 }
 
 Vector Vector::Normalise(const Vector& a)
@@ -127,15 +191,15 @@ Vector operator*(const Matrix4x4& m, const Vector& v)
 	return vect;
 }
 
-//Vector Matrix4x4::MultiplyVector(Matrix4x4& m, Vector& v) const
-//{
-//	Vector vect;
-//	vect.x = (v.x * m.m[0][0]) + (v.y * m.m[1][0]) + (v.z * m.m[2][0]) + (v.w * m.m[3][0]);
-//	vect.y = (v.x * m.m[0][1]) + (v.y * m.m[1][1]) + (v.z * m.m[2][1]) + (v.w * m.m[3][1]);
-//	vect.z = (v.x * m.m[0][2]) + (v.y * m.m[1][2]) + (v.z * m.m[2][2]) + (v.w * m.m[3][2]);
-//	vect.w = (v.x * m.m[0][3]) + (v.y * m.m[1][3]) + (v.z * m.m[2][3]) + (v.w * m.m[3][3]);
-//	return vect;
-//}
+Vector operator*=(const Matrix4x4& m, const Vector& v)
+{
+	Vector vect;
+	vect.x = (v.x * m.m[0][0]) + (v.y * m.m[1][0]) + (v.z * m.m[2][0]) + (v.w * m.m[3][0]);
+	vect.y = (v.x * m.m[0][1]) + (v.y * m.m[1][1]) + (v.z * m.m[2][1]) + (v.w * m.m[3][1]);
+	vect.z = (v.x * m.m[0][2]) + (v.y * m.m[1][2]) + (v.z * m.m[2][2]) + (v.w * m.m[3][2]);
+	vect.w = (v.x * m.m[0][3]) + (v.y * m.m[1][3]) + (v.z * m.m[2][3]) + (v.w * m.m[3][3]);
+	return vect;
+}
 
 void Matrix4x4::MakeIdentity()
 {

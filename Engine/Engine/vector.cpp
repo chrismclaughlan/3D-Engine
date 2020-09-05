@@ -178,7 +178,7 @@ Matrix4x4::Matrix4x4()
 	{
 		for (int j = 0; j < 4; j++)
 		{
-			m[i][j] = 0;
+			m[i][j] = 0.0f;
 		}
 	}
 }

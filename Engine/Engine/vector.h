@@ -89,7 +89,7 @@ struct Triangle
 {
 	Vector points[3];
 	Vector2 t[3];
-	uint32 colour = 0x0000ff;
+	uint32 colour;
 };
 
 class Texture
@@ -114,48 +114,14 @@ public:
 		}
 	}
 
-	inline void writeTo(int x, int y, uint32 a)
-	{
-		map[x * width + y] = a;
-	}
-	
-	inline uint32 readFrom(int x, int y) const
-	{
-		return map[x * width + y];
-	}
-
-	//void LoadExampleTexture()
+	//inline void writeTo(int x, int y, uint32 a)
 	//{
-	//	if (map != nullptr)
-	//	{
-	//		delete[] map;
-	//		map = nullptr;
-	//	}
+	//	map[x * width + y] = a;
+	//}
 	//
-	//	width = 30;
-	//	height = 30;
-	//
-	//	map = new uint32[width * height];
-	//
-	//	for (int i = 0; i < height; i++)
-	//	{
-	//		for (int j = 0; j < width; j++)
-	//		{
-	//			if (j < (-1.0f * i) + height - 1)
-	//				writeTo(i, j, 0x00ff00);
-	//			else
-	//				writeTo(i, j, 0x0000ff);
-	//		}
-	//	}
-	//
-	//	//writeTo(0, 0, 0xff0000); writeTo(0, 1, 0xff0000); writeTo(0, 2, 0xff0000); writeTo(0, 3, 0xff0000);	writeTo(0, 4, 0xff0000); writeTo(0, 5, 0xff0000); writeTo(0, 6, 0xff0000); writeTo(0, 7, 0xff0000);
-	//	//writeTo(1, 0, 0xff0000); writeTo(1, 1, 0xff0000); writeTo(1, 2, 0xff0000); writeTo(1, 3, 0xff0000);	writeTo(1, 4, 0xff0000); writeTo(1, 5, 0xff0000); writeTo(1, 6, 0xff0000); writeTo(1, 7, 0xffffff);
-	//	//writeTo(2, 0, 0xff0000); writeTo(2, 1, 0xff0000); writeTo(2, 2, 0xff0000); writeTo(2, 3, 0xff0000);	writeTo(2, 4, 0xff0000); writeTo(2, 5, 0xff0000); writeTo(2, 6, 0xffffff); writeTo(2, 7, 0xffffff);
-	//	//writeTo(3, 0, 0xff0000); writeTo(3, 1, 0xff0000); writeTo(3, 2, 0xff0000); writeTo(3, 3, 0xff0000);	writeTo(3, 4, 0xff0000); writeTo(3, 5, 0xffffff); writeTo(3, 6, 0xffffff); writeTo(3, 7, 0xffffff);
-	//	//writeTo(4, 0, 0xff0000); writeTo(4, 1, 0xff0000); writeTo(4, 2, 0xff0000); writeTo(4, 3, 0xff0000);	writeTo(4, 4, 0xffffff); writeTo(4, 5, 0xffffff); writeTo(4, 6, 0xffffff); writeTo(4, 7, 0xffffff);
-	//	//writeTo(5, 0, 0xff0000); writeTo(5, 1, 0xff0000); writeTo(5, 2, 0xff0000); writeTo(5, 3, 0xffffff);	writeTo(5, 4, 0xffffff); writeTo(5, 5, 0xffffff); writeTo(5, 6, 0xffffff); writeTo(5, 7, 0xffffff);
-	//	//writeTo(6, 0, 0xff0000); writeTo(6, 1, 0xff0000); writeTo(6, 2, 0xffffff); writeTo(6, 3, 0xffffff);	writeTo(6, 4, 0xffffff); writeTo(6, 5, 0xffffff); writeTo(6, 6, 0xffffff); writeTo(6, 7, 0xffffff);
-	//	//writeTo(7, 0, 0xff0000); writeTo(7, 1, 0xffffff); writeTo(7, 2, 0xffffff); writeTo(7, 3, 0xffffff);	writeTo(7, 4, 0xffffff); writeTo(7, 5, 0xffffff); writeTo(7, 6, 0xffffff); writeTo(7, 7, 0xffffff);
+	//inline uint32 readFrom(int x, int y) const
+	//{
+	//	return map[x * width + y];
 	//}
 
 	//static long int binToHex(long int binaryval)
@@ -232,13 +198,15 @@ public:
 	}
 };
 
-struct mesh
+struct Mesh
 {
 	std::vector<Triangle> tris;
 
 	// TODO error handling
 	bool LoadObjectFile(std::string filename, bool hasTexture)
 	{
+		tris.clear();
+
 		std::ifstream file(filename);
 
 		if (!file.is_open())
@@ -315,5 +283,23 @@ struct mesh
 		}
 
 		return true;
+	}
+
+	void LoadTestCube()
+	{
+		// South
+		tris.clear();
+		tris.push_back({ Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
+		tris.push_back({ Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
+		tris.push_back({ Vector(1.0f, 0.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
+		tris.push_back({ Vector(1.0f, 0.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
+		tris.push_back({ Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector(1.0f, 1.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
+		tris.push_back({ Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
+		tris.push_back({ Vector(0.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
+		tris.push_back({ Vector(0.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
+		tris.push_back({ Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector(0.0f, 1.0f, 1.0f, 1.0f), Vector(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
+		tris.push_back({ Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 1.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
+		tris.push_back({ Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
+		tris.push_back({ Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector(1.0f, 0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
 	}
 };

@@ -1,5 +1,3 @@
-#include "Engine\exception.h"
-#include "Engine\defines.h"
 #include "game.h"
 #include <iostream>
 #include <string>
@@ -9,30 +7,20 @@
 #include <assert.h>
 #include <algorithm>
 #include <list>
+#include <sstream>
 
 int32 Game::run()
 {
 	pDepthBuffer = new float[win.Gfx().getWidth() * win.Gfx().getHeight()];
 
-	//	// South
-	meshCube.tris.push_back({ Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
-	meshCube.tris.push_back({ Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
-	meshCube.tris.push_back({ Vector(1.0f, 0.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
-	meshCube.tris.push_back({ Vector(1.0f, 0.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
-	meshCube.tris.push_back({ Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector(1.0f, 1.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
-	meshCube.tris.push_back({ Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
-	meshCube.tris.push_back({ Vector(0.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
-	meshCube.tris.push_back({ Vector(0.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
-	meshCube.tris.push_back({ Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector(0.0f, 1.0f, 1.0f, 1.0f), Vector(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
-	meshCube.tris.push_back({ Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 1.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
-	meshCube.tris.push_back({ Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
-	meshCube.tris.push_back({ Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector(1.0f, 0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
-
-	textureCube = Texture();
+	// Load textures
+	objectTexture = Texture();
 	//textureCube.LoadExampleTexture();
-	textureCube.LoadTextureFromBMP("texture_16x32.bmp");
+	objectTexture.LoadTextureFromBMP("texture_16x32.bmp");
 
-	//meshCube.LoadObjectFile("teapot.obj", false);
+	// Load wavefront files
+	//objectMesh.LoadObjectFile("lowpolybuildings2.obj", true);
+	objectMesh.LoadTestCube();
 
 	projectionMatrix.MakeProjection(
 		90.0f,
@@ -188,11 +176,10 @@ void Game::DoFrame()
 	//const double secondsElapsed = diff.count();
 	const double secondsElapsed = 1.0f;
 
-	double turningSpeed = 0.001f * secondsElapsed;
-	double movementSpeed = 0.01f * secondsElapsed;
+	double turningSpeed = 0.005f * secondsElapsed;
+	double movementSpeed = 0.005f * secondsElapsed;
 
-	Vector vForward;
-	vForward = vLookDir * movementSpeed;
+	Vector vForward = vLookDir * movementSpeed;
 
 	vCamera += vForward * moveDirZ;			// forward / backward
 	fYaw += moveDirX * turningSpeed;		// left / right
@@ -200,7 +187,7 @@ void Game::DoFrame()
 
 	Matrix4x4 matrixRotX, matrixRotZ, matrixTranslation, matrixWorld;
 
-	//fTheta += 0.005f;
+	fTheta += 0.0005f;  // Spin the world
 
 	matrixRotX.MakeRotationX(fTheta);
 	matrixRotZ.MakeRotationZ(fTheta * 0.5f);
@@ -219,12 +206,11 @@ void Game::DoFrame()
 	vTarget = vCamera + vLookDir;
 
 	matrixCamera.MakePointAt(vCamera, vTarget, vUp);
-	//matrixView.MakeQuickInverse(matrixCamera);
 	matrixCamera.MakeQuickInverse();
 
 	// Triangles
 	std::vector<Triangle> trianglesToRaster;
-	for (auto tri : meshCube.tris)
+	for (auto tri : objectMesh.tris)
 	{
 		Triangle triProjected, triTransformed, triCamera;
 
@@ -253,7 +239,7 @@ void Game::DoFrame()
 			Vector vLightDir = { 0.0f, 1.0f, -1.0f };
 			vLightDir.Normalise();
 			float dp = std::max(0.1f, Vector::DotProduct(vLightDir, normal));
-			float triColour = ((dp * 256.0f) * 3.0f) / 5.0f;
+			float triColour = ((dp * 255.0f) * 3.0f) / 5.0f;
 
 			triCamera.points[0] = matrixCamera * triTransformed.points[0];
 			triCamera.points[1] = matrixCamera * triTransformed.points[1];
@@ -379,37 +365,27 @@ void Game::DoFrame()
 
 		for (auto& t : listTriangles)
 		{
+			// Draw textured triangles
 			TexturedTriangle(t.points[0].x, t.points[0].y, t.t[0].u, t.t[0].v, t.t[0].w,
 							 t.points[1].x, t.points[1].y, t.t[1].u, t.t[1].v, t.t[1].w,
 							 t.points[2].x, t.points[2].y, t.t[2].u, t.t[2].v, t.t[2].w,
-							 &textureCube);
+							 &objectTexture);
 
-
+			// Draw basic triangles
 			//win.Gfx().FillTriangleP(
 			//	t.points[0].x, t.points[0].y, 
 			//	t.points[1].x, t.points[1].y, 
 			//	t.points[2].x, t.points[2].y,
 			//	t.colour);
-			win.Gfx().DrawTriangleP(
-				t.points[0].x, t.points[0].y,
-				t.points[1].x, t.points[1].y,
-				t.points[2].x, t.points[2].y,
-				0xffffff);
+
+			// Draw wireframe
+			//win.Gfx().DrawTriangleP(
+			//	t.points[0].x, t.points[0].y,
+			//	t.points[1].x, t.points[1].y,
+			//	t.points[2].x, t.points[2].y,
+			//	0xffffff);
 		}
 	}
-
-	//performance.Update();
-	//if (fpsLimit > 0)
-	//{
-	//	performance.LimitFps(fpsLimit);
-	//}
-
-//#if DISPLAY_DEBUG_CONSOLE && DISPLAY_FPS
-//	if (performance.hasTimePassed(1.0))
-//	{
-//		std::cout << "FPS: " << performance.getFps() << "\n";
-//	}
-//#endif
 
 	win.Gfx().Render();  // last
 }

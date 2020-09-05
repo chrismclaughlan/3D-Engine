@@ -24,6 +24,7 @@ public:
 	Vector2(float u, float v, float w) : u(u), v(v), w(w) {};
 };
 
+
 class Vector
 {
 public:

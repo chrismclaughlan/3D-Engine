@@ -99,7 +99,7 @@ public:
 	int32 height = -1;
 	float scaleW = 1.0f;
 	float scaleH = 1.0f;
-	uint32* map = nullptr;
+	uint8* map = nullptr;
 
 public:
 	Texture()
@@ -124,39 +124,39 @@ public:
 		return map[x * width + y];
 	}
 
-	void LoadExampleTexture()
-	{
-		if (map != nullptr)
-		{
-			delete[] map;
-			map = nullptr;
-		}
-
-		width = 30;
-		height = 30;
-
-		map = new uint32[width * height];
-
-		for (int i = 0; i < height; i++)
-		{
-			for (int j = 0; j < width; j++)
-			{
-				if (j < (-1.0f * i) + height - 1)
-					writeTo(i, j, 0x00ff00);
-				else
-					writeTo(i, j, 0x0000ff);
-			}
-		}
-
-		//writeTo(0, 0, 0xff0000); writeTo(0, 1, 0xff0000); writeTo(0, 2, 0xff0000); writeTo(0, 3, 0xff0000);	writeTo(0, 4, 0xff0000); writeTo(0, 5, 0xff0000); writeTo(0, 6, 0xff0000); writeTo(0, 7, 0xff0000);
-		//writeTo(1, 0, 0xff0000); writeTo(1, 1, 0xff0000); writeTo(1, 2, 0xff0000); writeTo(1, 3, 0xff0000);	writeTo(1, 4, 0xff0000); writeTo(1, 5, 0xff0000); writeTo(1, 6, 0xff0000); writeTo(1, 7, 0xffffff);
-		//writeTo(2, 0, 0xff0000); writeTo(2, 1, 0xff0000); writeTo(2, 2, 0xff0000); writeTo(2, 3, 0xff0000);	writeTo(2, 4, 0xff0000); writeTo(2, 5, 0xff0000); writeTo(2, 6, 0xffffff); writeTo(2, 7, 0xffffff);
-		//writeTo(3, 0, 0xff0000); writeTo(3, 1, 0xff0000); writeTo(3, 2, 0xff0000); writeTo(3, 3, 0xff0000);	writeTo(3, 4, 0xff0000); writeTo(3, 5, 0xffffff); writeTo(3, 6, 0xffffff); writeTo(3, 7, 0xffffff);
-		//writeTo(4, 0, 0xff0000); writeTo(4, 1, 0xff0000); writeTo(4, 2, 0xff0000); writeTo(4, 3, 0xff0000);	writeTo(4, 4, 0xffffff); writeTo(4, 5, 0xffffff); writeTo(4, 6, 0xffffff); writeTo(4, 7, 0xffffff);
-		//writeTo(5, 0, 0xff0000); writeTo(5, 1, 0xff0000); writeTo(5, 2, 0xff0000); writeTo(5, 3, 0xffffff);	writeTo(5, 4, 0xffffff); writeTo(5, 5, 0xffffff); writeTo(5, 6, 0xffffff); writeTo(5, 7, 0xffffff);
-		//writeTo(6, 0, 0xff0000); writeTo(6, 1, 0xff0000); writeTo(6, 2, 0xffffff); writeTo(6, 3, 0xffffff);	writeTo(6, 4, 0xffffff); writeTo(6, 5, 0xffffff); writeTo(6, 6, 0xffffff); writeTo(6, 7, 0xffffff);
-		//writeTo(7, 0, 0xff0000); writeTo(7, 1, 0xffffff); writeTo(7, 2, 0xffffff); writeTo(7, 3, 0xffffff);	writeTo(7, 4, 0xffffff); writeTo(7, 5, 0xffffff); writeTo(7, 6, 0xffffff); writeTo(7, 7, 0xffffff);
-	}
+	//void LoadExampleTexture()
+	//{
+	//	if (map != nullptr)
+	//	{
+	//		delete[] map;
+	//		map = nullptr;
+	//	}
+	//
+	//	width = 30;
+	//	height = 30;
+	//
+	//	map = new uint32[width * height];
+	//
+	//	for (int i = 0; i < height; i++)
+	//	{
+	//		for (int j = 0; j < width; j++)
+	//		{
+	//			if (j < (-1.0f * i) + height - 1)
+	//				writeTo(i, j, 0x00ff00);
+	//			else
+	//				writeTo(i, j, 0x0000ff);
+	//		}
+	//	}
+	//
+	//	//writeTo(0, 0, 0xff0000); writeTo(0, 1, 0xff0000); writeTo(0, 2, 0xff0000); writeTo(0, 3, 0xff0000);	writeTo(0, 4, 0xff0000); writeTo(0, 5, 0xff0000); writeTo(0, 6, 0xff0000); writeTo(0, 7, 0xff0000);
+	//	//writeTo(1, 0, 0xff0000); writeTo(1, 1, 0xff0000); writeTo(1, 2, 0xff0000); writeTo(1, 3, 0xff0000);	writeTo(1, 4, 0xff0000); writeTo(1, 5, 0xff0000); writeTo(1, 6, 0xff0000); writeTo(1, 7, 0xffffff);
+	//	//writeTo(2, 0, 0xff0000); writeTo(2, 1, 0xff0000); writeTo(2, 2, 0xff0000); writeTo(2, 3, 0xff0000);	writeTo(2, 4, 0xff0000); writeTo(2, 5, 0xff0000); writeTo(2, 6, 0xffffff); writeTo(2, 7, 0xffffff);
+	//	//writeTo(3, 0, 0xff0000); writeTo(3, 1, 0xff0000); writeTo(3, 2, 0xff0000); writeTo(3, 3, 0xff0000);	writeTo(3, 4, 0xff0000); writeTo(3, 5, 0xffffff); writeTo(3, 6, 0xffffff); writeTo(3, 7, 0xffffff);
+	//	//writeTo(4, 0, 0xff0000); writeTo(4, 1, 0xff0000); writeTo(4, 2, 0xff0000); writeTo(4, 3, 0xff0000);	writeTo(4, 4, 0xffffff); writeTo(4, 5, 0xffffff); writeTo(4, 6, 0xffffff); writeTo(4, 7, 0xffffff);
+	//	//writeTo(5, 0, 0xff0000); writeTo(5, 1, 0xff0000); writeTo(5, 2, 0xff0000); writeTo(5, 3, 0xffffff);	writeTo(5, 4, 0xffffff); writeTo(5, 5, 0xffffff); writeTo(5, 6, 0xffffff); writeTo(5, 7, 0xffffff);
+	//	//writeTo(6, 0, 0xff0000); writeTo(6, 1, 0xff0000); writeTo(6, 2, 0xffffff); writeTo(6, 3, 0xffffff);	writeTo(6, 4, 0xffffff); writeTo(6, 5, 0xffffff); writeTo(6, 6, 0xffffff); writeTo(6, 7, 0xffffff);
+	//	//writeTo(7, 0, 0xff0000); writeTo(7, 1, 0xffffff); writeTo(7, 2, 0xffffff); writeTo(7, 3, 0xffffff);	writeTo(7, 4, 0xffffff); writeTo(7, 5, 0xffffff); writeTo(7, 6, 0xffffff); writeTo(7, 7, 0xffffff);
+	//}
 
 	//static long int binToHex(long int binaryval)
 	//{
@@ -173,7 +173,6 @@ public:
 	//	return hexadecimalval;
 	//}
 
-	// https://stackoverflow.com/questions/14375156/how-to-convert-a-rgb-color-value-to-an-hexadecimal-value-in-c
 	static uint32 rgbToHex(const uint8 r, const uint8 g, const uint8 b)
 	{
 		uint32 h = 0x0;
@@ -214,36 +213,22 @@ public:
 
 		// allocate 3 bytes per pixel
 		int size = 3 * width * height;
-		uint8* data = new uint8[size];
+		map = new uint8[size];
 
 		// read the rest of the data at once
-		fread(data, sizeof(uint8), size, f);
+		fread(map, sizeof(uint8), size, f);
 		fclose(f);
-
-		// Parse rgb into hex
-		map = new uint32[width * height];
-
-		std::cout << "size=" << size << "\n";
-
-		for (int i = 0; i < width; i++)
-		{
-			for (int j = 0; j < height; j++)
-			{
-				uint32 colour = rgbToHex(data[3 * (i * width + j) + 2], data[3 * (i * width + j) + 1], data[3 * (i * width + j)]);
-				writeTo(i, j, colour);
-
-				std::cout << "colour=" << colour << ", i=" << i << ", j=" << j << "\n";
-			}
-		}
 	}
 
 	uint32 lookUp(float x, float y)
 	{
 		int32 xIndex = (x * width) / scaleW;
 		int32 yIndex = (y * height) / scaleH;
-		//int32 xIndex = x * width;
-		//int32 yIndex = y * height;
-		return readFrom(xIndex, yIndex);
+
+		return rgbToHex(
+			map[3 * (xIndex * width + yIndex) + 2], 
+			map[3 * (xIndex * width + yIndex) + 1], 
+			map[3 * (xIndex * width + yIndex) + 0]);
 	}
 };
 

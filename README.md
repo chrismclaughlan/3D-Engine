@@ -1,17 +1,11 @@
-# Base Windows
+# 3D-Engine
+
+## Goals
+- To learn the basics behind 3D engines
+- To build on materials and implement miniture game/demo
 
 ## TODO
-- Exceptions for debug and different for release
-
-
-
-- implement networking
-- implement new particles + particle generator
-- create terraria clone
-	- create expandable map
-	- create player
-		- can interact with world x squares from player with mouse
- 
-### How to use:
-```
-```
+- Implement exception handling
+- Clean up vector.h/vector.cpp and game class
+- Fix texture glitches
+- Learn how to implement texture mapping to objects

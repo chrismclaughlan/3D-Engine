@@ -10,6 +10,7 @@
 - Clean up vector.h/vector.cpp and game class
 - Fix texture glitches
 - Learn how to implement texture mapping to objects
+- Fix fullscreen crash
 
 ### TODO minor
 - Move pDepthBuffer to window class

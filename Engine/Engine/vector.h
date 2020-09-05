@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include "types.h"
+#include <assert.h>
 
 struct Triangle;
 
@@ -88,41 +89,161 @@ struct Triangle
 {
 	Vector points[3];
 	Vector2 t[3];
-	int32 colour = 0x0000ff;
+	uint32 colour = 0x0000ff;
 };
 
 class Texture
 {
 public:
-	static const int32 sizeX = 4;
-	static const int32 sizeY = 4;
-	uint16 map[sizeX][sizeY];
+	int32 width = -1;
+	int32 height = -1;
+	float scaleW = 1.0f;
+	float scaleH = 1.0f;
+	uint32* map = nullptr;
 
 public:
 	Texture()
 	{
-		map[0][0] = 0xff0000; map[0][1] = 0xff0000; map[0][2] = 0xff0000; map[0][3] = 0xff0000;
-		map[1][0] = 0xff0000; map[1][1] = 0xff0000; map[1][2] = 0xff0000; map[1][3] = 0xffffff;
-		map[2][0] = 0xff0000; map[2][1] = 0xff0000; map[2][2] = 0xffffff; map[2][3] = 0xffffff;
-		map[3][0] = 0xff0000; map[3][1] = 0xffffff; map[3][2] = 0xffffff; map[3][3] = 0xffffff;
-		//for (int i = 0; i < 10; i++)
-		//{
-		//	for (int j = 0; j < 10; j++)
-		//	{
-		//		//test
-		//		if (j < 5)
-		//			map[j][i] = (uint16)0x00ff00;
-		//		else
-		//			map[j][i] = (uint16)0xff00ff;
-		//	}
-		//}
 	}
 
-	uint16 lookUp(float x, float y)
+	~Texture()
 	{
-		int32 xIndex = x * sizeX;
-		int32 yIndex = y * sizeY;
-		return map[yIndex][xIndex];
+		if (map != nullptr)
+		{
+			delete[] map;
+		}
+	}
+
+	inline void writeTo(int x, int y, uint32 a)
+	{
+		map[x * width + y] = a;
+	}
+	
+	inline uint32 readFrom(int x, int y) const
+	{
+		return map[x * width + y];
+	}
+
+	void LoadExampleTexture()
+	{
+		if (map != nullptr)
+		{
+			delete[] map;
+			map = nullptr;
+		}
+
+		width = 30;
+		height = 30;
+
+		map = new uint32[width * height];
+
+		for (int i = 0; i < height; i++)
+		{
+			for (int j = 0; j < width; j++)
+			{
+				if (j < (-1.0f * i) + height - 1)
+					writeTo(i, j, 0x00ff00);
+				else
+					writeTo(i, j, 0x0000ff);
+			}
+		}
+
+		//writeTo(0, 0, 0xff0000); writeTo(0, 1, 0xff0000); writeTo(0, 2, 0xff0000); writeTo(0, 3, 0xff0000);	writeTo(0, 4, 0xff0000); writeTo(0, 5, 0xff0000); writeTo(0, 6, 0xff0000); writeTo(0, 7, 0xff0000);
+		//writeTo(1, 0, 0xff0000); writeTo(1, 1, 0xff0000); writeTo(1, 2, 0xff0000); writeTo(1, 3, 0xff0000);	writeTo(1, 4, 0xff0000); writeTo(1, 5, 0xff0000); writeTo(1, 6, 0xff0000); writeTo(1, 7, 0xffffff);
+		//writeTo(2, 0, 0xff0000); writeTo(2, 1, 0xff0000); writeTo(2, 2, 0xff0000); writeTo(2, 3, 0xff0000);	writeTo(2, 4, 0xff0000); writeTo(2, 5, 0xff0000); writeTo(2, 6, 0xffffff); writeTo(2, 7, 0xffffff);
+		//writeTo(3, 0, 0xff0000); writeTo(3, 1, 0xff0000); writeTo(3, 2, 0xff0000); writeTo(3, 3, 0xff0000);	writeTo(3, 4, 0xff0000); writeTo(3, 5, 0xffffff); writeTo(3, 6, 0xffffff); writeTo(3, 7, 0xffffff);
+		//writeTo(4, 0, 0xff0000); writeTo(4, 1, 0xff0000); writeTo(4, 2, 0xff0000); writeTo(4, 3, 0xff0000);	writeTo(4, 4, 0xffffff); writeTo(4, 5, 0xffffff); writeTo(4, 6, 0xffffff); writeTo(4, 7, 0xffffff);
+		//writeTo(5, 0, 0xff0000); writeTo(5, 1, 0xff0000); writeTo(5, 2, 0xff0000); writeTo(5, 3, 0xffffff);	writeTo(5, 4, 0xffffff); writeTo(5, 5, 0xffffff); writeTo(5, 6, 0xffffff); writeTo(5, 7, 0xffffff);
+		//writeTo(6, 0, 0xff0000); writeTo(6, 1, 0xff0000); writeTo(6, 2, 0xffffff); writeTo(6, 3, 0xffffff);	writeTo(6, 4, 0xffffff); writeTo(6, 5, 0xffffff); writeTo(6, 6, 0xffffff); writeTo(6, 7, 0xffffff);
+		//writeTo(7, 0, 0xff0000); writeTo(7, 1, 0xffffff); writeTo(7, 2, 0xffffff); writeTo(7, 3, 0xffffff);	writeTo(7, 4, 0xffffff); writeTo(7, 5, 0xffffff); writeTo(7, 6, 0xffffff); writeTo(7, 7, 0xffffff);
+	}
+
+	//static long int binToHex(long int binaryval)
+	//{
+	//	long int hexadecimalval = 0, i = 1, remainder;
+	//
+	//	while (binaryval != 0)
+	//	{
+	//		remainder = binaryval % 10;
+	//		hexadecimalval = hexadecimalval + remainder * i;
+	//		i = i * 2;
+	//		binaryval = binaryval / 10;
+	//	}
+	//
+	//	return hexadecimalval;
+	//}
+
+	// https://stackoverflow.com/questions/14375156/how-to-convert-a-rgb-color-value-to-an-hexadecimal-value-in-c
+	static uint32 rgbToHex(const uint8 r, const uint8 g, const uint8 b)
+	{
+		uint32 h = 0x0;
+		h += r << 16;
+		h += g << 8;
+		h += b << 0;
+		return h;
+	}
+
+	bool LoadTextureFromBMP(const char* filename)
+	{
+		int i;	
+		FILE* f;
+		errno_t err = fopen_s(&f, filename, "r");
+		if (err != 0)
+		{
+			std::cerr << "Error opening file " << filename << "\n";
+			return false;
+		}
+		unsigned char info[54];
+
+		// read the 54-byte header
+		fread(info, sizeof(uint8), 54, f);
+
+		// extract image height and width from header
+		width = *(int*)& info[18];
+		height = *(int*)& info[22];
+		if (width < height)
+		{
+			scaleH = height / width;
+			scaleW = 1.0f / scaleH;
+		}
+		else
+		{
+			scaleW = width / height;
+			scaleH = 1.0f / scaleW;
+		}
+
+		// allocate 3 bytes per pixel
+		int size = 3 * width * height;
+		uint8* data = new uint8[size];
+
+		// read the rest of the data at once
+		fread(data, sizeof(uint8), size, f);
+		fclose(f);
+
+		// Parse rgb into hex
+		map = new uint32[width * height];
+
+		std::cout << "size=" << size << "\n";
+
+		for (int i = 0; i < width; i++)
+		{
+			for (int j = 0; j < height; j++)
+			{
+				uint32 colour = rgbToHex(data[3 * (i * width + j) + 2], data[3 * (i * width + j) + 1], data[3 * (i * width + j)]);
+				writeTo(i, j, colour);
+
+				std::cout << "colour=" << colour << ", i=" << i << ", j=" << j << "\n";
+			}
+		}
+	}
+
+	uint32 lookUp(float x, float y)
+	{
+		int32 xIndex = (x * width) / scaleW;
+		int32 yIndex = (y * height) / scaleH;
+		//int32 xIndex = x * width;
+		//int32 yIndex = y * height;
+		return readFrom(xIndex, yIndex);
 	}
 };
 

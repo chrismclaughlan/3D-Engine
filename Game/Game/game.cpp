@@ -15,22 +15,24 @@ int32 Game::run()
 	pDepthBuffer = new float[win.Gfx().getWidth() * win.Gfx().getHeight()];
 
 	//	// South
-	//meshCube.tris.push_back({ Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
-	//meshCube.tris.push_back({ Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
-	//meshCube.tris.push_back({ Vector(1.0f, 0.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
-	//meshCube.tris.push_back({ Vector(1.0f, 0.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
-	//meshCube.tris.push_back({ Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector(1.0f, 1.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
-	//meshCube.tris.push_back({ Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
-	//meshCube.tris.push_back({ Vector(0.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
-	//meshCube.tris.push_back({ Vector(0.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
-	//meshCube.tris.push_back({ Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector(0.0f, 1.0f, 1.0f, 1.0f), Vector(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
-	//meshCube.tris.push_back({ Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 1.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
-	//meshCube.tris.push_back({ Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
-	//meshCube.tris.push_back({ Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector(1.0f, 0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
+	meshCube.tris.push_back({ Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
+	meshCube.tris.push_back({ Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
+	meshCube.tris.push_back({ Vector(1.0f, 0.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
+	meshCube.tris.push_back({ Vector(1.0f, 0.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
+	meshCube.tris.push_back({ Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector(1.0f, 1.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
+	meshCube.tris.push_back({ Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
+	meshCube.tris.push_back({ Vector(0.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
+	meshCube.tris.push_back({ Vector(0.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
+	meshCube.tris.push_back({ Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector(0.0f, 1.0f, 1.0f, 1.0f), Vector(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
+	meshCube.tris.push_back({ Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 1.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
+	meshCube.tris.push_back({ Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
+	meshCube.tris.push_back({ Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector(1.0f, 0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
 
-	//textureCube = Texture();
+	textureCube = Texture();
+	//textureCube.LoadExampleTexture();
+	textureCube.LoadTextureFromBMP("texture_16x32.bmp");
 
-	meshCube.LoadObjectFile("teapot.obj", false);
+	//meshCube.LoadObjectFile("teapot.obj", false);
 
 	projectionMatrix.MakeProjection(
 		90.0f,
@@ -377,17 +379,17 @@ void Game::DoFrame()
 
 		for (auto& t : listTriangles)
 		{
-			//TexturedTriangle(t.points[0].x, t.points[0].y, t.t[0].u, t.t[0].v, t.t[0].w,
-			//				 t.points[1].x, t.points[1].y, t.t[1].u, t.t[1].v, t.t[1].w,
-			//				 t.points[2].x, t.points[2].y, t.t[2].u, t.t[2].v, t.t[2].w,
-			//				 &textureCube);
+			TexturedTriangle(t.points[0].x, t.points[0].y, t.t[0].u, t.t[0].v, t.t[0].w,
+							 t.points[1].x, t.points[1].y, t.t[1].u, t.t[1].v, t.t[1].w,
+							 t.points[2].x, t.points[2].y, t.t[2].u, t.t[2].v, t.t[2].w,
+							 &textureCube);
 
 
-			win.Gfx().FillTriangleP(
-				t.points[0].x, t.points[0].y, 
-				t.points[1].x, t.points[1].y, 
-				t.points[2].x, t.points[2].y,
-				t.colour);
+			//win.Gfx().FillTriangleP(
+			//	t.points[0].x, t.points[0].y, 
+			//	t.points[1].x, t.points[1].y, 
+			//	t.points[2].x, t.points[2].y,
+			//	t.colour);
 			win.Gfx().DrawTriangleP(
 				t.points[0].x, t.points[0].y,
 				t.points[1].x, t.points[1].y,
@@ -511,7 +513,8 @@ void Game::TexturedTriangle(int x1, int y1, float u1, float v1, float w1,
 				tex_w = (1.0f - t) * tex_sw + t * tex_ew;
 				if (tex_w > pDepthBuffer[i * win.Gfx().getWidth() + j])
 				{
-					win.Gfx().DrawPointP(j, i, tex->lookUp(tex_u / tex_w, tex_v / tex_w));
+					uint32 colour = tex->lookUp(tex_u / tex_w, tex_v / tex_w);
+					win.Gfx().DrawPointP(j, i, colour);
 					pDepthBuffer[i * win.Gfx().getWidth() + j] = tex_w;
 				}
 				t += tstep;
@@ -572,7 +575,8 @@ void Game::TexturedTriangle(int x1, int y1, float u1, float v1, float w1,
 
 				if (tex_w > pDepthBuffer[i * win.Gfx().getWidth() + j])
 				{
-					win.Gfx().DrawPointP(j, i, tex->lookUp(std::abs(tex_u / tex_w), std::abs(tex_v / tex_w)));
+					uint32 colour = tex->lookUp(tex_u / tex_w, tex_v / tex_w);
+					win.Gfx().DrawPointP(j, i, colour);
 					pDepthBuffer[i * win.Gfx().getWidth() + j] = tex_w;
 				}
 				t += tstep;

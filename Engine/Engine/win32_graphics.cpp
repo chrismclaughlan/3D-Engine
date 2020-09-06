@@ -3,17 +3,20 @@
 Win32Graphics::Win32Graphics(HWND hwnd, HDC hdc) : hdc(hdc)
 {
 	RECT rect;
+	int32 bufferSize;
+
 	GetClientRect(hwnd, &rect);
 
 	width = rect.right - rect.left;
 	height = rect.bottom - rect.top;
 
-	int32 buffer_size = width * height * sizeof(uint32);
+	bufferSize = width * height * sizeof(uint32);
+
 	if (memory)
 	{
 		VirtualFree(memory, 0, MEM_RELEASE);
 	}
-	memory = VirtualAlloc(0, buffer_size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+	memory = VirtualAlloc(0, bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 
 	bitmapinfo.bmiHeader.biSize = sizeof(bitmapinfo);
 	bitmapinfo.bmiHeader.biWidth = width;
@@ -25,6 +28,15 @@ Win32Graphics::Win32Graphics(HWND hwnd, HDC hdc) : hdc(hdc)
 	float nscale_x = width;
 	float nscale_y = height;
 	calculate_scales();
+
+	// 3D
+	bufferSize = width * height * sizeof(float);
+	if (pDepthBuffer)
+	{
+		VirtualFree(pDepthBuffer, 0, MEM_RELEASE);
+	}
+	pDepthBuffer = VirtualAlloc(0, bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+
 }
 
 void Win32Graphics::Render()
@@ -36,17 +48,18 @@ void Win32Graphics::Render()
 
 void Win32Graphics::ChangeSize(int32 newWidth, int32 newHeight)
 {
+	int32 bufferSize;
 	//width = rect->right - rect->left;
 	//height = rect->bottom - rect->top;
 	width = newWidth;
 	height = newHeight;
 
-	int32 buffer_size = width * height * sizeof(uint32);
+	bufferSize = width * height * sizeof(uint32);
 	if (memory)
 	{
 		VirtualFree(memory, 0, MEM_RELEASE);
 	}
-	memory = VirtualAlloc(0, buffer_size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+	memory = VirtualAlloc(0, bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 
 	bitmapinfo.bmiHeader.biWidth = width;
 	bitmapinfo.bmiHeader.biHeight = height;
@@ -54,4 +67,12 @@ void Win32Graphics::ChangeSize(int32 newWidth, int32 newHeight)
 	float nscale_x = width;
 	float nscale_y = height;
 	calculate_scales();
+
+	// 3D
+	bufferSize = width * height * sizeof(float);
+	if (pDepthBuffer)
+	{
+		VirtualFree(pDepthBuffer, 0, MEM_RELEASE);
+	}
+	pDepthBuffer = VirtualAlloc(0, bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 }

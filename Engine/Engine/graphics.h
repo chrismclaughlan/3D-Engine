@@ -18,6 +18,7 @@ public:
 
 protected:
 	void* memory;
+	void* pDepthBuffer;
 	float scale_x;
 	float scale_y;
 
@@ -53,4 +54,8 @@ public:
 	void DrawPoint(float x, float y, uint32 colour);
 	void DrawRectP(int32 x1, int32 y1, int32 x2, int32 y2, uint32 colour);
 	void DrawRect(float x, float y, float w, float h, uint32 colour);
+
+	// 3D
+	void ClearDepthBuffer();
+	float* sampleDepthBuffer(const int32 x, const int32 y);
 };

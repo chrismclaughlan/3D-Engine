@@ -36,7 +36,6 @@ protected:
 private:
 	Mesh objectMesh;
 	Texture objectTexture;
-	float* pDepthBuffer = nullptr;
 
 	void TexturedTriangle(int x1, int y1, float u1, float v1, float w1,
 		int x2, int y2, float u2, float v2, float w2,

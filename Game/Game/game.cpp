@@ -11,8 +11,6 @@
 
 int32 Game::run()
 {
-	pDepthBuffer = new float[win.Gfx().getWidth() * win.Gfx().getHeight()];
-
 	// Load textures
 	objectTexture = Texture();
 	//textureCube.LoadExampleTexture();
@@ -314,10 +312,7 @@ void Game::DoFrame()
 	/* ---------- Render ---------- */
 	// Clear screen and depth buffer
 	win.Gfx().ClearScreen(0x000000);
-	for (int i = 0; i < win.Gfx().getWidth() * win.Gfx().getHeight(); i++)
-	{
-		pDepthBuffer[i] = 0.0f;
-	}
+	win.Gfx().ClearDepthBuffer();
 
 	for (auto& triToRaster : trianglesToRaster)
 	{
@@ -487,11 +482,12 @@ void Game::TexturedTriangle(int x1, int y1, float u1, float v1, float w1,
 				tex_u = (1.0f - t) * tex_su + t * tex_eu;
 				tex_v = (1.0f - t) * tex_sv + t * tex_ev;
 				tex_w = (1.0f - t) * tex_sw + t * tex_ew;
-				if (tex_w > pDepthBuffer[i * win.Gfx().getWidth() + j])
+				float* z = win.Gfx().sampleDepthBuffer(i, j);
+				if (tex_w > *z)
 				{
 					uint32 colour = tex->lookUp(tex_u / tex_w, tex_v / tex_w);
 					win.Gfx().DrawPointP(j, i, colour);
-					pDepthBuffer[i * win.Gfx().getWidth() + j] = tex_w;
+					*z = tex_w;
 				}
 				t += tstep;
 			}
@@ -549,11 +545,12 @@ void Game::TexturedTriangle(int x1, int y1, float u1, float v1, float w1,
 				tex_v = (1.0f - t) * tex_sv + t * tex_ev;
 				tex_w = (1.0f - t) * tex_sw + t * tex_ew;
 
-				if (tex_w > pDepthBuffer[i * win.Gfx().getWidth() + j])
+				float* z = win.Gfx().sampleDepthBuffer(i, j);
+				if (tex_w > *z)
 				{
 					uint32 colour = tex->lookUp(tex_u / tex_w, tex_v / tex_w);
 					win.Gfx().DrawPointP(j, i, colour);
-					pDepthBuffer[i * win.Gfx().getWidth() + j] = tex_w;
+					*z = tex_w;
 				}
 				t += tstep;
 			}

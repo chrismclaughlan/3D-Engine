@@ -10,7 +10,7 @@
 
 struct Triangle;
 
-// TODO
+
 class Vector2
 {
 public:

@@ -114,6 +114,24 @@ void Graphics::ClearScreen(uint32 colour)
 	}
 }
 
+void Graphics::ClearDepthBuffer()
+{
+	float* depthBuffer = (float*)pDepthBuffer;
+	for (int32 y = 0; y < height; y++)
+	{
+		for (int32 x = 0; x < width; x++)
+		{
+			*depthBuffer++ = 0.0f;
+		}
+	}
+}
+
+float* Graphics::sampleDepthBuffer(const int32 x, const int32 y)
+{
+	float* depthBuffer = (float*)pDepthBuffer;
+	return &depthBuffer[x * width + y];
+}
+
 void Graphics::DrawPointP(int32 x, int32 y, uint32 colour)
 {
 	Clamp(0, &x, width - 1);

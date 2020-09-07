@@ -5,21 +5,29 @@
 int32 Game::run()
 {
 	// Load textures
-	Texture objectTexture = Texture();
-	if (!objectTexture.LoadTextureFromBMP("texture_16x32.bmp"))
+	objectTexture1 = new Texture();
+	objectTexture2 = new Texture();
+	if (!objectTexture1->LoadTextureFromBMP("texture_16x32.bmp"))
+	{
+		// error
+		return -1;
+	};
+	if (!objectTexture2->LoadTextureFromBMP("texture_32x32.bmp"))
 	{
 		// error
 		return -1;
 	};
 
 	// Load wavefront files
-	Mesh mesh1, mesh2;
-	mesh1.LoadObjectFile("teapot.obj", false);
-	mesh1.texture = &objectTexture;
-	objectMeshes.push_back(mesh1);
-	mesh2 = Mesh();
-	mesh2.LoadTestCube();
-	objectMeshes.push_back(mesh2);
+	object1 = new Mesh();
+	object1->LoadTestCube();
+	object1->texture = objectTexture1;
+	object2 = new Mesh();
+	object2->LoadTestCube();
+	object2->texture = objectTexture1;
+	//mesh1.LoadObjectFile("teapot.obj", false);
+	//mesh1.texture = &objectTexture;
+	//objectMeshes.push_back(mesh1);
 
 	projectionMatrix.MakeProjection(
 		90.0f,
@@ -88,12 +96,28 @@ void Game::HandleInput()
 			else if (moveDirY > 0 && event.isReleased())
 				moveDirY = 0.0f;
 		} break;
-		case 16:  // 0x16
+		case 16:  // 0x16 (shift key)
 		{
 			if (event.isPressed())
 				moveDirY = -1.0f;
 			else if (moveDirY < 0 && event.isReleased())
 				moveDirY = 0.0f;
+		} break;
+		case VK_UP:
+		{
+			object1->y += 0.1f;
+		} break;
+		case VK_DOWN:
+		{
+			object1->y -= 0.1f;
+		} break;
+		case VK_LEFT:
+		{
+			object1->x += 0.1f;
+		} break;
+		case VK_RIGHT:
+		{
+			object1->x -= 0.1f;
 		} break;
 		}
 	}
@@ -170,28 +194,14 @@ void Game::DoFrame()
 	double turningSpeed = 0.005f;
 	double movementSpeed = 0.005f;
 
+	// Camera
 	Vector vForward = vLookDir * movementSpeed;
-
 	vCamera	  += moveDirZ * vForward;		// forward / backward
 	fYaw	  += moveDirX * turningSpeed;   // left / right
 	vCamera.y += moveDirY * movementSpeed;  // up / down
 
-	Matrix4x4 matrixRotX, matrixRotZ, matrixTranslation, matrixWorld;
+	//fTheta += 0.001f;  // rotate world
 
-	fTheta += 0.005f;  // rotate world
-	matrixRotX.MakeRotationX(fTheta);
-	matrixRotZ.MakeRotationZ(fTheta * 0.5f);
-	matrixTranslation.MakeTranslation(0.0f, 0.0f, 5.0f);
-	//matrixWorld.MakeIdentity();
-	//matrixWorld = matrixRotZ * matrixRotX;
-	//matrixWorld *= matrixTranslation;
-
-	Matrix4x4 matrixWorldPos;
-	matrixWorldPos.MakeIdentity();
-	matrixWorldPos = matrixRotZ * matrixRotX;
-	matrixWorldPos *= matrixTranslation;
-
-	// Camera
 	Matrix4x4 matrixCameraRotation, matrixCamera;  // matrixView
 	Vector vUp(0.0f, 1.0f, 0.0f);
 	Vector vTarget(0.0f, 0.0f, 1.0f);
@@ -203,6 +213,9 @@ void Game::DoFrame()
 	matrixCamera.MakePointAt(vCamera, vTarget, vUp);
 	matrixCamera.MakeQuickInverse();
 
+	object1->updatePosition(fTheta);
+	object2->updatePosition(fTheta);
+
 	/* ---------- Render ---------- */
 
 	// Clear screen and depth buffer
@@ -210,10 +223,14 @@ void Game::DoFrame()
 	win.Gfx().ClearDepthBuffer();
 
 	// Draw objects in scene
+	std::vector<Mesh*> objects;
+	objects.push_back(object1);
+	objects.push_back(object2);
+
 	const uint32 strokeColour = 0xffffff;
-	win.Gfx().RasterTriangles(
-		matrixWorldPos, matrixCamera, projectionMatrix, vCamera, 
-		objectMeshes[0], nullptr);
+	win.Gfx().RasterTexturedTriangles(
+		matrixCamera, projectionMatrix, vCamera,
+		objects, &strokeColour);
 	//win.Gfx().RasterTriangles(matrixWorldPos, matrixCamera, projectionMatrix, vCamera, objectMeshes[1]);
 
 	// Draw to window

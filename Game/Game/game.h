@@ -14,6 +14,18 @@ public:
 		: win(name, width, height)
 	{}
 
+	~Game()
+	{
+		delete object1;
+		delete object2;
+		delete objectTexture1;
+		delete objectTexture2;
+		object1 = nullptr;
+		object2 = nullptr;
+		objectTexture1 = nullptr;
+		objectTexture2 = nullptr;
+	}
+
 	//virtual int32 run() = 0;
 	int32 run();
 protected:
@@ -24,7 +36,10 @@ protected:
 	//std::string acceptedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_ ";
 
 private:
-	std::vector<Mesh> objectMeshes;
+	Mesh* object1 = nullptr;
+	Mesh* object2 = nullptr;
+	Texture* objectTexture1 = nullptr;
+	Texture* objectTexture2 = nullptr;
 
 private:
 	Matrix4x4 projectionMatrix;

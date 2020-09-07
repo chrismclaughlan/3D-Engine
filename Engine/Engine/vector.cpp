@@ -360,6 +360,7 @@ int Vector::TriangleClipAgainstPlane(Vector plane_p, Vector plane_n, Triangle& i
 		// All points lie on the inside of plane, so do nothing
 		// and allow the triangle to simply pass through
 		out_tri1 = in_tri;
+		out_tri1.parent = in_tri.parent;
 
 		return 1; // Just the one returned original triangle is valid
 	}
@@ -375,6 +376,8 @@ int Vector::TriangleClipAgainstPlane(Vector plane_p, Vector plane_n, Triangle& i
 #else
 		out_tri1.colour = in_tri.colour;
 #endif
+
+		out_tri1.parent = in_tri.parent;
 
 		// The inside point is valid, so keep that...
 		out_tri1.p[0] = *inside_points[0];
@@ -413,6 +416,9 @@ int Vector::TriangleClipAgainstPlane(Vector plane_p, Vector plane_n, Triangle& i
 		out_tri1.colour = in_tri.colour;
 		out_tri2.colour = in_tri.colour;
 #endif
+
+		out_tri1.parent = in_tri.parent;
+		out_tri2.parent = in_tri.parent;
 
 		// The first triangle consists of the two inside points and a new
 		// point determined by the location where one side of the triangle

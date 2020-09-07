@@ -270,7 +270,6 @@ void Graphics::FillBottomFlatTriangleP(int32 x1, int32 y1, int32 x2, int32 y2, i
 	}
 }
 
-
 void Graphics::DrawRect(float x1, float y1, float x2, float y2, uint32 colour)
 {
 	DrawRectP(
@@ -282,11 +281,28 @@ void Graphics::DrawRect(float x1, float y1, float x2, float y2, uint32 colour)
 		);
 }
 
+//void Graphics::DrawTexturedTriangle(const Triangle& triangle)
 void Graphics::DrawTexturedTriangle(int x1, int y1, float u1, float v1, float w1,
-	int x2, int y2, float u2, float v2, float w2,
-	int x3, int y3, float u3, float v3, float w3,
-	const Texture* tex)
+int x2, int y2, float u2, float v2, float w2,
+int x3, int y3, float u3, float v3, float w3,
+const Texture* texture)
 {
+	//int32 x1 = triangle.p[0].x; 
+	//int32 y1 = triangle.p[0].y; 
+	//int32 u1 = triangle.t[0].u; 
+	//int32 v1 = triangle.t[0].v; 
+	//int32 w1 = triangle.t[0].w;
+	//int32 x2 = triangle.p[1].x; 
+	//int32 y2 = triangle.p[1].y; 
+	//int32 u2 = triangle.t[1].u; 
+	//int32 v2 = triangle.t[1].v; 
+	//int32 w2 = triangle.t[1].w;
+	//int32 x3 = triangle.p[2].x; 
+	//int32 y3 = triangle.p[2].y; 
+	//int32 u3 = triangle.t[2].u; 
+	//int32 v3 = triangle.t[2].v; 
+	//int32 w3 = triangle.t[2].w;
+
 	if (y2 < y1)
 	{
 		std::swap(y1, y2);
@@ -382,7 +398,7 @@ void Graphics::DrawTexturedTriangle(int x1, int y1, float u1, float v1, float w1
 				float* z = readDepthBuffer(i, j);
 				if (tex_w > * z)
 				{
-					uint32 colour = tex->lookUp(tex_u / tex_w, tex_v / tex_w);
+					uint32 colour = texture->lookUp(tex_u / tex_w, tex_v / tex_w);
 					DrawPointP(j, i, colour);
 					*z = tex_w;
 				}
@@ -445,7 +461,7 @@ void Graphics::DrawTexturedTriangle(int x1, int y1, float u1, float v1, float w1
 				float* z = readDepthBuffer(i, j);
 				if (tex_w > * z)
 				{
-					uint32 colour = tex->lookUp(tex_u / tex_w, tex_v / tex_w);
+					uint32 colour = texture->lookUp(tex_u / tex_w, tex_v / tex_w);
 					DrawPointP(j, i, colour);
 					*z = tex_w;
 				}
@@ -455,116 +471,124 @@ void Graphics::DrawTexturedTriangle(int x1, int y1, float u1, float v1, float w1
 	}
 }
 
-void Graphics::RasterTriangles(
-	const Matrix4x4& matrixWorld,
+void Graphics::RasterTexturedTriangles(
 	const Matrix4x4& matrixCamera,
 	const Matrix4x4& projectionMatrix,
 	const Vector& vCamera,
-	const Mesh& objectMesh,
-	const uint32* strokeColour,
-	const bool fill)
+	const std::vector<Mesh*> meshes,
+	const uint32* strokeColour)
 {
 	// Triangles
 	std::vector<Triangle> trianglesToRaster;
-	for (auto tri : objectMesh.tris)
+	for (auto objectMesh : meshes)
 	{
-		Triangle triProjected, triTransformed, triCamera;
-
-		triTransformed.p[0] = matrixWorld * tri.p[0];
-		triTransformed.p[1] = matrixWorld * tri.p[1];
-		triTransformed.p[2] = matrixWorld * tri.p[2];
-		triTransformed.t[0] = tri.t[0];
-		triTransformed.t[1] = tri.t[1];
-		triTransformed.t[2] = tri.t[2];
-
-		Vector normal, line1, line2;
-
-		line1 = triTransformed.p[1] - triTransformed.p[0];
-		line2 = triTransformed.p[2] - triTransformed.p[0];
-
-		normal = Vector::CrossProduct(line1, line2);
-
-		normal.Normalise();
-
-		Vector vCameraRay;
-		vCameraRay = triTransformed.p[0] - vCamera;
-
-		if (Vector::DotProduct(normal, vCameraRay) < 0.0f)
+		for (auto tri : objectMesh->tris)
 		{
-			// Shade triangle
-			Vector vLightDir = { 0.0f, 1.0f, -1.0f };
-			vLightDir.Normalise();
-			float dp = std::max(0.1f, Vector::DotProduct(vLightDir, normal));
-			float triColour = ((dp * 255.0f) * 3.0f) / 5.0f;
+			Triangle triProjected, triTransformed, triCamera;
 
-			triCamera.p[0] = matrixCamera * triTransformed.p[0];
-			triCamera.p[1] = matrixCamera * triTransformed.p[1];
-			triCamera.p[2] = matrixCamera * triTransformed.p[2];
-			triCamera.colour = triColour;
-			triCamera.t[0] = triTransformed.t[0];
-			triCamera.t[1] = triTransformed.t[1];
-			triCamera.t[2] = triTransformed.t[2];
+			triTransformed.p[0] = objectMesh->matrixWorldPos * tri.p[0];
+			triTransformed.p[1] = objectMesh->matrixWorldPos * tri.p[1];
+			triTransformed.p[2] = objectMesh->matrixWorldPos * tri.p[2];
+			triTransformed.t[0] = tri.t[0];
+			triTransformed.t[1] = tri.t[1];
+			triTransformed.t[2] = tri.t[2];
+			triTransformed.parent = tri.parent;
 
-			int32 nClippedTriangles = 0;
-			Triangle clipped[2];
-			nClippedTriangles = Vector::TriangleClipAgainstPlane({ 0.0f, 0.0f, 0.1f }, { 0.0f, 0.0f, 1.0f }, triCamera, clipped[0], clipped[1]);
+			Vector normal, line1, line2;
 
-			for (int32 n = 0; n < nClippedTriangles; n++)
+			line1 = triTransformed.p[1] - triTransformed.p[0];
+			line2 = triTransformed.p[2] - triTransformed.p[0];
+
+			normal = Vector::CrossProduct(line1, line2);
+
+			normal.Normalise();
+
+			Vector vCameraRay;
+			vCameraRay = triTransformed.p[0] - vCamera;
+
+			if (Vector::DotProduct(normal, vCameraRay) < 0.0f)
 			{
-				triProjected.p[0] = projectionMatrix * clipped[n].p[0];
-				triProjected.p[1] = projectionMatrix * clipped[n].p[1];
-				triProjected.p[2] = projectionMatrix * clipped[n].p[2];
-				triProjected.colour = clipped[n].colour;
-				triProjected.t[0] = clipped[n].t[0];
-				triProjected.t[1] = clipped[n].t[1];
-				triProjected.t[2] = clipped[n].t[2];
+				// Shade triangle
+				Vector vLightDir = { 0.0f, 1.0f, -1.0f };
+				vLightDir.Normalise();
+				float dp = std::max(0.1f, Vector::DotProduct(vLightDir, normal));
+				float triColour = ((dp * 255.0f) * 3.0f) / 5.0f;
+
+				triCamera.p[0] = matrixCamera * triTransformed.p[0];
+				triCamera.p[1] = matrixCamera * triTransformed.p[1];
+				triCamera.p[2] = matrixCamera * triTransformed.p[2];
+				triCamera.colour = triColour;
+				triCamera.t[0] = triTransformed.t[0];
+				triCamera.t[1] = triTransformed.t[1];
+				triCamera.t[2] = triTransformed.t[2];
+				triCamera.parent = triTransformed.parent;
+
+				int32 nClippedTriangles = 0;
+				Triangle clipped[2];
+				nClippedTriangles = Vector::TriangleClipAgainstPlane({ 0.0f, 0.0f, 0.1f }, { 0.0f, 0.0f, 1.0f }, triCamera, clipped[0], clipped[1]);
+
+				for (int32 n = 0; n < nClippedTriangles; n++)
+				{
+					triProjected.p[0] = projectionMatrix * clipped[n].p[0];
+					triProjected.p[1] = projectionMatrix * clipped[n].p[1];
+					triProjected.p[2] = projectionMatrix * clipped[n].p[2];
+					triProjected.colour = clipped[n].colour;
+					triProjected.t[0] = clipped[n].t[0];
+					triProjected.t[1] = clipped[n].t[1];
+					triProjected.t[2] = clipped[n].t[2];
+					triProjected.parent = clipped[n].parent;
 
 
-				triProjected.t[0].u /= triProjected.p[0].w;
-				triProjected.t[1].u /= triProjected.p[1].w;
-				triProjected.t[2].u /= triProjected.p[2].w;
+					triProjected.t[0].u /= triProjected.p[0].w;
+					triProjected.t[1].u /= triProjected.p[1].w;
+					triProjected.t[2].u /= triProjected.p[2].w;
 
-				triProjected.t[0].v /= triProjected.p[0].w;
-				triProjected.t[1].v /= triProjected.p[1].w;
-				triProjected.t[2].v /= triProjected.p[2].w;
+					triProjected.t[0].v /= triProjected.p[0].w;
+					triProjected.t[1].v /= triProjected.p[1].w;
+					triProjected.t[2].v /= triProjected.p[2].w;
 
-				triProjected.t[0].w = 1.0f / triProjected.p[0].w;
-				triProjected.t[1].w = 1.0f / triProjected.p[1].w;
-				triProjected.t[2].w = 1.0f / triProjected.p[2].w;
+					triProjected.t[0].w = 1.0f / triProjected.p[0].w;
+					triProjected.t[1].w = 1.0f / triProjected.p[1].w;
+					triProjected.t[2].w = 1.0f / triProjected.p[2].w;
 
 
-				triProjected.p[0] /= triProjected.p[0].w;
-				triProjected.p[1] /= triProjected.p[1].w;
-				triProjected.p[2] /= triProjected.p[2].w;
+					triProjected.p[0] /= triProjected.p[0].w;
+					triProjected.p[1] /= triProjected.p[1].w;
+					triProjected.p[2] /= triProjected.p[2].w;
 
-				// Invert
-				triProjected.p[0].x *= -1;
-				triProjected.p[1].x *= -1;
-				triProjected.p[2].x *= -1;
+					// Invert
+					triProjected.p[0].x *= -1;
+					triProjected.p[1].x *= -1;
+					triProjected.p[2].x *= -1;
 
-				Vector vOffsetView = { 1, 1, 0 };
-				triProjected.p[0] += vOffsetView;
-				triProjected.p[1] += vOffsetView;
-				triProjected.p[2] += vOffsetView;
-				triProjected.p[0].x *= 0.5f * (float)width;
-				triProjected.p[0].y *= 0.5f * (float)height;
-				triProjected.p[1].x *= 0.5f * (float)width;
-				triProjected.p[1].y *= 0.5f * (float)height;
-				triProjected.p[2].x *= 0.5f * (float)width;
-				triProjected.p[2].y *= 0.5f * (float)height;
+					Vector vOffsetView = { 1, 1, 0 };
+					triProjected.p[0] += vOffsetView;
+					triProjected.p[1] += vOffsetView;
+					triProjected.p[2] += vOffsetView;
+					triProjected.p[0].x *= 0.5f * (float)width;
+					triProjected.p[0].y *= 0.5f * (float)height;
+					triProjected.p[1].x *= 0.5f * (float)width;
+					triProjected.p[1].y *= 0.5f * (float)height;
+					triProjected.p[2].x *= 0.5f * (float)width;
+					triProjected.p[2].y *= 0.5f * (float)height;
 
-				trianglesToRaster.push_back(triProjected);
+					trianglesToRaster.push_back(triProjected);
+				}
 			}
 		}
 	}
+		
 
-	//// Sort triangles from back to front
-	//sort(trianglesToRaster.begin(), trianglesToRaster.end(), [](Triangle& t1, Triangle& t2)
-	//	{
-	//		float z1 = (t1.p[0].z + t1.p[1].z + t1.p[2].z) / 3.0f;
-	//		float z2 = (t2.p[0].z + t2.p[1].z + t2.p[2].z) / 3.0f;
-	//		return z1 > z2;
-	//	});
+	//if (fill)
+	//{
+	//	// Sort triangles from back to front
+	//	sort(trianglesToRaster.begin(), trianglesToRaster.end(), [](Triangle& t1, Triangle& t2)
+	//		{
+	//			float z1 = (t1.p[0].z + t1.p[1].z + t1.p[2].z) / 3.0f;
+	//			float z2 = (t2.p[0].z + t2.p[1].z + t2.p[2].z) / 3.0f;
+	//			return z1 > z2;
+	//		});
+	//}
 
 	for (auto& triToRaster : trianglesToRaster)
 	{
@@ -596,14 +620,15 @@ void Graphics::RasterTriangles(
 
 				switch (p)
 				{
-				case 0:	trianglesToAdd = Vector::TriangleClipAgainstPlane(pTop, nDownwards, test, clipped[0], clipped[1]); break;
+				case 0:	trianglesToAdd = Vector::TriangleClipAgainstPlane(pTop,	   nDownwards, test, clipped[0], clipped[1]); break;
 				case 1:	trianglesToAdd = Vector::TriangleClipAgainstPlane(pBottom, nUpwards, test, clipped[0], clipped[1]); break;
-				case 2:	trianglesToAdd = Vector::TriangleClipAgainstPlane(pLeft, nRight, test, clipped[0], clipped[1]); break;
-				case 3:	trianglesToAdd = Vector::TriangleClipAgainstPlane(pRight, nLeft, test, clipped[0], clipped[1]); break;
+				case 2:	trianglesToAdd = Vector::TriangleClipAgainstPlane(pLeft,   nRight, test, clipped[0], clipped[1]); break;
+				case 3:	trianglesToAdd = Vector::TriangleClipAgainstPlane(pRight,  nLeft, test, clipped[0], clipped[1]); break;
 				}
 
 				for (int32 w = 0; w < trianglesToAdd; w++)
 				{
+					clipped[w].parent = triToRaster.parent;
 					listTriangles.push_back(clipped[w]);
 				}
 			}
@@ -612,22 +637,25 @@ void Graphics::RasterTriangles(
 
 		for (auto& t : listTriangles)
 		{
-			if (fill)
+			//if (fill)
+			//{
+			//	FillTriangleP(
+			//		t.p[0].x, t.p[0].y, 
+			//		t.p[1].x, t.p[1].y, 
+			//		t.p[2].x, t.p[2].y,
+			//		t.colour);
+			//}
+
+			if (t.parent == nullptr)
 			{
-				FillTriangleP(
-					t.p[0].x, t.p[0].y, 
-					t.p[1].x, t.p[1].y, 
-					t.p[2].x, t.p[2].y,
-					t.colour);
+				// error
 			}
-			else if (objectMesh.texture != nullptr)
-			{
-				DrawTexturedTriangle(
-					t.p[0].x, t.p[0].y, t.t[0].u, t.t[0].v, t.t[0].w,
-					t.p[1].x, t.p[1].y, t.t[1].u, t.t[1].v, t.t[1].w,
-					t.p[2].x, t.p[2].y, t.t[2].u, t.t[2].v, t.t[2].w,
-					objectMesh.texture);
-			}
+
+			DrawTexturedTriangle(
+				t.p[0].x, t.p[0].y, t.t[0].u, t.t[0].v, t.t[0].w,
+				t.p[1].x, t.p[1].y, t.t[1].u, t.t[1].v, t.t[1].w,
+				t.p[2].x, t.p[2].y, t.t[2].u, t.t[2].v, t.t[2].w,
+				t.parent->texture);
 
 			if (strokeColour != nullptr)
 			{

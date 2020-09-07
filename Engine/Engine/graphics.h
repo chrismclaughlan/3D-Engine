@@ -60,13 +60,11 @@ public:
 	void DrawTexturedTriangle(int x1, int y1, float u1, float v1, float w1,
 		int x2, int y2, float u2, float v2, float w2,
 		int x3, int y3, float u3, float v3, float w3,
-		const Texture* tex);
-	void RasterTriangles(
-		const Matrix4x4& matrixWorld,
+		const Texture* texture);
+	void RasterTexturedTriangles(
 		const Matrix4x4& matrixCamera,
 		const Matrix4x4& projectionMatrix,
 		const Vector& vCamera,
-		const Mesh& objectMesh,
-		const uint32* strokeColour = nullptr,
-		const bool fill = true);
+		const std::vector<Mesh*> meshes,
+		const uint32* strokeColour = nullptr);
 };

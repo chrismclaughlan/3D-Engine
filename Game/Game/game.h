@@ -3,16 +3,9 @@
 #include "Engine\win32_window.h"
 #include "Engine\vector.h"
 
-//#include <chrono>
-#include <iostream>
-
-class Vector;
-class Matrix4x4;
-
 
 class Game
 {
-	// TODO error handling
 protected:
 	Window win;
 
@@ -27,20 +20,11 @@ protected:
 	void HandleInput();
 	void DoFrame();
 protected:
-	std::string userTextBuffer;
-	std::string acceptedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_ ";
-
-//private:
-//	std::chrono::time_point<std::chrono::steady_clock> timeStarted = std::chrono::high_resolution_clock::now();
+	//std::string userTextBuffer;
+	//std::string acceptedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_ ";
 
 private:
-	Mesh objectMesh;
-	Texture objectTexture;
-
-	void TexturedTriangle(int x1, int y1, float u1, float v1, float w1,
-		int x2, int y2, float u2, float v2, float w2,
-		int x3, int y3, float u3, float v3, float w3,
-		Texture* tex);
+	std::vector<Mesh> objectMeshes;
 
 private:
 	Matrix4x4 projectionMatrix;

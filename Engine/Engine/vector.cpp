@@ -174,13 +174,7 @@ Vector Vector::CrossProduct(const Vector& a, const Vector& b)
 
 Matrix4x4::Matrix4x4()
 {
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			m[i][j] = 0.0f;
-		}
-	}
+	memset(&m, 0.0f, sizeof(float) * 4 * 4);
 }
 
 Vector operator*(const Matrix4x4& m, const Vector& v)
@@ -298,7 +292,6 @@ void Matrix4x4::MakeQuickInverse() // Only for Rotation/Translation Matrices
 
 Vector Vector::IntersectPlane(Vector& plane_p, Vector& plane_n, Vector& lineStart, Vector& lineEnd, float& t)
 {
-	plane_n.Normalise();
 	float plane_d = -Vector::DotProduct(plane_n, plane_p);
 	float ad = Vector::DotProduct(lineStart, plane_n);
 	float bd = Vector::DotProduct(lineEnd, plane_n);
@@ -329,25 +322,25 @@ int Vector::TriangleClipAgainstPlane(Vector plane_p, Vector plane_n, Triangle& i
 	Vector2* outside_tex[3];   int nOutsideTexCount = 0;
 
 	// Get signed distance of each point in triangle to plane
-	float d0 = dist(in_tri.points[0]);
-	float d1 = dist(in_tri.points[1]);
-	float d2 = dist(in_tri.points[2]);
+	float d0 = dist(in_tri.p[0]);
+	float d1 = dist(in_tri.p[1]);
+	float d2 = dist(in_tri.p[2]);
 
-	if (d0 >= 0) { inside_points[nInsidePointCount++] = &in_tri.points[0]; inside_tex[nInsideTexCount++] = &in_tri.t[0]; }
+	if (d0 >= 0) { inside_points[nInsidePointCount++] = &in_tri.p[0]; inside_tex[nInsideTexCount++] = &in_tri.t[0]; }
 	else {
-		outside_points[nOutsidePointCount++] = &in_tri.points[0]; outside_tex[nOutsideTexCount++] = &in_tri.t[0];
+		outside_points[nOutsidePointCount++] = &in_tri.p[0]; outside_tex[nOutsideTexCount++] = &in_tri.t[0];
 	}
 	if (d1 >= 0) {
-		inside_points[nInsidePointCount++] = &in_tri.points[1]; inside_tex[nInsideTexCount++] = &in_tri.t[1];
+		inside_points[nInsidePointCount++] = &in_tri.p[1]; inside_tex[nInsideTexCount++] = &in_tri.t[1];
 	}
 	else {
-		outside_points[nOutsidePointCount++] = &in_tri.points[1];  outside_tex[nOutsideTexCount++] = &in_tri.t[1];
+		outside_points[nOutsidePointCount++] = &in_tri.p[1];  outside_tex[nOutsideTexCount++] = &in_tri.t[1];
 	}
 	if (d2 >= 0) {
-		inside_points[nInsidePointCount++] = &in_tri.points[2]; inside_tex[nInsideTexCount++] = &in_tri.t[2];
+		inside_points[nInsidePointCount++] = &in_tri.p[2]; inside_tex[nInsideTexCount++] = &in_tri.t[2];
 	}
 	else {
-		outside_points[nOutsidePointCount++] = &in_tri.points[2];  outside_tex[nOutsideTexCount++] = &in_tri.t[2];
+		outside_points[nOutsidePointCount++] = &in_tri.p[2];  outside_tex[nOutsideTexCount++] = &in_tri.t[2];
 	}
 
 	// Now classify triangle points, and break the input triangle into 
@@ -384,19 +377,19 @@ int Vector::TriangleClipAgainstPlane(Vector plane_p, Vector plane_n, Triangle& i
 #endif
 
 		// The inside point is valid, so keep that...
-		out_tri1.points[0] = *inside_points[0];
+		out_tri1.p[0] = *inside_points[0];
 		out_tri1.t[0] = *inside_tex[0];
 
 		// but the two new points are at the locations where the 
 		// original sides of the triangle (lines) intersect with the plane
 		float t;
-		out_tri1.points[1] = Vector::IntersectPlane(plane_p, plane_n, *inside_points[0], *outside_points[0], t);
+		out_tri1.p[1] = Vector::IntersectPlane(plane_p, plane_n, *inside_points[0], *outside_points[0], t);
 		out_tri1.t[1].u = t * (outside_tex[0]->u - inside_tex[0]->u) + inside_tex[0]->u;
 		out_tri1.t[1].v = t * (outside_tex[0]->v - inside_tex[0]->v) + inside_tex[0]->v;
 		out_tri1.t[1].w = t * (outside_tex[0]->w - inside_tex[0]->w) + inside_tex[0]->w;
 
 		
-		out_tri1.points[2] = Vector::IntersectPlane(plane_p, plane_n, *inside_points[0], *outside_points[1], t);
+		out_tri1.p[2] = Vector::IntersectPlane(plane_p, plane_n, *inside_points[0], *outside_points[1], t);
 		out_tri1.t[2].u = t * (outside_tex[1]->u - inside_tex[0]->u) + inside_tex[0]->u;
 		out_tri1.t[2].v = t * (outside_tex[1]->v - inside_tex[0]->v) + inside_tex[0]->v;
 		out_tri1.t[2].w = t * (outside_tex[1]->w - inside_tex[0]->w) + inside_tex[0]->w;
@@ -424,13 +417,13 @@ int Vector::TriangleClipAgainstPlane(Vector plane_p, Vector plane_n, Triangle& i
 		// The first triangle consists of the two inside points and a new
 		// point determined by the location where one side of the triangle
 		// intersects with the plane
-		out_tri1.points[0] = *inside_points[0];
-		out_tri1.points[1] = *inside_points[1];
+		out_tri1.p[0] = *inside_points[0];
+		out_tri1.p[1] = *inside_points[1];
 		out_tri1.t[0] = *inside_tex[0];
 		out_tri1.t[1] = *inside_tex[1];
 
 		float t;
-		out_tri1.points[2] = Vector::IntersectPlane(plane_p, plane_n, *inside_points[0], *outside_points[0], t);
+		out_tri1.p[2] = Vector::IntersectPlane(plane_p, plane_n, *inside_points[0], *outside_points[0], t);
 		out_tri1.t[2].u = t * (outside_tex[0]->u - inside_tex[0]->u) + inside_tex[0]->u;
 		out_tri1.t[2].v = t * (outside_tex[0]->v - inside_tex[0]->v) + inside_tex[0]->v;
 		out_tri1.t[2].w = t * (outside_tex[0]->w - inside_tex[0]->w) + inside_tex[0]->w;
@@ -439,11 +432,11 @@ int Vector::TriangleClipAgainstPlane(Vector plane_p, Vector plane_n, Triangle& i
 		// The second triangle is composed of one of he inside points, a
 		// new point determined by the intersection of the other side of the 
 		// triangle and the plane, and the newly created point above
-		out_tri2.points[0] = *inside_points[1];
-		out_tri2.points[1] = out_tri1.points[2];
+		out_tri2.p[0] = *inside_points[1];
+		out_tri2.p[1] = out_tri1.p[2];
 		out_tri2.t[0] = *inside_tex[1];
 		out_tri2.t[1] = out_tri1.t[2];
-		out_tri2.points[2] = Vector::IntersectPlane(plane_p, plane_n, *inside_points[1], *outside_points[0], t);
+		out_tri2.p[2] = Vector::IntersectPlane(plane_p, plane_n, *inside_points[1], *outside_points[0], t);
 		out_tri2.t[2].u = t * (outside_tex[0]->u - inside_tex[1]->u) + inside_tex[1]->u;
 		out_tri2.t[2].v = t * (outside_tex[0]->v - inside_tex[1]->v) + inside_tex[1]->v;
 		out_tri2.t[2].w = t * (outside_tex[0]->w - inside_tex[1]->w) + inside_tex[1]->w;
@@ -452,7 +445,7 @@ int Vector::TriangleClipAgainstPlane(Vector plane_p, Vector plane_n, Triangle& i
 	}
 }
 
-void Vector::reset()
+void Vector::setZero()
 {
 	x = 0.0f;
 	y = 0.0f;

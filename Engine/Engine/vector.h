@@ -1,16 +1,15 @@
 #pragma once
+#include "types.h"
+#include <strstream>
 #include <iostream>
 #include <fstream>
-#include <strstream>
 #include <vector>
-#include <iostream>
 #include <string>
-#include "types.h"
 #include <assert.h>
 
 struct Triangle;
 
-
+// make struct?
 class Vector2
 {
 public:
@@ -23,7 +22,6 @@ public:
 	Vector2(float u, float v) : u(u), v(v), w(1.0f) {};
 	Vector2(float u, float v, float w) : u(u), v(v), w(w) {};
 };
-
 
 class Vector
 {
@@ -44,12 +42,14 @@ public:
 	friend Vector operator+(const Vector& a, const Vector& b);
 	friend Vector operator-(const Vector& a, const Vector& b);
 	friend Vector operator*(const Vector& a, const float k);
+	friend Vector operator*(const float k, Vector& a) { return a * k; };
 	friend Vector operator/(const Vector& a, const float k);
 	friend Vector operator+=(Vector& a, const Vector& b);
 	friend Vector operator-=(Vector& a, const Vector& b);
 	friend Vector operator*=(Vector& a, const float k);
 	friend Vector operator/=(Vector& a, const float k);
 	Vector& operator-();
+
 	static float DotProduct(const Vector& a, const Vector& b);
 	static float Length(const Vector& a);
 	void Normalise();
@@ -59,7 +59,7 @@ public:
 	static Vector IntersectPlane(Vector& plane_p, Vector& plane_n, Vector& lineStart, Vector& lineEnd, float& t);
 	static int32 TriangleClipAgainstPlane(Vector plane_p, Vector plane_n, Triangle& in_tri, Triangle& out_tri1, Triangle& out_tri2);
 
-	void reset();
+	void setZero();
 };
 
 class Matrix4x4
@@ -68,7 +68,6 @@ public:
 	float m[4][4];
 public:
 	Matrix4x4();
-	//Matrix4x4( ... )
 
 	friend Vector operator*(const Matrix4x4& m, const Vector& v);
 	friend Vector operator*=(const Matrix4x4& m, const Vector& v);
@@ -88,9 +87,10 @@ public:
 
 struct Triangle
 {
-	Vector points[3];
+	Vector p[3];
 	Vector2 t[3];
 	uint32 colour;
+	// alpha
 };
 
 class Texture
@@ -103,10 +103,6 @@ public:
 	uint8* map = nullptr;
 
 public:
-	Texture()
-	{
-	}
-
 	~Texture()
 	{
 		if (map != nullptr)
@@ -185,9 +181,11 @@ public:
 		// read the rest of the data at once
 		fread(map, sizeof(uint8), size, f);
 		fclose(f);
+
+		return true;
 	}
 
-	uint32 lookUp(float x, float y)
+	uint32 lookUp(float x, float y) const
 	{
 		int32 xIndex = (x * width) / scaleW;
 		int32 yIndex = (y * height) / scaleH;
@@ -199,11 +197,13 @@ public:
 	}
 };
 
-struct Mesh
+class Mesh
 {
+public:
+	Texture* texture = nullptr;
 	std::vector<Triangle> tris;
 
-	// TODO error handling
+public:
 	bool LoadObjectFile(std::string filename, bool hasTexture)
 	{
 		tris.clear();
@@ -285,7 +285,6 @@ struct Mesh
 
 		return true;
 	}
-
 	void LoadTestCube()
 	{
 		// South
@@ -303,4 +302,7 @@ struct Mesh
 		tris.push_back({ Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
 		tris.push_back({ Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector(1.0f, 0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
 	}
+
+	// Move object in world space (to test multiple objects)
+	void moveMesh();
 };

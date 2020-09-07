@@ -461,7 +461,7 @@ void Graphics::RasterTriangles(
 	const Matrix4x4& projectionMatrix,
 	const Vector& vCamera,
 	const Mesh& objectMesh,
-	const int32* strokeColour,
+	const uint32* strokeColour,
 	const bool fill)
 {
 	// Triangles
@@ -546,7 +546,6 @@ void Graphics::RasterTriangles(
 				triProjected.p[0] += vOffsetView;
 				triProjected.p[1] += vOffsetView;
 				triProjected.p[2] += vOffsetView;
-
 				triProjected.p[0].x *= 0.5f * (float)width;
 				triProjected.p[0].y *= 0.5f * (float)height;
 				triProjected.p[1].x *= 0.5f * (float)width;
@@ -559,7 +558,7 @@ void Graphics::RasterTriangles(
 		}
 	}
 
-	// Sort triangles from back to front
+	//// Sort triangles from back to front
 	//sort(trianglesToRaster.begin(), trianglesToRaster.end(), [](Triangle& t1, Triangle& t2)
 	//	{
 	//		float z1 = (t1.p[0].z + t1.p[1].z + t1.p[2].z) / 3.0f;
@@ -585,9 +584,9 @@ void Graphics::RasterTriangles(
 
 				// Clipping planes (borders of the screen)
 				Vector pTop(0.0f, 0.0f, 0.0f);
-				Vector pBottom(0.0f, (float)height - 1, 0.0f);
+				Vector pBottom(0.0f, (float)height - 1.0f, 0.0f);
 				Vector pLeft(0.0f, 0.0f, 0.0f);
-				Vector pRight((float)width - 1, 0.0f, 0.0f);
+				Vector pRight((float)width - 1.0f, 0.0f, 0.0f);
 
 				// Normals (facing into screen boundary)
 				Vector nDownwards(0.0f, 1.0f, 0.0f);
@@ -613,20 +612,21 @@ void Graphics::RasterTriangles(
 
 		for (auto& t : listTriangles)
 		{
-			if (objectMesh.texture != nullptr)
-			{
-				DrawTexturedTriangle(t.p[0].x, t.p[0].y, t.t[0].u, t.t[0].v, t.t[0].w,
-					t.p[1].x, t.p[1].y, t.t[1].u, t.t[1].v, t.t[1].w,
-					t.p[2].x, t.p[2].y, t.t[2].u, t.t[2].v, t.t[2].w,
-					objectMesh.texture);
-			}
-			else if (fill)
+			if (fill)
 			{
 				FillTriangleP(
 					t.p[0].x, t.p[0].y, 
 					t.p[1].x, t.p[1].y, 
 					t.p[2].x, t.p[2].y,
 					t.colour);
+			}
+			else if (objectMesh.texture != nullptr)
+			{
+				DrawTexturedTriangle(
+					t.p[0].x, t.p[0].y, t.t[0].u, t.t[0].v, t.t[0].w,
+					t.p[1].x, t.p[1].y, t.t[1].u, t.t[1].v, t.t[1].w,
+					t.p[2].x, t.p[2].y, t.t[2].u, t.t[2].v, t.t[2].w,
+					objectMesh.texture);
 			}
 
 			if (strokeColour != nullptr)

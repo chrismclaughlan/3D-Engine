@@ -67,6 +67,6 @@ public:
 		const Matrix4x4& projectionMatrix,
 		const Vector& vCamera,
 		const Mesh& objectMesh,
-		const int32* strokeColour = nullptr,
+		const uint32* strokeColour = nullptr,
 		const bool fill = true);
 };

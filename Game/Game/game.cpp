@@ -13,16 +13,13 @@ int32 Game::run()
 	};
 
 	// Load wavefront files
-	//objectMesh.LoadTestCube();
 	Mesh mesh1, mesh2;
-	mesh1.LoadTestCube();
+	mesh1.LoadObjectFile("teapot.obj", false);
 	mesh1.texture = &objectTexture;
 	objectMeshes.push_back(mesh1);
 	mesh2 = Mesh();
 	mesh2.LoadTestCube();
 	objectMeshes.push_back(mesh2);
-	//objectMesh.LoadObjectFile("lowpolybuildings2.obj", true);
-	//objectMesh.texture = &objectTexture;
 
 	projectionMatrix.MakeProjection(
 		90.0f,
@@ -185,9 +182,14 @@ void Game::DoFrame()
 	matrixRotX.MakeRotationX(fTheta);
 	matrixRotZ.MakeRotationZ(fTheta * 0.5f);
 	matrixTranslation.MakeTranslation(0.0f, 0.0f, 5.0f);
-	matrixWorld.MakeIdentity();
-	matrixWorld = matrixRotZ * matrixRotX;
-	matrixWorld *= matrixTranslation;
+	//matrixWorld.MakeIdentity();
+	//matrixWorld = matrixRotZ * matrixRotX;
+	//matrixWorld *= matrixTranslation;
+
+	Matrix4x4 matrixWorldPos;
+	matrixWorldPos.MakeIdentity();
+	matrixWorldPos = matrixRotZ * matrixRotX;
+	matrixWorldPos *= matrixTranslation;
 
 	// Camera
 	Matrix4x4 matrixCameraRotation, matrixCamera;  // matrixView
@@ -201,8 +203,6 @@ void Game::DoFrame()
 	matrixCamera.MakePointAt(vCamera, vTarget, vUp);
 	matrixCamera.MakeQuickInverse();
 
-	//objectMeshes[0].
-
 	/* ---------- Render ---------- */
 
 	// Clear screen and depth buffer
@@ -210,8 +210,11 @@ void Game::DoFrame()
 	win.Gfx().ClearDepthBuffer();
 
 	// Draw objects in scene
-	win.Gfx().RasterTriangles(matrixWorld, matrixCamera, projectionMatrix, vCamera, objectMeshes[0]);
-	win.Gfx().RasterTriangles(matrixWorld, matrixCamera, projectionMatrix, vCamera, objectMeshes[1]);
+	const uint32 strokeColour = 0xffffff;
+	win.Gfx().RasterTriangles(
+		matrixWorldPos, matrixCamera, projectionMatrix, vCamera, 
+		objectMeshes[0], nullptr);
+	//win.Gfx().RasterTriangles(matrixWorldPos, matrixCamera, projectionMatrix, vCamera, objectMeshes[1]);
 
 	// Draw to window
 	win.Gfx().Render();  // last

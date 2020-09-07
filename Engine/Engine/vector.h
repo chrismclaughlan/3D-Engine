@@ -112,6 +112,7 @@ public:
 		{
 			delete[] map;
 		}
+		map = nullptr;
 	}
 
 	//inline void writeTo(int x, int y, uint32 a)
@@ -207,7 +208,7 @@ public:
 	std::vector<Triangle> tris;
 	Texture* texture = nullptr;
 	// check all right
-	float x = 0.0f;  // + right / - left
+	float x = 0.0f;  // + left / - right
 	float y = 0.0f;  // + upwards / - downwards
 	float z = 5.0f;  // + forwards / - backwards
 

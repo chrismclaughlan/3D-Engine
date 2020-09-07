@@ -96,32 +96,10 @@ int32 Graphics::screenToPxY(float y)
 void Graphics::ClearScreen(uint32 colour)
 {
 	uint32* pixel = (uint32*)memory;
-	for (int32 y = 0; y < height; y++)
+	for (int32 i = 0; i < width * height; i++)
 	{
-		for (int32 x = 0; x < width; x++)
-		{
-			*pixel++ = colour;
-		}
+		*pixel++ = colour;
 	}
-}
-
-void Graphics::ClearDepthBuffer()
-{
-	float* depthBuffer = (float*)pDepthBuffer;
-	//for (int32 i = 0; i < width * height; i++)
-	for (int32 y = 0; y < height; y++)
-	{
-		for (int32 x = 0; x < width; x++)
-		{
-			*depthBuffer++ = 0.0f;
-		}
-	}
-}
-
-float* Graphics::readDepthBuffer(const int32 x, const int32 y)
-{
-	float* depthBuffer = (float*)pDepthBuffer;
-	return &depthBuffer[x * width + y];
 }
 
 void Graphics::DrawPointP(int32 x, int32 y, uint32 colour)
@@ -281,27 +259,28 @@ void Graphics::DrawRect(float x1, float y1, float x2, float y2, uint32 colour)
 		);
 }
 
-//void Graphics::DrawTexturedTriangle(const Triangle& triangle)
-void Graphics::DrawTexturedTriangle(int x1, int y1, float u1, float v1, float w1,
-int x2, int y2, float u2, float v2, float w2,
-int x3, int y3, float u3, float v3, float w3,
-const Texture* texture)
+// 3D
+
+void Graphics::ClearDepthBuffer()
 {
-	//int32 x1 = triangle.p[0].x; 
-	//int32 y1 = triangle.p[0].y; 
-	//int32 u1 = triangle.t[0].u; 
-	//int32 v1 = triangle.t[0].v; 
-	//int32 w1 = triangle.t[0].w;
-	//int32 x2 = triangle.p[1].x; 
-	//int32 y2 = triangle.p[1].y; 
-	//int32 u2 = triangle.t[1].u; 
-	//int32 v2 = triangle.t[1].v; 
-	//int32 w2 = triangle.t[1].w;
-	//int32 x3 = triangle.p[2].x; 
-	//int32 y3 = triangle.p[2].y; 
-	//int32 u3 = triangle.t[2].u; 
-	//int32 v3 = triangle.t[2].v; 
-	//int32 w3 = triangle.t[2].w;
+	float* depthBuffer = (float*)pDepthBuffer;
+	for (int32 i = 0; i < width * height; i++)
+	{
+		*depthBuffer++ = 0.0f;
+	}
+}
+
+float* Graphics::readDepthBuffer(const int32 x, const int32 y)
+{
+	float* depthBuffer = (float*)pDepthBuffer;
+	return &depthBuffer[x * width + y];
+}
+
+void Graphics::DrawTexturedTriangle(int x1, int y1, float u1, float v1, float w1,
+	int x2, int y2, float u2, float v2, float w2,
+	int x3, int y3, float u3, float v3, float w3,
+	const Texture* texture)
+{
 
 	if (y2 < y1)
 	{

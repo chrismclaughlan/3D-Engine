@@ -6,7 +6,7 @@
 
 class Game
 {
-protected:
+private:
 	Window win;
 
 public:
@@ -28,10 +28,10 @@ public:
 
 	//virtual int32 run() = 0;
 	int32 run();
-protected:
+private:
 	void HandleInput();
 	void DoFrame();
-protected:
+private:
 	//std::string userTextBuffer;
 	//std::string acceptedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_ ";
 
@@ -43,13 +43,13 @@ private:
 
 private:
 	Matrix4x4 projectionMatrix;
-	Vector vCamera;
-	Vector vLookDir;
 	float fTheta = 0.0f;
-	float fYaw = 0.0f;
 
-	// Movement
+	// Camera control
 	float moveDirX = 0.0f;
 	float moveDirY = 0.0f;
 	float moveDirZ = 0.0f;
+	float fYaw = 0.0f;
+	Vector vCamera;
+	Vector vLookDir;
 };

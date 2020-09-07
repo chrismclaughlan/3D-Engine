@@ -23,8 +23,8 @@ int32 Game::run()
 	object1->LoadTestCube();
 	object1->texture = objectTexture1;
 	object2 = new Mesh();
-	object2->LoadTestCube();
-	object2->texture = objectTexture1;
+	object2->LoadObjectFile("axis.obj", false);
+	object2->texture = objectTexture2;
 	//mesh1.LoadObjectFile("teapot.obj", false);
 	//mesh1.texture = &objectTexture;
 	//objectMeshes.push_back(mesh1);
@@ -191,28 +191,27 @@ void Game::DoFrame()
 {
 	/* ---------- Simulate ---------- */
 
+	// Camera
 	double turningSpeed = 0.005f;
 	double movementSpeed = 0.005f;
 
-	// Camera
+	Vector vUp(0.0f, 1.0f, 0.0f);
+	Vector vTarget(0.0f, 0.0f, 1.0f);
 	Vector vForward = vLookDir * movementSpeed;
+	Matrix4x4 matrixCameraRotation, matrixCamera;  // matrixView
+
+	// Camera control
 	vCamera	  += moveDirZ * vForward;		// forward / backward
 	fYaw	  += moveDirX * turningSpeed;   // left / right
 	vCamera.y += moveDirY * movementSpeed;  // up / down
-
-	//fTheta += 0.001f;  // rotate world
-
-	Matrix4x4 matrixCameraRotation, matrixCamera;  // matrixView
-	Vector vUp(0.0f, 1.0f, 0.0f);
-	Vector vTarget(0.0f, 0.0f, 1.0f);
-
 	matrixCameraRotation.MakeRotationY(fYaw);
 	vLookDir = matrixCameraRotation * vTarget;
 	vTarget = vCamera + vLookDir;
-
 	matrixCamera.MakePointAt(vCamera, vTarget, vUp);
 	matrixCamera.MakeQuickInverse();
 
+	// Update world objects
+	//fTheta += 0.001f;  // rotate world
 	object1->updatePosition(fTheta);
 	object2->updatePosition(fTheta);
 
@@ -230,8 +229,7 @@ void Game::DoFrame()
 	const uint32 strokeColour = 0xffffff;
 	win.Gfx().RasterTexturedTriangles(
 		matrixCamera, projectionMatrix, vCamera,
-		objects, &strokeColour);
-	//win.Gfx().RasterTriangles(matrixWorldPos, matrixCamera, projectionMatrix, vCamera, objectMeshes[1]);
+		objects, nullptr);
 
 	// Draw to window
 	win.Gfx().Render();  // last

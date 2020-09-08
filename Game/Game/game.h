@@ -56,6 +56,6 @@ private:
 	// 2D Text
 	std::vector<uint8> text;
 	Text2D* textTexture;
-	//std::string userTextBuffer;
+	std::string userTextBuffer;
 	//std::string acceptedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_ ";
 };

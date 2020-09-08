@@ -5,7 +5,7 @@
 int32 Game::run()
 {
 	textTexture = new Text2D();
-	textTexture->test("texture_font_256x128_monochrome.bmp");
+	textTexture->test("texture_font_252x108_monochrome.bmp");
 	//textTexture->getBlackAndWhiteBmp("texture_font_256x128_monochrome.bmp");
 
 	//textTexture->displayInfo(2, 2);
@@ -163,33 +163,33 @@ void Game::HandleInput()
 //		}
 //	}
 
-//	while (!win.keyboard.charIsEmpty())
-//	{
-//		const uint8 e = win.keyboard.readChar();
-//
-//		switch (e)
-//		{
-//			case VK_BACK:
-//			{
-//				if (!userTextBuffer.empty())
-//				{
-//					userTextBuffer.pop_back();
-//				}
-//			} break;// continue to default ...
-//			default:
-//			{
-//				if (acceptedCharacters.find(e) != std::string::npos)
-//				{
-//					// If char in acceptedCharacters
-//					userTextBuffer += std::string(1, e);
-//				}
-//			} break;
-//		}
-//#ifdef DISPLAY_DEBUG_CONSOLE
-//
-//		std::cout << userTextBuffer << "\n";
-//#endif
-//	}
+	while (!win.keyboard.charIsEmpty())
+	{
+		const uint8 e = win.keyboard.readChar();
+
+		switch (e)
+		{
+			case VK_BACK:
+			{
+				if (!userTextBuffer.empty())
+				{
+					userTextBuffer.pop_back();
+				}
+			} break;// continue to default ...
+			default:
+			{
+				//if (acceptedCharacters.find(e) != std::string::npos)
+				//{
+					// If char in acceptedCharacters
+					userTextBuffer += std::string(1, e);
+				//}
+			} break;
+		}
+#ifdef DISPLAY_DEBUG_CONSOLE
+
+		std::cout << userTextBuffer << "\n";
+#endif
+	}
 }
 
 void Game::DoFrame()
@@ -238,19 +238,7 @@ void Game::DoFrame()
 
 	//win.Gfx().DrawChar(100, 100, "0");
 
-	for (int y = textTexture->height - 1; y >= 0; y--)
-	{
-		for (int x = 0; x < textTexture->width; x++)
-		{
-			int pos = y * textTexture->linesize + x / 8;
-			int bit = 1 << (7 - x % 8);
-			int v = (textTexture->map[pos] & bit) > 0;
-			if (v)
-				win.Gfx().DrawPointP(x, y, 0xffffff);
-			else
-				win.Gfx().DrawPointP(x, y, 0xff0000);
-		}
-	}
+	win.Gfx().DrawText(textTexture, userTextBuffer, 100, 100);
 
 	// Draw to window
 	win.Gfx().Render();  // last

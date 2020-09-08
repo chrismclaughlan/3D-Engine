@@ -87,6 +87,6 @@ public:
 
 public:
 	Texture* textTexture = nullptr;
-	void DrawText(std::string str);
-	const bool DrawChar(int32 x, int32 y, const char* c);
+	void DrawText(const Text2D* textTexture, std::string str, int32 posX, const int32 posY);
+	const bool DrawChar(const Text2D* textTexture, const char c, const int32 posX, const int32 posY);
 };

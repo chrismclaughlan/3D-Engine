@@ -360,83 +360,13 @@ struct Text2D
 	int32 height;
 	uint8* map;
 	int32 linesize;
+	uint32_t colortable[2];
 
 	~Text2D()
 	{
 		delete[] map;
 		map = nullptr;
 	}
-
-	//bool getBlackAndWhiteBmp(const char* filename) {
-	//	BmpHeader head;
-	//	std::ifstream f(filename, std::ios::binary);
-
-	//	if (!f) {
-	//		throw "Invalid file given";
-	//	}
-
-	//	int headSize = sizeof(BmpHeader);
-	//	f.read((char*)& head, headSize);
-
-	//	if (head.bitsPerPixel != 1) {
-	//		f.close();
-	//		throw "Invalid bitmap loaded";
-	//	}
-
-	//	height = head.height;
-	//	width = head.width;
-
-	//	// Lines are aligned on a 4-byte boundary
-	//	int lineSize = (width / 8 + (width / 8) % 4);
-	//	int fileSize = lineSize * height;
-
-	//	std::vector<uint8> rawFile(fileSize);
-	//	std::vector<std::vector<int32>> img(head.height, std::vector<int32>(width, -1));
-
-	//	// Skip to where the actual image data is
-	//	f.seekg(head.offset);
-
-	//	// Read in all of the file
-	//	f.read((int8*)& rawFile[0], fileSize);
-
-	//	//// Decode the actual boolean values of the pixesl
-	//	//int row;
-	//	//int reverseRow; // Because bitmaps are stored bottom to top for some reason
-	//	//int columnByte;
-	//	//int columnBit;
-	//	//
-	//	//for (row = 0, reverseRow = height - 1; row < height; ++row, --reverseRow) {
-	//	//	columnBit = 0;
-	//	//	for (columnByte = 0; columnByte < ceil((width / 8.0)); ++columnByte) {
-	//	//		int rawPos = (row * lineSize) + columnByte;
-	//	//
-	//	//		for (int k = 7; k >= 0 && columnBit < width; --k, ++columnBit) {
-	//	//			img[reverseRow][columnBit] = (rawFile[rawPos] >> k) & 1;
-	//	//		}
-	//	//	}
-	//	//}
-	//	// Decode the actual boolean values of the pixesl
-	//	int row;
-	//	int columnByte;
-	//	int columnBit;
-
-	//	for (row = 0; row < height; ++row)
-	//	{
-	//		columnBit = 0;
-	//		for (columnByte = 0; columnByte < ceil((width / 8.0)); ++columnByte)
-	//		{
-	//			int rawPos = (row * lineSize) + columnByte;
-
-	//			for (int k = 7; k >= 0 && columnBit < width; --k, ++columnBit)
-	//			{
-	//				img[row][columnBit] = (rawFile[rawPos] >> k) & 1;
-	//			}
-	//		}
-	//	}
-
-	//	f.close();
-	//	image = img;
-	//}
 
 	bool test(const char* filename)
 	{
@@ -465,13 +395,9 @@ struct Text2D
 		map = new uint8[filesize];
 
 		//read color table
-		uint32_t color0;
-		uint32_t color1;
-		uint32_t colortable[2];
 		f.seekg(54);
 		f.read((int8*)& colortable[0], 4);
 		f.read((int8*)& colortable[1], 4);
-		printf("colortable: 0x%06X 0x%06X\n", colortable[0], colortable[1]);
 
 		f.seekg(head.offset);
 		f.read((int8*)& map[0], filesize);
@@ -483,9 +409,7 @@ struct Text2D
 				int pos = y * linesize + x / 8;
 				int bit = 1 << (7 - x % 8);
 				int v = (map[pos] & bit) > 0;
-				printf("%d", v);
 			}
-			printf("\n");
 		}
 
 		f.close();

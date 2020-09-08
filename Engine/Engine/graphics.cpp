@@ -648,70 +648,132 @@ void Graphics::RasterTexturedTriangles(
 	}
 }
 
-void Graphics::DrawText(std::string str)
+void Graphics::DrawText(const Text2D* textTexture, std::string str, int32 posX, const int32 posY)
 {
+	// assert ...
+	//for (char& c : str)
+	//{
+	//	DrawChar(textTexture, &c, posX, posY);
+	//	posX += 14;  // ind_x
+	//}
 
+	for (std::string::size_type i = 0; i < str.size(); i++)
+	{
+		if (posX >= width)
+		{
+			return;
+		}
+		DrawChar(textTexture, str[i], posX, posY);
+		posX += 14;  // ind_x
+	}
 }
 
-const bool Graphics::DrawChar(int32 x, int32 y, const char* c)
+const bool Graphics::DrawChar(const Text2D* textTexture, const char c, const int32 posX, const int32 posY)
 {
+	// assert ...
+
 	// Check acceptable character
-	std::string acceptedChars = "0123456789";
-	if (acceptedChars.find(c) == std::string::npos)
+	//                                      1         2         3         4         5         6          7         8         9
+	//                           012 3456789012345678901234567890123456789012345678901234567890 123456789012345678901234567890123456789
+	std::string acceptedChars = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+	int32 charIndex = acceptedChars.find(c);
+	if (charIndex == std::string::npos)
 	{
-		// error
 		return false;
 	}
-	
-	const int32 constX = 14;
-	const int32 constY = 18;
 
-	// Starts top-left
-	int32 ind_x = 1;
-	int32 ind_y = 0;
+	// Find char in texture
+	int32 num_elements_x = 18;
+	int32 ind_x =  charIndex % num_elements_x;
+	int32 ind_y = floor((charIndex) / (num_elements_x));
 
-	int32 tex_x = 1 * constX;
-	int32 tex_y = 1 * constY;
+	// Size of char in texture
+	const int32 size_x = 14;
+	const int32 size_y = 18;
 
-	uint32 data[constX][constY];
-	memset(data, 0, sizeof(uint32) * constX * constY);
+	const int32 top = (textTexture->height - 1) - (size_y * ind_y);  // max textTexture->height - 1; min 0
+	const int32 bottom = top - size_y;  // min 0  (clamp etc.)
+	const int32 left = size_x * ind_x;  // min 0; max textTexture->width - size_x
+	const int32 right = left + size_x;  // max textTexture->width
 
-	for (int32 n = 2; n < 4; n++)
+	//DrawRectP(posX, posY, posX + size_x, posY + size_y, 0xff0000);  // test boundaries
+
+	for (int y = top; y >= bottom; y--)
 	{
-		data[3][n] = 0xffffff; data[4][n] = 0xffffff; data[5][n] = 0xffffff; data[6][n] = 0xffffff; data[7][n] = 0xffffff; data[8][n] = 0xffffff;
-	}
-	for (int32 n = 4; n < 14; n++)
-	{
-		data[1][n] = 0xffffff; data[2][n] = 0xffffff; data[9][n] = 0xffffff; data[10][n] = 0xffffff;
-	}
-	for (int32 n = 14; n < 16; n++)
-	{
-		data[3][n] = 0xffffff; data[4][n] = 0xffffff; data[5][n] = 0xffffff; data[6][n] = 0xffffff; data[7][n] = 0xffffff; data[8][n] = 0xffffff;
-	}
-
-	for (int32 i = 0; i < constX; i++)
-	{
-		for (int32 j = 0; j < constY; j++)
+		for (int x = left; x < right; x++)
 		{
-			DrawPointP(x + i, y + j, data[i][j]);
+			int pos = y * textTexture->linesize + x / 8;
+			int bit = 1 << (7 - x % 8);
+			int v = (textTexture->map[pos] & bit) > 0;
+			if (v)
+				DrawPointP(posX + (x - left), posY + (y - bottom), textTexture->colortable[1]);
+			//else  // draw background
+				//DrawPointP(posX + (x - left), posY + (y - bottom), textTexture->colortable[0]);
 		}
 	}
 
-	//for (int32 i = tex_x; i < tex_x + constX; i++)
-	//{
-	//	for (int32 j = tex_y; j < tex_y + constY; j++)
-	//	{
-	//		assert(i < textTexture->width);
-	//		assert(j < textTexture->height);
-	//		assert(x < width);
-	//		assert(x > 0);
-	//		assert(y < height);
-	//		assert(y > 0);
-	//		DrawPointP(x, y, textTexture->map[i + j * width]);
-	//	}
-	//}
-
-	// 14x18
-
 	return true;
 }
+
+//const bool Graphics::DrawChar(int32 x, int32 y, const char* c)
+//{
+//	// Check acceptable character
+//	std::string acceptedChars = "0123456789";
+//	if (acceptedChars.find(c) == std::string::npos)
+//	{
+//		// error
+//		return false;
+//	}
+//	
+//	const int32 constX = 14;
+//	const int32 constY = 18;
+//
+//	// Starts top-left
+//	int32 ind_x = 1;
+//	int32 ind_y = 0;
+//
+//	int32 tex_x = 1 * constX;
+//	int32 tex_y = 1 * constY;
+//
+//	uint32 data[constX][constY];
+//	memset(data, 0, sizeof(uint32) * constX * constY);
+//
+//	for (int32 n = 2; n < 4; n++)
+//	{
+//		data[3][n] = 0xffffff; data[4][n] = 0xffffff; data[5][n] = 0xffffff; data[6][n] = 0xffffff; data[7][n] = 0xffffff; data[8][n] = 0xffffff;
+//	}
+//	for (int32 n = 4; n < 14; n++)
+//	{
+//		data[1][n] = 0xffffff; data[2][n] = 0xffffff; data[9][n] = 0xffffff; data[10][n] = 0xffffff;
+//	}
+//	for (int32 n = 14; n < 16; n++)
+//	{
+//		data[3][n] = 0xffffff; data[4][n] = 0xffffff; data[5][n] = 0xffffff; data[6][n] = 0xffffff; data[7][n] = 0xffffff; data[8][n] = 0xffffff;
+//	}
+//
+//	for (int32 i = 0; i < constX; i++)
+//	{
+//		for (int32 j = 0; j < constY; j++)
+//		{
+//			DrawPointP(x + i, y + j, data[i][j]);
+//		}
+//	}
+//
+//	//for (int32 i = tex_x; i < tex_x + constX; i++)
+//	//{
+//	//	for (int32 j = tex_y; j < tex_y + constY; j++)
+//	//	{
+//	//		assert(i < textTexture->width);
+//	//		assert(j < textTexture->height);
+//	//		assert(x < width);
+//	//		assert(x > 0);
+//	//		assert(y < height);
+//	//		assert(y > 0);
+//	//		DrawPointP(x, y, textTexture->map[i + j * width]);
+//	//	}
+//	//}
+//
+//	// 14x18
+//
+//	return true;
+//}

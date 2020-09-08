@@ -361,6 +361,9 @@ struct Text2D
 	uint8* map;
 	int32 linesize;
 	uint32_t colortable[2];
+	//                                      1         2         3         4         5         6          7         8         9
+	//                           012 3456789012345678901234567890123456789012345678901234567890 123456789012345678901234567890123456789
+	std::string acceptedChars = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
 	~Text2D()
 	{

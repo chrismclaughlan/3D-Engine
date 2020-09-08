@@ -174,21 +174,25 @@ void Game::HandleInput()
 				if (!userTextBuffer.empty())
 				{
 					userTextBuffer.pop_back();
+#ifdef DISPLAY_DEBUG_CONSOLE
+
+					std::cout << userTextBuffer << "\n";
+#endif
 				}
 			} break;// continue to default ...
 			default:
 			{
-				//if (acceptedCharacters.find(e) != std::string::npos)
-				//{
+				if (textTexture->acceptedChars.find(e) != std::string::npos)
+				{
 					// If char in acceptedCharacters
 					userTextBuffer += std::string(1, e);
-				//}
-			} break;
-		}
 #ifdef DISPLAY_DEBUG_CONSOLE
 
-		std::cout << userTextBuffer << "\n";
+					std::cout << userTextBuffer << "\n";
 #endif
+				}
+			} break;
+		}
 	}
 }
 

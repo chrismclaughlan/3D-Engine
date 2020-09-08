@@ -651,11 +651,6 @@ void Graphics::RasterTexturedTriangles(
 void Graphics::DrawText(const Text2D* textTexture, std::string str, int32 posX, const int32 posY)
 {
 	// assert ...
-	//for (char& c : str)
-	//{
-	//	DrawChar(textTexture, &c, posX, posY);
-	//	posX += 14;  // ind_x
-	//}
 
 	for (std::string::size_type i = 0; i < str.size(); i++)
 	{
@@ -673,10 +668,7 @@ const bool Graphics::DrawChar(const Text2D* textTexture, const char c, const int
 	// assert ...
 
 	// Check acceptable character
-	//                                      1         2         3         4         5         6          7         8         9
-	//                           012 3456789012345678901234567890123456789012345678901234567890 123456789012345678901234567890123456789
-	std::string acceptedChars = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-	int32 charIndex = acceptedChars.find(c);
+	int32 charIndex = textTexture->acceptedChars.find(c);
 	if (charIndex == std::string::npos)
 	{
 		return false;
@@ -714,66 +706,3 @@ const bool Graphics::DrawChar(const Text2D* textTexture, const char c, const int
 
 	return true;
 }
-
-//const bool Graphics::DrawChar(int32 x, int32 y, const char* c)
-//{
-//	// Check acceptable character
-//	std::string acceptedChars = "0123456789";
-//	if (acceptedChars.find(c) == std::string::npos)
-//	{
-//		// error
-//		return false;
-//	}
-//	
-//	const int32 constX = 14;
-//	const int32 constY = 18;
-//
-//	// Starts top-left
-//	int32 ind_x = 1;
-//	int32 ind_y = 0;
-//
-//	int32 tex_x = 1 * constX;
-//	int32 tex_y = 1 * constY;
-//
-//	uint32 data[constX][constY];
-//	memset(data, 0, sizeof(uint32) * constX * constY);
-//
-//	for (int32 n = 2; n < 4; n++)
-//	{
-//		data[3][n] = 0xffffff; data[4][n] = 0xffffff; data[5][n] = 0xffffff; data[6][n] = 0xffffff; data[7][n] = 0xffffff; data[8][n] = 0xffffff;
-//	}
-//	for (int32 n = 4; n < 14; n++)
-//	{
-//		data[1][n] = 0xffffff; data[2][n] = 0xffffff; data[9][n] = 0xffffff; data[10][n] = 0xffffff;
-//	}
-//	for (int32 n = 14; n < 16; n++)
-//	{
-//		data[3][n] = 0xffffff; data[4][n] = 0xffffff; data[5][n] = 0xffffff; data[6][n] = 0xffffff; data[7][n] = 0xffffff; data[8][n] = 0xffffff;
-//	}
-//
-//	for (int32 i = 0; i < constX; i++)
-//	{
-//		for (int32 j = 0; j < constY; j++)
-//		{
-//			DrawPointP(x + i, y + j, data[i][j]);
-//		}
-//	}
-//
-//	//for (int32 i = tex_x; i < tex_x + constX; i++)
-//	//{
-//	//	for (int32 j = tex_y; j < tex_y + constY; j++)
-//	//	{
-//	//		assert(i < textTexture->width);
-//	//		assert(j < textTexture->height);
-//	//		assert(x < width);
-//	//		assert(x > 0);
-//	//		assert(y < height);
-//	//		assert(y > 0);
-//	//		DrawPointP(x, y, textTexture->map[i + j * width]);
-//	//	}
-//	//}
-//
-//	// 14x18
-//
-//	return true;
-//}

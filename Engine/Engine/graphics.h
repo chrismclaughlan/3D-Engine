@@ -9,6 +9,23 @@ scale_y = nscale_y * ratio;\
 
 class Graphics
 {
+public:
+	Graphics()
+	{
+		textTexture = new Texture();
+		if (!textTexture->LoadTextureFromBMP("texture_font_256x128.bmp"))
+		{
+			// error
+		};
+	}
+	~Graphics()
+	{
+		if (textTexture != nullptr)
+		{
+			delete textTexture;
+			textTexture = nullptr;
+		}
+	}
 protected:
 	int32 width;
 	int32 height;
@@ -67,4 +84,9 @@ public:
 		const Vector& vCamera,
 		const std::vector<Mesh*> meshes,
 		const uint32* strokeColour = nullptr);
+
+public:
+	Texture* textTexture = nullptr;
+	void DrawText(std::string str);
+	const bool DrawChar(int32 x, int32 y, const char* c);
 };

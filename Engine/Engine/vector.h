@@ -111,8 +111,8 @@ public:
 		if (map != nullptr)
 		{
 			delete[] map;
+			map = nullptr;
 		}
-		map = nullptr;
 	}
 
 	//inline void writeTo(int x, int y, uint32 a)
@@ -328,5 +328,172 @@ public:
 		matrixWorldPos.MakeIdentity();
 		matrixWorldPos = matrixRotZ * matrixRotX;
 		matrixWorldPos *= matrixTranslation;
+	}
+
+	void setPos(float x_, float y_, float z_)
+	{
+		x = x_;
+		y = y_;
+		z = z_;
+	}
+};
+
+// https://stackoverflow.com/questions/49215933/reading-a-monochrome-bitmap-in-c-requires-reading-every-other-line
+
+#pragma pack(1)
+struct BmpHeader {
+	int8 magic[2];          // 0-1
+	uint32_t fileSize;      // 2-5
+	uint32_t reserved;      // 6-9
+	uint32_t offset;        // 10-13
+	uint32_t headerSize;    // 14-17
+	uint32_t width;         // 18-21
+	uint32_t height;        // 22-25
+	uint16_t bitsPerPixel;  // 26-27
+	uint16_t bitDepth;      // 28-29
+};
+#pragma pack()
+
+struct Text2D
+{
+	int32 width;
+	int32 height;
+	uint8* map;
+	int32 linesize;
+
+	~Text2D()
+	{
+		delete[] map;
+		map = nullptr;
+	}
+
+	//bool getBlackAndWhiteBmp(const char* filename) {
+	//	BmpHeader head;
+	//	std::ifstream f(filename, std::ios::binary);
+
+	//	if (!f) {
+	//		throw "Invalid file given";
+	//	}
+
+	//	int headSize = sizeof(BmpHeader);
+	//	f.read((char*)& head, headSize);
+
+	//	if (head.bitsPerPixel != 1) {
+	//		f.close();
+	//		throw "Invalid bitmap loaded";
+	//	}
+
+	//	height = head.height;
+	//	width = head.width;
+
+	//	// Lines are aligned on a 4-byte boundary
+	//	int lineSize = (width / 8 + (width / 8) % 4);
+	//	int fileSize = lineSize * height;
+
+	//	std::vector<uint8> rawFile(fileSize);
+	//	std::vector<std::vector<int32>> img(head.height, std::vector<int32>(width, -1));
+
+	//	// Skip to where the actual image data is
+	//	f.seekg(head.offset);
+
+	//	// Read in all of the file
+	//	f.read((int8*)& rawFile[0], fileSize);
+
+	//	//// Decode the actual boolean values of the pixesl
+	//	//int row;
+	//	//int reverseRow; // Because bitmaps are stored bottom to top for some reason
+	//	//int columnByte;
+	//	//int columnBit;
+	//	//
+	//	//for (row = 0, reverseRow = height - 1; row < height; ++row, --reverseRow) {
+	//	//	columnBit = 0;
+	//	//	for (columnByte = 0; columnByte < ceil((width / 8.0)); ++columnByte) {
+	//	//		int rawPos = (row * lineSize) + columnByte;
+	//	//
+	//	//		for (int k = 7; k >= 0 && columnBit < width; --k, ++columnBit) {
+	//	//			img[reverseRow][columnBit] = (rawFile[rawPos] >> k) & 1;
+	//	//		}
+	//	//	}
+	//	//}
+	//	// Decode the actual boolean values of the pixesl
+	//	int row;
+	//	int columnByte;
+	//	int columnBit;
+
+	//	for (row = 0; row < height; ++row)
+	//	{
+	//		columnBit = 0;
+	//		for (columnByte = 0; columnByte < ceil((width / 8.0)); ++columnByte)
+	//		{
+	//			int rawPos = (row * lineSize) + columnByte;
+
+	//			for (int k = 7; k >= 0 && columnBit < width; --k, ++columnBit)
+	//			{
+	//				img[row][columnBit] = (rawFile[rawPos] >> k) & 1;
+	//			}
+	//		}
+	//	}
+
+	//	f.close();
+	//	image = img;
+	//}
+
+	bool test(const char* filename)
+	{
+		BmpHeader head;
+		std::ifstream f(filename, std::ios::binary);
+		if (!f.good())
+			return false;
+
+		int headsize = sizeof(BmpHeader);
+		f.read((char*)& head, headsize);
+
+		if (head.bitsPerPixel != 1)
+		{
+			f.close();
+			throw "Invalid bitmap loaded";
+		}
+
+		height = head.height;
+		width = head.width;
+
+		int bpp = 1;
+		linesize = ((width * bpp + 31) / 32) * 4;
+		int filesize = linesize * height;
+
+		//std::vector<uint8> data(filesize);
+		map = new uint8[filesize];
+
+		//read color table
+		uint32_t color0;
+		uint32_t color1;
+		uint32_t colortable[2];
+		f.seekg(54);
+		f.read((int8*)& colortable[0], 4);
+		f.read((int8*)& colortable[1], 4);
+		printf("colortable: 0x%06X 0x%06X\n", colortable[0], colortable[1]);
+
+		f.seekg(head.offset);
+		f.read((int8*)& map[0], filesize);
+
+		for (int y = height - 1; y >= 0; y--)
+		{
+			for (int x = 0; x < width; x++)
+			{
+				int pos = y * linesize + x / 8;
+				int bit = 1 << (7 - x % 8);
+				int v = (map[pos] & bit) > 0;
+				printf("%d", v);
+			}
+			printf("\n");
+		}
+
+		f.close();
+		return true;
+	}
+
+	void LoopUp(const int32 x, const int32 y)
+	{
+		
 	}
 };

@@ -4,6 +4,12 @@
 
 int32 Game::run()
 {
+	textTexture = new Text2D();
+	textTexture->test("texture_font_256x128_monochrome.bmp");
+	//textTexture->getBlackAndWhiteBmp("texture_font_256x128_monochrome.bmp");
+
+	//textTexture->displayInfo(2, 2);
+
 	// Load textures
 	objectTexture1 = new Texture();
 	objectTexture2 = new Texture();
@@ -22,12 +28,11 @@ int32 Game::run()
 	object1 = new Mesh();
 	object1->LoadTestCube();
 	object1->texture = objectTexture1;
+	object1->setPos(-2.0f, 2.0f, 5.0f);
 	object2 = new Mesh();
-	object2->LoadObjectFile("axis.obj", false);
+	object2->LoadTestCube();
 	object2->texture = objectTexture2;
-	//mesh1.LoadObjectFile("teapot.obj", false);
-	//mesh1.texture = &objectTexture;
-	//objectMeshes.push_back(mesh1);
+	object2->setPos(2.0f, 2.0f, 5.0f);
 
 	projectionMatrix.MakeProjection(
 		90.0f,
@@ -230,6 +235,22 @@ void Game::DoFrame()
 	win.Gfx().RasterTexturedTriangles(
 		matrixCamera, projectionMatrix, vCamera,
 		objects, nullptr);
+
+	//win.Gfx().DrawChar(100, 100, "0");
+
+	for (int y = textTexture->height - 1; y >= 0; y--)
+	{
+		for (int x = 0; x < textTexture->width; x++)
+		{
+			int pos = y * textTexture->linesize + x / 8;
+			int bit = 1 << (7 - x % 8);
+			int v = (textTexture->map[pos] & bit) > 0;
+			if (v)
+				win.Gfx().DrawPointP(x, y, 0xffffff);
+			else
+				win.Gfx().DrawPointP(x, y, 0xff0000);
+		}
+	}
 
 	// Draw to window
 	win.Gfx().Render();  // last

@@ -1,6 +1,9 @@
 #pragma once
 #include "types.h"
+#include "gui.h"
+#include "text2d.h"
 #include "vector.h"
+#include "texture.h"
 
 #define calculate_scales()\
 float ratio = 1080.0f / nscale_y;\
@@ -10,20 +13,12 @@ scale_y = nscale_y * ratio;\
 class Graphics
 {
 public:
-	Graphics()
-	{
-		textTexture = new Texture();
-		if (!textTexture->LoadTextureFromBMP("texture_font_256x128.bmp"))
-		{
-			// error
-		};
-	}
 	~Graphics()
 	{
-		if (textTexture != nullptr)
+		if (text2D != nullptr)
 		{
-			delete textTexture;
-			textTexture = nullptr;
+			delete text2D;
+			text2D = nullptr;
 		}
 	}
 protected:
@@ -44,11 +39,11 @@ public:
 
 	//void MultiplyMatrixVector(vector3& v1, vector3& v2, matrix4x4& m);  // inline
 	void DrawLineP(int32 x1, int32 y1, int32 x2, int32 y2, uint32 colour);
-	void DrawLine(float x1, float y1, float x2, float y2, uint32 colour);
+	//void DrawLine(float x1, float y1, float x2, float y2, uint32 colour);
 	void DrawTriangleP(int32 x1, int32 y1, int32 x2, int32 y2, int32 x3, int32 y3, const uint32 colour);
-	void DrawTriangle(float x1, float y1, float x2, float y2, float x3, float y3, uint32 colour);
+	//void DrawTriangle(float x1, float y1, float x2, float y2, float x3, float y3, uint32 colour);
 	void FillTriangleP(int32 x1, int32 y1, int32 x2, int32 y2, int32 x3, int32 y3, uint32 colour);
-	void FillTriangle(float x1, float y1, float x2, float y2, float x3, float y3, uint32 colour);
+	//void FillTriangle(float x1, float y1, float x2, float y2, float x3, float y3, uint32 colour);
 	void FillTopFlatTriangleP(int32 x1, int32 y1, int32 x2, int32 y2, int32 x3, int32 y3, uint32 colour);
 	void FillBottomFlatTriangleP(int32 x1, int32 y1, int32 x2, int32 y2, int32 x3, int32 y3, uint32 colour);
 
@@ -67,7 +62,7 @@ public:
 public:
 	void ClearScreen(uint32 colour);
 	void DrawPointP(int32 x, int32 y, uint32 colour);
-	void DrawPoint(float x, float y, uint32 colour);
+	//void DrawPoint(float x, float y, uint32 colour);
 	void DrawRectP(int32 x1, int32 y1, int32 x2, int32 y2, uint32 colour);
 	void DrawRect(float x, float y, float w, float h, uint32 colour);
 
@@ -79,14 +74,28 @@ public:
 		int x3, int y3, float u3, float v3, float w3,
 		const Texture* texture);
 	void RasterTexturedTriangles(
-		const Matrix4x4& matrixCamera,
 		const Matrix4x4& projectionMatrix,
+		const Matrix4x4& matrixCamera,
 		const Vector& vCamera,
-		const std::vector<Mesh*> meshes,
+		const std::vector<Object*> meshes,
 		const uint32* strokeColour = nullptr);
 
 public:
-	Texture* textTexture = nullptr;
-	void DrawText(const Text2D* textTexture, std::string str, int32 posX, const int32 posY);
-	const bool DrawChar(const Text2D* textTexture, const char c, const int32 posX, const int32 posY);
+	// GUI
+	Text2D* text2D;
+	//void DrawText(std::string str, int32 posX, const int32 posY);
+	void DrawText(const GUITextInput guiTextInput);
+	const bool DrawChar(const char c, const int32 posX, const int32 posY);
+
+	void DrawGUILayout(GUILayout* guiLayout)
+	{
+		for (auto r : guiLayout->getRects())
+		{
+			DrawRect(r->x1, r->y1, r->x2, r->y2, r->colour);
+		}
+		for (auto t : guiLayout->getTextInputs())
+		{
+			DrawText(*t);
+		}
+	}
 };

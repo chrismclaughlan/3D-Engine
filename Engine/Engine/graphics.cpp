@@ -1,3 +1,4 @@
+#include "objects.h"
 #include "graphics.h"
 #include <algorithm>
 #include <list>
@@ -36,10 +37,10 @@ void Graphics::DrawLineP(int32 x1, int32 y1, int32 x2, int32 y2, uint32 colour)
 	}
 }
 
-void Graphics::DrawLine(float x1, float y1, float x2, float y2, uint32 colour)
-{
-	DrawLineP(screenToPxX(x1), screenToPxY(y1), screenToPxX(x2), screenToPxY(y2), colour);
-}
+//void Graphics::DrawLine(float x1, float y1, float x2, float y2, uint32 colour)
+//{
+//	DrawLineP(screenToPxX(x1), screenToPxY(y1), screenToPxX(x2), screenToPxY(y2), colour);
+//}
 
 void Graphics::Clamp(int32 min, int32* val, int32 max)
 {
@@ -110,15 +111,15 @@ void Graphics::DrawPointP(int32 x, int32 y, uint32 colour)
 	pixel[x + (y * width)] = colour;
 }
 
-void Graphics::DrawPoint(float x, float y, uint32 colour)
-{
-	int32 xi = screenToPxX(x);
-	int32 yi = screenToPxY(y);
-	Clamp(0, &xi, width - 1);
-	Clamp(0, &yi, height - 1);
-	uint32* pixel = (uint32*)memory;
-	pixel[xi + (yi * width)] = colour;
-}
+//void Graphics::DrawPoint(float x, float y, uint32 colour)
+//{
+//	int32 xi = screenToPxX(x);
+//	int32 yi = screenToPxY(y);
+//	Clamp(0, &xi, width - 1);
+//	Clamp(0, &yi, height - 1);
+//	uint32* pixel = (uint32*)memory;
+//	pixel[xi + (yi * width)] = colour;
+//}
 
 void Graphics::DrawRectP(int32 x1, int32 y1, int32 x2, int32 y2, uint32 colour)
 {
@@ -144,12 +145,12 @@ void Graphics::DrawTriangleP(int32 x1, int32 y1, int32 x2, int32 y2, int32 x3, i
 	DrawLineP(x3, y3, x1, y1, colour);
 }
 
-void Graphics::DrawTriangle(float x1, float y1, float x2, float y2, float x3, float y3, uint32 colour)
-{
-	DrawLine(x1, y1, x2, y2, colour);
-	DrawLine(x2, y2, x3, y3, colour);
-	DrawLine(x3, y3, x1, y1, colour);
-}
+//void Graphics::DrawTriangle(float x1, float y1, float x2, float y2, float x3, float y3, uint32 colour)
+//{
+//	DrawLine(x1, y1, x2, y2, colour);
+//	DrawLine(x2, y2, x3, y3, colour);
+//	DrawLine(x3, y3, x1, y1, colour);
+//}
 
 static void swap(int32* a, int32* b)
 {
@@ -199,18 +200,18 @@ void Graphics::FillTriangleP(int32 x1, int32 y1, int32 x2, int32 y2, int32 x3, i
 	}
 }
 
-void Graphics::FillTriangle(float x1, float y1, float x2, float y2, float x3, float y3, uint32 colour)
-{
-	FillTriangleP(
-		screenToPxX(x1),
-		screenToPxY(y1),
-		screenToPxX(x2),
-		screenToPxY(y2),
-		screenToPxX(x3),
-		screenToPxY(y3),
-		colour
-	);
-}
+//void Graphics::FillTriangle(float x1, float y1, float x2, float y2, float x3, float y3, uint32 colour)
+//{
+//	FillTriangleP(
+//		screenToPxX(x1),
+//		screenToPxY(y1),
+//		screenToPxX(x2),
+//		screenToPxY(y2),
+//		screenToPxX(x3),
+//		screenToPxY(y3),
+//		colour
+//	);
+//}
 
 void Graphics::FillTopFlatTriangleP(int32 x1, int32 y1, int32 x2, int32 y2, int32 x3, int32 y3, uint32 colour)
 {
@@ -451,10 +452,10 @@ void Graphics::DrawTexturedTriangle(int x1, int y1, float u1, float v1, float w1
 }
 
 void Graphics::RasterTexturedTriangles(
-	const Matrix4x4& matrixCamera,
 	const Matrix4x4& projectionMatrix,
+	const Matrix4x4& matrixCamera,
 	const Vector& vCamera,
-	const std::vector<Mesh*> meshes,
+	const std::vector<Object*> meshes,
 	const uint32* strokeColour)
 {
 	// Triangles
@@ -648,27 +649,48 @@ void Graphics::RasterTexturedTriangles(
 	}
 }
 
-void Graphics::DrawText(const Text2D* textTexture, std::string str, int32 posX, const int32 posY)
+//void Graphics::DrawText(std::string str, int32 posX, const int32 posY)
+//{
+//	// assert ...
+//
+//	for (std::string::size_type i = 0; i < str.size(); i++)
+//	{
+//		if (posX >= width)
+//		{
+//			return;
+//		}
+//		DrawChar(str[i], posX, posY);
+//		posX += 14;  // ind_x
+//	}
+//}
+
+void Graphics::DrawText(const GUITextInput guiText)
 {
 	// assert ...
-
-	for (std::string::size_type i = 0; i < str.size(); i++)
+	float fPosX = guiText.x1;
+	float fPosY = guiText.y1;
+	int32 iPosX = screenToPxX(fPosX);
+	int32 iPosY = screenToPxY(fPosY);
+	if (guiText.text == nullptr)
+		return;
+	std::string txt = *guiText.text;
+	for (std::string::size_type i = 0; i < txt.size(); i++)
 	{
-		if (posX >= width)
+		if (iPosX >= width)
 		{
 			return;
 		}
-		DrawChar(textTexture, str[i], posX, posY);
-		posX += 14;  // ind_x
+		DrawChar(txt[i], iPosX, iPosY);
+		iPosX += 14;  // ind_x
 	}
 }
 
-const bool Graphics::DrawChar(const Text2D* textTexture, const char c, const int32 posX, const int32 posY)
+const bool Graphics::DrawChar(const char c, const int32 posX, const int32 posY)
 {
 	// assert ...
 
 	// Check acceptable character
-	int32 charIndex = textTexture->acceptedChars.find(c);
+	int32 charIndex = text2D->acceptedChars.find(c);
 	if (charIndex == std::string::npos)
 	{
 		return false;
@@ -683,7 +705,7 @@ const bool Graphics::DrawChar(const Text2D* textTexture, const char c, const int
 	const int32 size_x = 14;
 	const int32 size_y = 18;
 
-	const int32 top = (textTexture->height - 1) - (size_y * ind_y);  // max textTexture->height - 1; min 0
+	const int32 top = (text2D->height - 1) - (size_y * ind_y);  // max textTexture->height - 1; min 0
 	const int32 bottom = top - size_y;  // min 0  (clamp etc.)
 	const int32 left = size_x * ind_x;  // min 0; max textTexture->width - size_x
 	const int32 right = left + size_x;  // max textTexture->width
@@ -694,11 +716,11 @@ const bool Graphics::DrawChar(const Text2D* textTexture, const char c, const int
 	{
 		for (int x = left; x < right; x++)
 		{
-			int pos = y * textTexture->linesize + x / 8;
+			int pos = y * text2D->linesize + x / 8;
 			int bit = 1 << (7 - x % 8);
-			int v = (textTexture->map[pos] & bit) > 0;
+			int v = (text2D->map[pos] & bit) > 0;
 			if (v)
-				DrawPointP(posX + (x - left), posY + (y - bottom), textTexture->colortable[1]);
+				DrawPointP(posX + (x - left), posY + (y - bottom), text2D->colortable[1]);
 			//else  // draw background
 				//DrawPointP(posX + (x - left), posY + (y - bottom), textTexture->colortable[0]);
 		}

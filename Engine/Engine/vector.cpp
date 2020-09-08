@@ -1,4 +1,5 @@
 #include "vector.h"
+#include "objects.h"
 #include <assert.h>
 
 #define SHOW_CLIPPING false

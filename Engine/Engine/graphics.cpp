@@ -649,34 +649,44 @@ void Graphics::RasterTexturedTriangles(
 	}
 }
 
-//void Graphics::DrawText(std::string str, int32 posX, const int32 posY)
-//{
-//	// assert ...
-//
-//	for (std::string::size_type i = 0; i < str.size(); i++)
-//	{
-//		if (posX >= width)
-//		{
-//			return;
-//		}
-//		DrawChar(str[i], posX, posY);
-//		posX += 14;  // ind_x
-//	}
-//}
-
-void Graphics::DrawText(const GUITextInput guiText)
+void Graphics::DrawText(std::string str, int32 posX, const int32 posY)
 {
 	// assert ...
-	float fPosX = guiText.x1;
-	float fPosY = guiText.y1;
+
+	for (std::string::size_type i = 0; i < str.size(); i++)
+	{
+		if (posX >= width)
+		{
+			return;
+		}
+		DrawChar(str[i], posX, posY);
+		posX += 14;  // ind_x
+	}
+}
+
+void Graphics::DrawText(const GUIText guiText)
+{
+	// assert ...
+	float fPosX = guiText.x;
+	float fPosY = guiText.y;
+	float fMaxX = guiText.max_x;
+	float fMaxY = guiText.max_y;
 	int32 iPosX = screenToPxX(fPosX);
 	int32 iPosY = screenToPxY(fPosY);
-	if (guiText.text == nullptr)
+	int32 iMaxX = screenToPxX(fMaxX);
+	int32 iMaxY = screenToPxY(fMaxY);
+
+	std::string txt;
+	if (guiText.pText == nullptr && guiText.sText.empty())
 		return;
-	std::string txt = *guiText.text;
+	else if (guiText.pText == nullptr)
+		txt = guiText.sText;
+	else
+		txt = guiText.sText + *guiText.pText;
+
 	for (std::string::size_type i = 0; i < txt.size(); i++)
 	{
-		if (iPosX >= width)
+		if (iPosX >= width || iPosX >= iMaxX || iPosY <= iMaxY)
 		{
 			return;
 		}

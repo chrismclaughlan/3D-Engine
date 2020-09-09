@@ -6,11 +6,6 @@
 
 int32 Game::run()
 {
-	GUITextInput* guiTopBarTextInput = new GUITextInput(-1.0f, 0.9f, 1.0f, 1.0f, nullptr, 0x00ff00);
-	GUIRect* guiTopBar = new GUIRect(-1.0f, 0.9f, 1.0f, 1.0f, 0x0000ff, guiTopBarTextInput);
-	guiCurrent.addRect(guiTopBar);
-	guiCurrent.addTextInput(guiTopBarTextInput);
-
 	win.Gfx().text2D = new Text2D();
 	win.Gfx().text2D->LoadTextMapFromBMP("texture_font_252x108_monochrome.bmp");
 
@@ -46,6 +41,10 @@ int32 Game::run()
 
 	while (Window::processMessages())
 	{
+		// Menu loop
+		
+
+
 		HandleInput();
 		DoFrame();
 	}
@@ -55,86 +54,76 @@ int32 Game::run()
 
 void Game::HandleInput()
 {
-	while (!win.keyboard.keyIsEmpty())
-	{
-		const auto event = win.keyboard.readKey();
-		switch (event.getCode())
-		{
-		case VK_ESCAPE:
-		{
-			for (auto r : guiCurrent.getRects())
-			{
-				if (r->guiTextInput != nullptr)
-				{
-					userTextBuffer->clear();
-					r->guiTextInput->text = nullptr;
-					enableWriting = false;
-				}
-			}
-
-			player.resetPosition();
-			player.resetCamera();
-		} break;
-		case 0x57:  // 'w'
-		{
-			if (event.isPressed())
-				player.moveForward();
-			else if (player.isMovingForward() && event.isReleased())
-				player.moveForward(false);
-		} break;
-		case 0x53:  // 's'
-		{
-			if (event.isPressed())
-				player.moveBackward();
-			else if (player.isMovingBackward() && event.isReleased())
-				player.moveBackward(false);
-		} break;
-		case 0x41:  // 'a'
-		{
-			if (event.isPressed())
-				player.moveLeft();
-			else if (player.isMovingLeft() && event.isReleased())
-				player.moveLeft(false);
-		} break;
-		case 0x44:  // 'd'
-		{
-			if (event.isPressed())
-				player.moveRight();
-			else if (player.isMovingRight() && event.isReleased())
-				player.moveRight(false);
-		} break;
-		case VK_SPACE:
-		{
-			if (event.isPressed())
-				player.moveUpward();
-			else if (player.isMovingUpward() && event.isReleased())
-				player.moveUpward(false);
-		} break;
-		case 16:  // 0x16 (shift key)
-		{
-			if (event.isPressed())
-				player.moveDownward();
-			else if (player.isMovingDownward() && event.isReleased())
-				player.moveDownward(false);
-		} break;
-		case VK_UP:
-		{
-			object1->y += 0.1f;
-		} break;
-		case VK_DOWN:
-		{
-			object1->y -= 0.1f;
-		} break;
-		case VK_LEFT:
-		{
-			object1->x += 0.1f;
-		} break;
-		case VK_RIGHT:
-		{
-			object1->x -= 0.1f;
-		} break;
-		}
-	}
+	//while (!win.keyboard.keyIsEmpty())
+	//{
+	//	const auto event = win.keyboard.readKey();
+	//	switch (event.getCode())
+	//	{
+	//	case VK_ESCAPE:
+	//	{
+	//		player.resetPosition();
+	//		player.resetCamera();
+	//	} break;
+	//	case 0x57:  // 'w'
+	//	{
+	//		if (event.isPressed())
+	//			player.moveForward();
+	//		else if (player.isMovingForward() && event.isReleased())
+	//			player.moveForward(false);
+	//	} break;
+	//	case 0x53:  // 's'
+	//	{
+	//		if (event.isPressed())
+	//			player.moveBackward();
+	//		else if (player.isMovingBackward() && event.isReleased())
+	//			player.moveBackward(false);
+	//	} break;
+	//	case 0x41:  // 'a'
+	//	{
+	//		if (event.isPressed())
+	//			player.moveLeft();
+	//		else if (player.isMovingLeft() && event.isReleased())
+	//			player.moveLeft(false);
+	//	} break;
+	//	case 0x44:  // 'd'
+	//	{
+	//		if (event.isPressed())
+	//			player.moveRight();
+	//		else if (player.isMovingRight() && event.isReleased())
+	//			player.moveRight(false);
+	//	} break;
+	//	case VK_SPACE:
+	//	{
+	//		if (event.isPressed())
+	//			player.moveUpward();
+	//		else if (player.isMovingUpward() && event.isReleased())
+	//			player.moveUpward(false);
+	//	} break;
+	//	case 16:  // 0x16 (shift key)
+	//	{
+	//		if (event.isPressed())
+	//			player.moveDownward();
+	//		else if (player.isMovingDownward() && event.isReleased())
+	//			player.moveDownward(false);
+	//	} break;
+	//	case VK_UP:
+	//	{
+	//		object1->y += 0.1f;
+	//	} break;
+	//	case VK_DOWN:
+	//	{
+	//		object1->y -= 0.1f;
+	//	} break;
+	//	case VK_LEFT:
+	//	{
+	//		object1->x += 0.1f;
+	//	} break;
+	//	case VK_RIGHT:
+	//	{
+	//		object1->x -= 0.1f;
+	//	} break;
+	//	}
+	//}
 
 	while (!win.mouse.isEmpty())
 	{
@@ -143,6 +132,11 @@ void Game::HandleInput()
 		{
 		case Mouse::Event::Type::Move:
 		{
+			int32 iX = event.getX();
+			int32 iY = event.getY();
+			float fX = win.Gfx().pxToScreenX(iX);
+			float fY = win.Gfx().pxToScreenY(iY);
+			CheckMouseMoveRect(fX, fY, guiChat.getRect());
 //#if DISPLAY_DEBUG_CONSOLE && DISPLAY_MOUSE_COORDS
 //			std::cout << event.getX() << " " << event.getY() << "\n";
 //#endif
@@ -155,17 +149,8 @@ void Game::HandleInput()
 			float fX = win.Gfx().pxToScreenX(iX);
 			float fY = win.Gfx().pxToScreenY(iY);
 			std::cout << "Lpressed at x = " << fX << " y = " << fY << "\n";
-			for (auto r : guiCurrent.getRects())
-			{
-				if (r->isAt(fX, fY))
-				{
-					if (r->guiTextInput != nullptr)
-					{
-						r->guiTextInput->text = userTextBuffer;
-						enableWriting = true;
-					}
-				}
-			}
+			enableWriting = false;
+			CheckLMousePressedRect(fX, fY, guiChat.getRect());
 		} break;
 		case Mouse::Event::Type::LReleased:
 		{
@@ -178,13 +163,9 @@ void Game::HandleInput()
 		} break;
 		case Mouse::Event::Type::WheelDown:
 		{
-			fTheta += 0.05f;
-			std::cout << "fTheta = " << fTheta << std::endl;
 		} break;
 		case Mouse::Event::Type::WheelUp:
 		{
-			fTheta -= 0.05f;
-			std::cout << "fTheta = " << fTheta << std::endl;
 		} break;
 		}
 	}
@@ -195,6 +176,20 @@ void Game::HandleInput()
 
 		switch (e)
 		{
+			case VK_ESCAPE:
+			{
+				CheckEscapeRect(guiChat.getRect());
+			} break;
+			case VK_RETURN:
+			{
+				std::string* s = nullptr;
+				if (CheckReturnRect(guiChat.getRect(), s))
+				{
+					std::cout << "s : " << *s << "\n";
+					delete s;     // temp : do something with string
+					s = nullptr;
+				}
+			} break;
 			case VK_BACK:
 			{
 				if (!enableWriting)
@@ -255,9 +250,10 @@ void Game::DoFrame()
 		player.getMCamera(), player.getVCamera(),
 		objects);
 
-	//win.Gfx().DrawText(userTextBuffer, 100, 100);
+	win.Gfx().DrawText(*userTextBuffer, 100, 100);  // test
 
-	win.Gfx().DrawGUILayout(&guiCurrent);
+	win.Gfx().DrawGUIChat(&guiChat);
+	win.Gfx().DrawGUIForm(&guiMainMenu);
 
 	/* ---------- Draw to window ---------- */
 

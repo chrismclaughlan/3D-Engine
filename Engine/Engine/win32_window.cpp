@@ -364,3 +364,7 @@ LRESULT Window::HandleMessage
 
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
+
+
+/* --------------------------------------------------------- */
+

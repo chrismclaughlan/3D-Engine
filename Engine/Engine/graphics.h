@@ -83,17 +83,27 @@ public:
 public:
 	// GUI
 	Text2D* text2D;
-	//void DrawText(std::string str, int32 posX, const int32 posY);
-	void DrawText(const GUITextInput guiTextInput);
+	void DrawText(std::string str, int32 posX, const int32 posY);
+	void DrawText(const GUIText guiTextInput);
 	const bool DrawChar(const char c, const int32 posX, const int32 posY);
 
-	void DrawGUILayout(GUILayout* guiLayout)
+	void DrawGUIChat(GUIChat* guiChat)
 	{
-		for (auto r : guiLayout->getRects())
+		GUIRect* r = guiChat->getRect();
+		DrawRect(r->x1, r->y1, r->x2, r->y2, r->colourPallete[r->state]);
+		if (r->guiTextInput != nullptr)
 		{
-			DrawRect(r->x1, r->y1, r->x2, r->y2, r->colour);
+			DrawText(*r->guiTextInput);
 		}
-		for (auto t : guiLayout->getTextInputs())
+	}
+	void DrawGUIForm(GUIForm* guiForm)
+	{
+		GUIRect* r = guiForm->getRect();
+		DrawRect(r->x1, r->y1, r->x2, r->y2, r->colourPallete[r->state]);
+
+
+		std::vector<GUIText*> vGuiText = guiForm->getVGuiText();
+		for (auto t : vGuiText)
 		{
 			DrawText(*t);
 		}

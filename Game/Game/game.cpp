@@ -6,6 +6,13 @@
 
 int32 Game::run()
 {
+	// INPROGRESS
+	gameState.push(&Game::MainMenu);
+	void (Game:: * x)();
+	x = &Game::MainMenu;
+	(this->*x)();
+	// IN PROGRESS
+
 	win.Gfx().text2D = new Text2D();
 	win.Gfx().text2D->LoadTextMapFromBMP("texture_font_252x108_monochrome.bmp");
 
@@ -41,10 +48,6 @@ int32 Game::run()
 
 	while (Window::processMessages())
 	{
-		// Menu loop
-		
-
-
 		HandleInput();
 		DoFrame();
 	}
@@ -137,6 +140,10 @@ void Game::HandleInput()
 			float fX = win.Gfx().pxToScreenX(iX);
 			float fY = win.Gfx().pxToScreenY(iY);
 			CheckMouseMoveRect(fX, fY, guiChat.getRect());
+			for (auto t : guiMainMenu.getVGuiText())
+			{
+				CheckMouseMoveText(fX, fY, t);
+			}
 //#if DISPLAY_DEBUG_CONSOLE && DISPLAY_MOUSE_COORDS
 //			std::cout << event.getX() << " " << event.getY() << "\n";
 //#endif
@@ -151,6 +158,10 @@ void Game::HandleInput()
 			std::cout << "Lpressed at x = " << fX << " y = " << fY << "\n";
 			enableWriting = false;
 			CheckLMousePressedRect(fX, fY, guiChat.getRect());
+			for (auto t : guiMainMenu.getVGuiText())
+			{
+				CheckMousePressedText(fX, fY, t);
+			}
 		} break;
 		case Mouse::Event::Type::LReleased:
 		{
@@ -250,7 +261,7 @@ void Game::DoFrame()
 		player.getMCamera(), player.getVCamera(),
 		objects);
 
-	win.Gfx().DrawText(*userTextBuffer, 100, 100);  // test
+	win.Gfx().DrawText(*userTextBuffer, 100, 100, 0xffffff);  // test
 
 	win.Gfx().DrawGUIChat(&guiChat);
 	win.Gfx().DrawGUIForm(&guiMainMenu);

@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="exception.cpp" />
     <ClCompile Include="graphics.cpp" />
+    <ClCompile Include="gui.cpp" />
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="vector.cpp" />

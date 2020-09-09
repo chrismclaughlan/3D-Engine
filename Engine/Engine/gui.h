@@ -1,8 +1,10 @@
 #pragma once
 #include "types.h"
+#include "graphics.h"
 #include <string>
 #include <vector>
 
+class Graphics;
 struct GUIText;
 
 #define GUI_STATE_INACTIVE 0
@@ -17,7 +19,7 @@ struct GUIRect
 	float x2;
 	float y2;
 	uint32 colourPallete[3];
-	int32 state = 0;  // 1 = hover, 2 = active
+	int32 state = GUI_STATE_INACTIVE;  // enum?
 
 	GUIRect(float x1, float y1, float x2, float y2, uint32 colours[3], GUIText* guiTextInput = nullptr)
 		: x1(x1), y1(y1), x2(x2), y2(y2), guiTextInput(guiTextInput)
@@ -44,36 +46,47 @@ struct GUIRect
 
 struct GUIText
 {
-	// TODO start drawing from top-left
-	float x;
-	float y;
-	// TODO use these for text wrap
-	float max_x;
-	float max_y;
-	bool textWrap = false;
-	bool drawBackground = false;
-	uint32 cText;
-	uint32 cBackground;
+	float x1;
+	float y1;
+	float x2 = 1.0f;
+	float y2 = 1.0f;
 	std::string sText;
 	std::string* pText = nullptr;
-	bool canModify = false;
+	uint32 colourPallete[3];
+	int32 state = GUI_STATE_INACTIVE;  // enum?
+	uint32 cBackground;
+	bool drawBackground;
 
-	GUIText(std::string sText, std::string* pText, const uint32 cText, const float x, const float y,
-		const bool canModify = false,
-		const float max_x = 1.0f, const float max_y = -1.0f, const bool textWrap = false,
-		const bool drawBackground = false, const uint32 cBackground = 0x000000)
-		: x(x), y(y), canModify(canModify), max_x(max_x), max_y(max_y), sText(sText), pText(pText), cText(cText), 
-		textWrap(textWrap), cBackground(cBackground), drawBackground(drawBackground) 
-	{}
+	GUIText(const std::string sText, const uint32 colours[3], 
+		const float x1, const float y1,
+		const float x2 = 1.0f, const float y2 = 1.0f,
+		const bool drawBackground = false,
+		const uint32 cBackground = 0x000000)
+		: sText(sText), x1(x1), y1(y1), x2(x2), y2(y2),
+		drawBackground(drawBackground), cBackground(cBackground)
+	{
+		colourPallete[0] = colours[0];
+		colourPallete[1] = colours[1];
+		colourPallete[2] = colours[2];
+	}
 
-	//const float[4] getBoundingBox()
-	//{
-	//	float bb[4];
-	//	bb[0] = x;
-	//	bb[1] = y;
-	//	bb[2] = x + (sText.size() * 14)
-	//}
+	const bool isAt(const float x, const float y, Graphics* gfx);
 };
+
+//struct GUITextInput : GUIText
+//{
+//	// TODO use these for text wrap
+//	//bool textWrap = false;
+//	std::string* pText = nullptr;
+//
+//	GUITextInput(const std::string sText, const uint32 cText, 
+//		const float x1, const float y1,
+//		const float x2, const float y2,
+//		const bool drawBackground = false,
+//		const uint32 cBackground = 0x000000)
+//		: GUIText(sText, cText, x1, y1, x2, y2, drawBackground, cBackground)
+//	{}
+//};
 
 #include <iostream>
 
@@ -106,10 +119,11 @@ private:
 public:
 	GUIChat()
 	{
-		const float x1 = -1.0f, y1 = -1.0f, x2 = 0.5f, y2 = -0.9f;
-		uint32 colours[3] = { 0xaaaaaa, 0x444444, 0x888888 };
-		guiTextInput = new GUIText("Chat : ", nullptr, 0xffffff, x1, y1, false, x2);
-		guiRect = new GUIRect(x1, y1, x2, y2, colours, guiTextInput);
+		const float x1 = 0.0f, y1 = 0.0f, x2 = 0.75f, y2 = 0.05f;
+		uint32 tColours[3] = { 0xff0000, 0x00ff00, 0x0000ff };
+		uint32 rColours[3] = { 0xaaaaaa, 0x444444, 0x888888 };
+		guiTextInput = new GUIText("Chat : ", tColours, x1, y1, x2, y2, false);
+		guiRect = new GUIRect(x1, y1, x2, y2, rColours, guiTextInput);
 	}
 
 	~GUIChat()
@@ -139,11 +153,12 @@ class GUIFormMainMenu : public GUIForm
 public:
 	GUIFormMainMenu()
 	{
-		uint32 colours[3] = { 0xaaaaaa, 0x444444, 0x888888 };
-		guiRect = new GUIRect(-0.2f, -0.1f, 0.2f, 0.1f, colours, nullptr);
+		uint32 tColours[3] = { 0xdddddd, 0xf362d4, 0xffffff };
+		uint32 rColours[3] = { 0xaaaaaa, 0x444444, 0x888888 };
+		guiRect = new GUIRect(0.4f, 0.45f, 0.6f, 0.55f, rColours, nullptr);
 
-		GUIText* item1 = new GUIText("Start", nullptr, 0xff0000, -0.1f, 0.0f);
-		GUIText* item2 = new GUIText("Quit", nullptr, 0xff0000, -0.1f, -0.1f);
+		GUIText* item1 = new GUIText("Start", tColours, 0.45f, 0.5f);
+		GUIText* item2 = new GUIText("Quit", tColours, 0.45f, 0.45f);
 		vGuiText.push_back(item1);
 		vGuiText.push_back(item2);
 	}
@@ -165,25 +180,9 @@ public:
 	void tRightJustify();
 
 	// Centers text with center of boundary
-	void tCenterJustify()
-	{
-		for (auto t : vGuiText)
-		{
-			t->x = t->x;
-			t->y = t->y;
-		}
-	}
+	void tCenterJustify();
 
 	// Contains the text within the rect boundaries
 	// do we need this?
-	void containText()
-	{
-		for (auto t : vGuiText)
-		{
-			t->x = t->x;
-			t->y = t->y;
-			t->max_x = t->max_x;
-			t->max_y = t->max_y;
-		}
-	}
+	void containText();
 };

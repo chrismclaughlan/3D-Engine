@@ -37,6 +37,9 @@
     <ClCompile Include="vector.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="gui.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="defines.h" />

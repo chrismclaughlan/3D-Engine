@@ -70,28 +70,28 @@ inline void Graphics::ScaleY(float* val)
 	*val *= height / scale_y;
 }
 
-// -1.0f <> 1.0f
-float Graphics::pxToScreenX(int32 x)
+// 0.0f <> 1.0f
+float Graphics::pxToScreenX(const int32 x)
 {
-	return ((2.0f * x) / width) - 1.0f;
+	return (float)x / (float)width;
 }
 
-// -1.0f <> 1.0f
-float Graphics::pxToScreenY(int32 y)
+// 0.0f <> 1.0f
+float Graphics::pxToScreenY(const int32 y)
 {
-	return ((2.0f * y) / height) - 1.0f;
+	return (float)y / (float)height;
 }
 
 // 0 <> screenWidth
-int32 Graphics::screenToPxX(float x)
+int32 Graphics::screenToPxX(const float x)
 {
-	return (x + 1.0f) * (width / 2.0f);
+	return (int32)(x * width);
 }
 
 // 0 <> screenHeight
-int32 Graphics::screenToPxY(float y)
+int32 Graphics::screenToPxY(const float y)
 {
-	return (y + 1.0f) * (height / 2.0f);
+	return (int32)(y* height);
 }
 
 void Graphics::ClearScreen(uint32 colour)
@@ -649,7 +649,7 @@ void Graphics::RasterTexturedTriangles(
 	}
 }
 
-void Graphics::DrawText(std::string str, int32 posX, const int32 posY)
+void Graphics::DrawText(std::string str, int32 posX, const int32 posY, const uint32 colour)
 {
 	// assert ...
 
@@ -659,7 +659,7 @@ void Graphics::DrawText(std::string str, int32 posX, const int32 posY)
 		{
 			return;
 		}
-		DrawChar(str[i], posX, posY);
+		DrawChar(str[i], posX, posY, colour);
 		posX += 14;  // ind_x
 	}
 }
@@ -667,10 +667,10 @@ void Graphics::DrawText(std::string str, int32 posX, const int32 posY)
 void Graphics::DrawText(const GUIText guiText)
 {
 	// assert ...
-	float fPosX = guiText.x;
-	float fPosY = guiText.y;
-	float fMaxX = guiText.max_x;
-	float fMaxY = guiText.max_y;
+	float fPosX = guiText.x1;
+	float fPosY = guiText.y1;
+	float fMaxX = guiText.x2;
+	float fMaxY = guiText.y2;
 	int32 iPosX = screenToPxX(fPosX);
 	int32 iPosY = screenToPxY(fPosY);
 	int32 iMaxX = screenToPxX(fMaxX);
@@ -685,15 +685,18 @@ void Graphics::DrawText(const GUIText guiText)
 	{
 		txt = guiText.sText;
 
+		std::string sTrailing = "_";
+		std::string fill = ".. ";
+
 		// Cut off beginning of pText if it flows off end of rect
-		if ((guiText.sText.size() * 14) + (guiText.pText->size() * 14) >= iMaxX - iPosX)
+		if ((guiText.sText.size() * 14) + (guiText.pText->size() * 14) + (sTrailing.size() * 14) >= iMaxX - iPosX)
 		{
 			int32 num_chars_that_fit = ((iMaxX - iPosX) / 14) - guiText.sText.size();
 			//int32 difference = guiText.pText->size() - num_chars_that_fit;
 			
-			std::string fill = ".. ";
 			txt += fill;
 			num_chars_that_fit -= fill.size();
+			num_chars_that_fit -= sTrailing.size();
 			
 			txt += guiText.pText->substr(guiText.pText->size() - num_chars_that_fit, num_chars_that_fit);
 		}
@@ -701,6 +704,8 @@ void Graphics::DrawText(const GUIText guiText)
 		{
 			txt += *guiText.pText;
 		}
+
+		txt += sTrailing;
 	}
 
 	for (std::string::size_type i = 0; i < txt.size(); i++)
@@ -710,12 +715,12 @@ void Graphics::DrawText(const GUIText guiText)
 			return;
 		}
 
-		DrawChar(txt[i], iPosX, iPosY);
+		DrawChar(txt[i], iPosX, iPosY, guiText.colourPallete[guiText.state]);
 		iPosX += 14;  // ind_x
 	}
 }
 
-const bool Graphics::DrawChar(const char c, const int32 posX, const int32 posY)
+const bool Graphics::DrawChar(const char c, const int32 posX, const int32 posY, const uint32 colour)
 {
 	// assert ...
 
@@ -750,11 +755,35 @@ const bool Graphics::DrawChar(const char c, const int32 posX, const int32 posY)
 			int bit = 1 << (7 - x % 8);
 			int v = (text2D->map[pos] & bit) > 0;
 			if (v)
-				DrawPointP(posX + (x - left), posY + (y - bottom), text2D->colortable[1]);
+				DrawPointP(posX + (x - left), posY + (y - bottom), colour);
+				//DrawPointP(posX + (x - left), posY + (y - bottom), text2D->colortable[1]);
 			//else  // draw background
 				//DrawPointP(posX + (x - left), posY + (y - bottom), textTexture->colortable[0]);
 		}
 	}
 
 	return true;
+}
+
+void Graphics::DrawGUIChat(GUIChat* guiChat)
+{
+	GUIRect* r = guiChat->getRect();
+	DrawRect(r->x1, r->y1, r->x2, r->y2, r->colourPallete[r->state]);
+	if (r->guiTextInput != nullptr)
+	{
+		DrawText(*r->guiTextInput);
+	}
+}
+
+void Graphics::DrawGUIForm(GUIForm* guiForm)
+{
+	GUIRect* r = guiForm->getRect();
+	DrawRect(r->x1, r->y1, r->x2, r->y2, r->colourPallete[r->state]);
+
+
+	std::vector<GUIText*> vGuiText = guiForm->getVGuiText();
+	for (auto t : vGuiText)
+	{
+		DrawText(*t);
+	}
 }

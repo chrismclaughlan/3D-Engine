@@ -10,6 +10,10 @@ float ratio = 1080.0f / nscale_y;\
 scale_x = nscale_x * ratio;\
 scale_y = nscale_y * ratio;\
 
+struct GUIChat;
+struct GUIText;
+struct GUIForm;
+
 class Graphics
 {
 public:
@@ -54,10 +58,10 @@ public:
 	inline void ScaleX(float*);
 	inline void ScaleY(float*);
 
-	float pxToScreenX(int32 a);  // inline
-	float pxToScreenY(int32 a);  // inline
-	int32 screenToPxX(float a);  // inline
-	int32 screenToPxY(float a);  // inline
+	float pxToScreenX(const int32 a);  // inline
+	float pxToScreenY(const int32 a);  // inline
+	int32 screenToPxX(const float a);  // inline
+	int32 screenToPxY(const float a);  // inline
 
 public:
 	void ClearScreen(uint32 colour);
@@ -83,29 +87,10 @@ public:
 public:
 	// GUI
 	Text2D* text2D;
-	void DrawText(std::string str, int32 posX, const int32 posY);
-	void DrawText(const GUIText guiTextInput);
-	const bool DrawChar(const char c, const int32 posX, const int32 posY);
+	void DrawText(std::string str, int32 posX, const int32 posY, const uint32 colour);
+	void DrawText(const GUIText guiText);
+	const bool DrawChar(const char c, const int32 posX, const int32 posY, const uint32 colour);
 
-	void DrawGUIChat(GUIChat* guiChat)
-	{
-		GUIRect* r = guiChat->getRect();
-		DrawRect(r->x1, r->y1, r->x2, r->y2, r->colourPallete[r->state]);
-		if (r->guiTextInput != nullptr)
-		{
-			DrawText(*r->guiTextInput);
-		}
-	}
-	void DrawGUIForm(GUIForm* guiForm)
-	{
-		GUIRect* r = guiForm->getRect();
-		DrawRect(r->x1, r->y1, r->x2, r->y2, r->colourPallete[r->state]);
-
-
-		std::vector<GUIText*> vGuiText = guiForm->getVGuiText();
-		for (auto t : vGuiText)
-		{
-			DrawText(*t);
-		}
-	}
+	void DrawGUIChat(GUIChat* guiChat);
+	void DrawGUIForm(GUIForm* guiForm);
 };

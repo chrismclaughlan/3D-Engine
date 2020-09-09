@@ -4,11 +4,21 @@
 #include "Engine\vector.h"
 #include "Engine\gui.h"
 #include "player.h"
+#include <stack>
 
 class Player;
 
 class Game
 {
+private:
+	std::stack<void (Game::*)(void)> gameState;
+
+public:
+	void MainMenu()
+	{
+		std::cout << "MainMenu\n";
+	}
+
 private:
 	Window win;
 
@@ -91,7 +101,8 @@ private:
 		}
 	}
 
-	void CheckMouseMoveRect(const float x, const float y, GUIRect* r)
+	void CheckMouseMoveRect(const float x, const float y, 
+		GUIRect* r)
 	{
 		if (r->state != GUI_STATE_ACTIVE)
 		{
@@ -106,7 +117,8 @@ private:
 		}
 	}
 
-	void CheckLMousePressedRect(const float x, const float y, GUIRect* r)
+	void CheckLMousePressedRect(const float x, const float y, 
+		GUIRect* r)
 	{
 		if (r->guiTextInput != nullptr)
 		{
@@ -129,6 +141,29 @@ private:
 				r->state = GUI_STATE_INACTIVE;
 				r->guiTextInput->pText = nullptr;
 			}
+		}
+	}
+
+	void CheckMouseMoveText(const float x, const float y, 
+		GUIText* t)
+	{
+		if (t->isAt(x, y, &win.Gfx()))
+		{
+			if (t->state != GUI_STATE_ACTIVE)
+				t->state = GUI_STATE_HOVER;
+		}
+		else
+		{
+			t->state = GUI_STATE_INACTIVE;
+		}
+	}
+
+	void CheckMousePressedText(const float x, const float y, 
+		GUIText* t)
+	{
+		if (t->isAt(x, y, &win.Gfx()))
+		{
+			t->state = GUI_STATE_ACTIVE;
 		}
 	}
 };

@@ -682,14 +682,34 @@ void Graphics::DrawText(const GUIText guiText)
 	else if (guiText.pText == nullptr)
 		txt = guiText.sText;
 	else
-		txt = guiText.sText + *guiText.pText;
+	{
+		txt = guiText.sText;
+
+		// Cut off beginning of pText if it flows off end of rect
+		if ((guiText.sText.size() * 14) + (guiText.pText->size() * 14) >= iMaxX - iPosX)
+		{
+			int32 num_chars_that_fit = ((iMaxX - iPosX) / 14) - guiText.sText.size();
+			//int32 difference = guiText.pText->size() - num_chars_that_fit;
+			
+			std::string fill = ".. ";
+			txt += fill;
+			num_chars_that_fit -= fill.size();
+			
+			txt += guiText.pText->substr(guiText.pText->size() - num_chars_that_fit, num_chars_that_fit);
+		}
+		else
+		{
+			txt += *guiText.pText;
+		}
+	}
 
 	for (std::string::size_type i = 0; i < txt.size(); i++)
 	{
-		if (iPosX >= width || iPosX >= iMaxX || iPosY <= iMaxY)
+		if (iPosX >= width)  // || iPosY <= iMaxY)
 		{
 			return;
 		}
+
 		DrawChar(txt[i], iPosX, iPosY);
 		iPosX += 14;  // ind_x
 	}

@@ -65,6 +65,14 @@ struct GUIText
 		: x(x), y(y), canModify(canModify), max_x(max_x), max_y(max_y), sText(sText), pText(pText), cText(cText), 
 		textWrap(textWrap), cBackground(cBackground), drawBackground(drawBackground) 
 	{}
+
+	//const float[4] getBoundingBox()
+	//{
+	//	float bb[4];
+	//	bb[0] = x;
+	//	bb[1] = y;
+	//	bb[2] = x + (sText.size() * 14)
+	//}
 };
 
 #include <iostream>
@@ -98,9 +106,10 @@ private:
 public:
 	GUIChat()
 	{
+		const float x1 = -1.0f, y1 = -1.0f, x2 = 0.5f, y2 = -0.9f;
 		uint32 colours[3] = { 0xaaaaaa, 0x444444, 0x888888 };
-		guiTextInput = new GUIText("Chat : ", nullptr, 0xffffff, -0.9f, 0.8f);
-		guiRect = new GUIRect(-0.9f, 0.8f, 0.9f, 0.9f, colours, guiTextInput);
+		guiTextInput = new GUIText("Chat : ", nullptr, 0xffffff, x1, y1, false, x2);
+		guiRect = new GUIRect(x1, y1, x2, y2, colours, guiTextInput);
 	}
 
 	~GUIChat()
@@ -133,8 +142,10 @@ public:
 		uint32 colours[3] = { 0xaaaaaa, 0x444444, 0x888888 };
 		guiRect = new GUIRect(-0.2f, -0.1f, 0.2f, 0.1f, colours, nullptr);
 
-		GUIText* item1 = new GUIText("Quit", nullptr, 0xff0000, -0.1f, 0.0f);
+		GUIText* item1 = new GUIText("Start", nullptr, 0xff0000, -0.1f, 0.0f);
+		GUIText* item2 = new GUIText("Quit", nullptr, 0xff0000, -0.1f, -0.1f);
 		vGuiText.push_back(item1);
+		vGuiText.push_back(item2);
 	}
 
 	~GUIFormMainMenu()

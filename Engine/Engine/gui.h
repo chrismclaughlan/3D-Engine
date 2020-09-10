@@ -142,10 +142,33 @@ protected:
 	std::vector<GUIText*> vGuiText;
 
 public:
+	~GUIForm()
+	{
+		for (auto t : vGuiText)
+		{
+			if (t != nullptr)
+			{
+				delete t;
+				t = nullptr;
+			}
+		}
+		vGuiText.clear();
+	}
+
 	std::vector<GUIText*> getVGuiText()
 	{
 		return vGuiText;
 	}
+
+	void tLeftJustify();
+	void tRightJustify();
+
+	// Centers text with center of boundary
+	void tCenterJustify();
+
+	// Contains the text within the rect boundaries
+	// do we need this?
+	void containText();
 };
 
 class GUIFormMainMenu : public GUIForm
@@ -162,27 +185,20 @@ public:
 		vGuiText.push_back(item1);
 		vGuiText.push_back(item2);
 	}
+};
 
-	~GUIFormMainMenu()
+class GUIFormGameMenu : public GUIForm
+{
+public:
+	GUIFormGameMenu()
 	{
-		for (auto t : vGuiText)
-		{
-			if (t != nullptr)
-			{
-				delete t;
-				t = nullptr;
-			}
-		}
-		vGuiText.clear();
+		uint32 tColours[3] = { 0xdddddd, 0xf362d4, 0xffffff };
+		uint32 rColours[3] = { 0xaaaaaa, 0x444444, 0x888888 };
+		guiRect = new GUIRect(0.4f, 0.45f, 0.6f, 0.55f, rColours, nullptr);
+
+		GUIText* item1 = new GUIText("Continue", tColours, 0.45f, 0.5f);
+		GUIText* item2 = new GUIText("Quit", tColours, 0.45f, 0.45f);
+		vGuiText.push_back(item1);
+		vGuiText.push_back(item2);
 	}
-
-	void tLeftJustify();
-	void tRightJustify();
-
-	// Centers text with center of boundary
-	void tCenterJustify();
-
-	// Contains the text within the rect boundaries
-	// do we need this?
-	void containText();
 };

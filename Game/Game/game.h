@@ -11,13 +11,92 @@ class Player;
 class Game
 {
 private:
-	std::stack<void (Game::*)(void)> gameState;
-
-public:
-	void MainMenu()
+	// Game States
+	std::stack<void (Game::*)()> gStates;
+	
+	void gsPush(void (Game::* gs)())
 	{
-		std::cout << "MainMenu\n";
+		gStates.push(gs);
+		win.keyboard.flush();
+		win.mouse.flush();
 	}
+
+	const bool gsSafePop()
+	{
+		if (gStates.empty())
+		{
+			return false;
+		}
+
+		gStates.pop();
+		return true;
+	}
+
+	const bool gsPop()
+	{
+		if (gStates.empty())
+		{
+			return false;
+		}
+
+		if (!gsSafePop())
+		{
+			return false;
+		}
+
+		win.keyboard.flush();
+		win.mouse.flush();
+		return true;
+	}
+
+	void gsPopUntil(void (Game::*gs)())
+	{
+		if (!gsSafePop())
+		{
+			std::cout << "Hit end of stack -> cannot hit intended element\n";
+			return;
+		}
+
+		while (gStates.top() != gs)
+		{
+			// Handle intermediate game states
+
+			if (gStates.top() == &Game::gsGame)
+			{
+				// deconstruct game?
+			}
+
+			// delete intermediate GUIs!
+
+			if (!gsSafePop())
+			{
+				std::cout << "Hit end of stack -> cannot hit intended element\n";
+				return;
+			}
+		}
+
+		// Hit intended element in stack
+		win.keyboard.flush();
+		win.mouse.flush();
+	}
+
+	//void resetGUIForm(GUIForm f)
+	//{
+	//	for (auto t : f.getVGuiText())
+	//	{
+	//		t->state = GUI_STATE_INACTIVE;
+	//	}
+	//}
+
+	const int32 initText();
+	void gsMainMenu();
+	const int32 initGame();
+	void gsGame();
+	void gsGameInput();
+	void gsGameSimulate();
+	void gsGameRender();
+	void gsGameMenu();
+
 
 private:
 	Window win;
@@ -31,6 +110,22 @@ public:
 
 	~Game()
 	{
+		if (guiChat != nullptr)
+		{
+			delete guiChat;
+			guiChat     = nullptr;
+		}
+		if (guiMainMenu != nullptr)
+		{
+			delete guiMainMenu;
+			guiMainMenu = nullptr;
+		}
+		if (guiGameMenu != nullptr)
+		{
+			delete guiGameMenu;
+			guiGameMenu = nullptr;
+		}
+
 		delete userTextBuffer;
 		delete object1;
 		delete object2;
@@ -63,14 +158,15 @@ private:
 private:
 	// 2D Text
 	//std::vector<uint8> text;
-	bool enableWriting = false;
+	bool disableMovement = false;
 	std::string* userTextBuffer;
 	//std::vector<std::string*> textHistory;
 
 	//GUILayout guiChat;
 
-	GUIChat guiChat;
-	GUIFormMainMenu guiMainMenu;
+	GUIChat* guiChat = nullptr;
+	GUIFormMainMenu* guiMainMenu = nullptr;
+	GUIFormGameMenu* guiGameMenu = nullptr;
 
 private:
 	// returns true if string occupied
@@ -82,7 +178,7 @@ private:
 			s = r->guiTextInput->pText;
 			r->guiTextInput->pText = nullptr;
 			userTextBuffer = new std::string;
-			enableWriting = false;
+			disableMovement = false;
 			return true;
 		}
 
@@ -97,7 +193,7 @@ private:
 			if (r->state == GUI_STATE_ACTIVE)
 				r->state = GUI_STATE_INACTIVE;
 			r->guiTextInput->pText = nullptr;
-			enableWriting = false;
+			disableMovement = false;
 		}
 	}
 
@@ -128,7 +224,7 @@ private:
 				{
 					r->state = GUI_STATE_ACTIVE;
 					r->guiTextInput->pText = userTextBuffer;
-					enableWriting = true;
+					disableMovement = true;
 				}
 				else
 				{

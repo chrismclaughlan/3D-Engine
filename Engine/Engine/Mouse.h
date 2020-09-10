@@ -19,6 +19,7 @@ public:
 			MPressed, MReleased,
 			WheelUp, WheelDown,
 			Move, Enter, Leave,
+			MoveRelative,
 			Invalid,
 		};
 	private:
@@ -55,6 +56,7 @@ public:
 
 private:
 	void move(int32 newX, int32 newY) noexcept;
+	void moveRelative(const int32 x, const int32 y) noexcept;
 	void enter() noexcept;
 	void leave() noexcept;
 	void leftPress(int32 newX, int32 newY) noexcept;

@@ -14,8 +14,8 @@ public:  // temp
 
 private:
 	// Camera control
-	double turningSpeed = 0.005f;
-	double movementSpeed = 0.005f;
+	float turningSpeed = 0.005f;
+	float movementSpeed = 0.005f;
 
 	const Vector vUp;
 	Vector vCamera;
@@ -69,12 +69,12 @@ public:
 	void moveUpward(const bool b = true) { b ? moveDirY += 1.0f : moveDirY = 0.0f; };
 	void moveDownward(const bool b = true) { b ? moveDirY -= 1.0f : moveDirY = 0.0f; };
 
-	void lookX(const int32 d)
+	void lookX(const float d)
 	{
 		fYaw += d * turningSpeed;
 	}
 	
-	void lookY(const int32 d)
+	void lookY(const float d)
 	{
 		float maxPitch = 1.5f;
 

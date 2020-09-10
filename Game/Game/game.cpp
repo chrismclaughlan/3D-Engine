@@ -192,36 +192,48 @@ void Game::gsGameInput()
 		const auto event = win.mouse.read();
 		switch (event.getType())
 		{
-		case Mouse::Event::Type::Move:
+		case Mouse::Event::Type::LPressed:
 		{
-			int32 iX = event.getX();
-			int32 iY = event.getY();
-			float fX = win.Gfx().pxToScreenX(iX);
-			float fY = win.Gfx().pxToScreenY(iY);
-		
-			// Hover chat box
-			CheckMouseMoveRect(fX, fY, guiChat->getRect());
+			float fX = win.Gfx().pxToScreenX(event.getX());
+			float fY = win.Gfx().pxToScreenY(event.getY());
 
-			if (event.isRightPressed())
-			{
-				player.lookX(iX - mouseXPrev);
-				player.lookY(iY - mouseYPrev);
-				std::cout << event.getX() << "," << event.getY() << " " << player.fYaw << "," << player.fPitch << "\n";
-			}
-			mouseXPrev = iX;
-			mouseYPrev = iY;
+			// Hover chat box
+			CheckLMousePressedRect(fX, fY, guiChat->getRect());
 		} break;
-		case Mouse::Event::Type::LReleased:
+		case Mouse::Event::Type::RPressed:
 		{
-			// find out if gui pressed
-			int32 iX = event.getX();
-			int32 iY = event.getY();
-			float fX = win.Gfx().pxToScreenX(iX);
-			float fY = win.Gfx().pxToScreenY(iY);
+			win.hideCursor();
+		} break;
+		case Mouse::Event::Type::RReleased:
+		{
+			win.showCursor();
+
+			float fX = win.Gfx().pxToScreenX(event.getX());
+			float fY = win.Gfx().pxToScreenY(event.getY());
 
 			// Click chat box
 			disableMovement = false;
 			CheckLMousePressedRect(fX, fY, guiChat->getRect());
+		} break;
+		case Mouse::Event::Type::MoveRelative:
+		{
+			if (event.isRightPressed())
+			{
+				int32 iCenterX = win.Gfx().getWidth() / 2;
+				int32 iCenterY = win.Gfx().getHeight() / 2;
+				win.GetScreenPos(&iCenterX, &iCenterY);
+				win.MoveMouse(iCenterX, iCenterY);
+				player.lookX( event.getX());
+				player.lookY(-event.getY());
+			}
+		} break;
+		case Mouse::Event::Type::Move:
+		{
+			float fX = win.Gfx().pxToScreenX(event.getX());
+			float fY = win.Gfx().pxToScreenY(event.getY());
+		
+			// Hover chat box
+			CheckMouseMoveRect(fX, fY, guiChat->getRect());
 		} break;
 		}
 	}
@@ -303,6 +315,8 @@ void Game::gsGameRender()
 	//win.Gfx().DrawText(*userTextBuffer, 100, 100, 0xffffff);  // test
 
 	win.Gfx().DrawGUIChat(guiChat);
+
+	win.Gfx().DrawPointP(win.Gfx().getWidth() / 2, win.Gfx().getHeight() / 2, 0xff0000);
 }
 
 void Game::gsMainMenu()

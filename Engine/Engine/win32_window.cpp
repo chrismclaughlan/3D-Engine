@@ -4,6 +4,14 @@
 #include <windowsX.h>  // mouse movement
 #include <assert.h>
 
+// you can #include <hidusage.h> for these defines
+#ifndef HID_USAGE_PAGE_GENERIC
+#define HID_USAGE_PAGE_GENERIC         ((USHORT) 0x01)
+#endif
+#ifndef HID_USAGE_GENERIC_MOUSE
+#define HID_USAGE_GENERIC_MOUSE        ((USHORT) 0x02)
+#endif
+
 #include "defines.h"
 
 #define THROW_WINDOW_EXCEPTION(msg)\
@@ -104,6 +112,14 @@ Window::Window(const char* name, int32 width, int32 height)
 	{
 		THROW_WINDOW_EXCEPTION_CODE("Error initialising window: hwnd returned NULL");
 	}
+
+	// Raw input
+	RAWINPUTDEVICE Rid[1];
+	Rid[0].usUsagePage = HID_USAGE_PAGE_GENERIC;
+	Rid[0].usUsage = HID_USAGE_GENERIC_MOUSE;
+	Rid[0].dwFlags = RIDEV_INPUTSINK;
+	Rid[0].hwndTarget = hwnd;
+	RegisterRawInputDevices(Rid, 1, sizeof(Rid[0]));
 
 	HDC hdc = GetDC(hwnd);
 	if (NULL == hdc)
@@ -299,6 +315,24 @@ LRESULT Window::HandleMessage
 		keyboard.onChar(static_cast<int8>(wParam));
 	} break;
 	/* -------------------- MOUSE -------------------- */
+
+	case WM_INPUT:
+	{
+		UINT dwSize = sizeof(RAWINPUT);
+		static BYTE lpb[sizeof(RAWINPUT)];
+
+		GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER));
+
+		RAWINPUT* raw = (RAWINPUT*)lpb;
+
+		if (raw->header.dwType == RIM_TYPEMOUSE)
+		{
+			const int32 xPosRelative = raw->data.mouse.lLastX;
+			const int32 yPosRelative = raw->data.mouse.lLastY;
+			mouse.moveRelative(xPosRelative, yPosRelative);
+		}
+	} break;
+
 	case WM_MOUSEMOVE:
 	{
 		GetXY();

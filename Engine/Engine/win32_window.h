@@ -64,6 +64,29 @@ public:
 public:
 	Mouse mouse;
 	Keyboard keyboard;
+
+	void GetScreenPos(int32* x, int32* y)
+	{
+		POINT p = { *x, *y };
+		ClientToScreen(hwnd, &p);
+		*x = p.x;
+		*y = p.y;
+	}
+
+	void MoveMouse(const int32 x, const int32 y)
+	{
+		SetCursorPos(x, y);
+	}
+
+	void hideCursor()
+	{
+		ShowCursor(false);
+	}
+
+	void showCursor()
+	{
+		ShowCursor(true);
+	}
 private:
 	FILE* fConsole;
 };

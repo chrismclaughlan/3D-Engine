@@ -52,6 +52,16 @@ void Mouse::move(int32 newX, int32 newY) noexcept
 	buffer.push(Mouse::Event(Mouse::Event::Type::Move, *this));
 	trimBuffer();
 }
+
+void Mouse::moveRelative(const int32 newX, const int32 newY) noexcept
+{
+	x = newX;
+	y = newY;
+
+	buffer.push(Mouse::Event(Mouse::Event::Type::MoveRelative, *this));
+	trimBuffer();
+}
+
 void Mouse::enter() noexcept
 {
 	inWindow = true;

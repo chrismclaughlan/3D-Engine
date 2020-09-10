@@ -11,8 +11,8 @@ class Player;
 class Game
 {
 private:
-	int32 mouseXPrev = 0;
-	int32 mouseYPrev = 0;
+	int32 mouseXPrev = -1;
+	int32 mouseYPrev = -1;
 
 private:
 	// Game States

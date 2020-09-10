@@ -70,6 +70,7 @@ void Mouse::leftPress(int32 newX, int32 newY) noexcept
 {
 	x = newX;
 	y = newY;
+	leftPressed = true;  //
 
 	buffer.push(Mouse::Event(Mouse::Event::Type::LPressed, *this));
 	trimBuffer();
@@ -78,6 +79,7 @@ void Mouse::leftRelease(int32 newX, int32 newY) noexcept
 {
 	x = newX;
 	y = newY;
+	leftPressed = false;  //
 
 	buffer.push(Mouse::Event(Mouse::Event::Type::LReleased, *this));
 	trimBuffer();
@@ -86,6 +88,7 @@ void Mouse::rightPress(int32 newX, int32 newY) noexcept
 {
 	x = newX;
 	y = newY;
+	rightPressed = true;  //
 
 	buffer.push(Mouse::Event(Mouse::Event::Type::RPressed, *this));
 	trimBuffer();
@@ -94,6 +97,7 @@ void Mouse::rightRelease(int32 newX, int32 newY) noexcept
 {
 	x = newX;
 	y = newY;
+	rightPressed = false;  //
 
 	buffer.push(Mouse::Event(Mouse::Event::Type::RReleased, *this));
 	trimBuffer();

@@ -11,6 +11,10 @@ class Player;
 class Game
 {
 private:
+	int32 mouseXPrev = 0;
+	int32 mouseYPrev = 0;
+
+private:
 	// Game States
 	std::stack<void (Game::*)()> gStates;
 	
@@ -139,9 +143,6 @@ public:
 
 	//virtual int32 run() = 0;
 	int32 run();
-private:
-	void HandleInput();
-	void DoFrame();
 
 private:
 	// 3D

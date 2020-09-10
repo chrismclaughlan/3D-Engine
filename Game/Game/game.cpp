@@ -198,9 +198,18 @@ void Game::gsGameInput()
 			int32 iY = event.getY();
 			float fX = win.Gfx().pxToScreenX(iX);
 			float fY = win.Gfx().pxToScreenY(iY);
-
+		
 			// Hover chat box
 			CheckMouseMoveRect(fX, fY, guiChat->getRect());
+
+			if (event.isRightPressed())
+			{
+				player.lookX(iX - mouseXPrev);
+				player.lookY(iY - mouseYPrev);
+				std::cout << event.getX() << "," << event.getY() << " " << player.fYaw << "," << player.fPitch << "\n";
+			}
+			mouseXPrev = iX;
+			mouseYPrev = iY;
 		} break;
 		case Mouse::Event::Type::LReleased:
 		{

@@ -1,11 +1,18 @@
 #pragma once
 #include "types.h"
+#include "gui.h"
 #include <strstream>
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <string>
 #include <assert.h>
+
+#define LOOKUP_WHOLE 0
+#define LOOKUP_LEFT  1
+#define LOOKUP_RIGHT 2
+
+struct WIPGUISpriteClickable;
 
 class Texture
 {
@@ -100,14 +107,134 @@ public:
 		return true;
 	}
 
-	uint32 lookUp(float x, float y) const
+	uint32 lookUp(const float y, const float x, const int32 flag = LOOKUP_WHOLE) const
 	{
-		int32 xIndex = (x * width) / scaleW;
-		int32 yIndex = (y * height) / scaleH;
+		// Flip values (array stored differently)
+		int32 xIndex;
+		int32 yIndex;
+
+		switch (flag)
+		{
+		case LOOKUP_WHOLE:
+		{
+			xIndex = (x * width) / scaleW;
+			yIndex = (y * height) / scaleH;
+		} break;
+		case LOOKUP_RIGHT:
+		{
+			xIndex = (x * width) / scaleW;
+			yIndex = ((y * height) / scaleH);
+			yIndex *= 0.5f;
+			yIndex += height;
+		} break;
+		case LOOKUP_LEFT:
+		{
+			xIndex = (x * width) / scaleW;
+			yIndex = (y * height) / scaleH;
+			yIndex *= 0.5f;
+		} break;
+		}
 
 		return rgbToHex(
 			map[3 * (xIndex * width + yIndex) + 2],
 			map[3 * (xIndex * width + yIndex) + 1],
 			map[3 * (xIndex * width + yIndex) + 0]);
+	}
+
+	// bool: keep -> Keep left if true; Keep right if false
+	void crop(const float multiplier, const bool left = true)
+	{
+		assert(multiplier > 0.0f);
+		assert(multiplier < 1.0f);
+
+		int32 newSize = 3 * width * height;
+		uint8* newMap = new uint8[newSize];
+
+		int32 newWidth = width * multiplier;
+		int32 start = left ? 0 : newWidth;
+		int32 end = left ? newWidth : width;
+
+		for (int32 j = 0; j < height; j++)
+		{
+			for (int32 i = start; i < end; i++)
+			{
+				newMap[3 * (i + (j * (int32)(width - newWidth))) + 0] = map[3 * (i + (j * width)) + 0];
+				newMap[3 * (i + (j * (int32)(width - newWidth))) + 1] = map[3 * (i + (j * width)) + 1];
+				newMap[3 * (i + (j * (int32)(width - newWidth))) + 2] = map[3 * (i + (j * width)) + 2];
+			}
+		}
+
+		memset(map, 0, 3 * width * height);
+		delete map;
+		map = nullptr;
+
+		scaleH *= 1.0f / multiplier;
+		scaleW *= multiplier;
+		width = newWidth;
+		map = newMap;
+	}
+
+
+
+	/*
+	
+	keep all texture but just check for values shifted along
+
+	OR
+
+	keep two textures with same size just shifted left or right
+
+	draw left
+
+	check right for collisions
+	
+	*/
+
+
+
+	void getColourBlocks(std::vector<WIPGUISpriteClickable> vClickable)
+	{
+		//std::vector<int32> min_ys;
+
+		//bool emptyColumn = true;
+		//int32 max_y = 0;
+		//int32 min_y = height;
+		//for (int32 j = 0; j < height; j++)
+		//{
+		//	int32 max_x = (width / 2) + 1;
+		//	int32 min_x = width;
+		//	emptyColumn = true;
+		//	for (int32 i = (width / 2) + 1; i < width; i++)
+		//	{
+		//		uint8 one =   map[3 * (j * width + i) + 0];
+		//		uint8 two =   map[3 * (j * width + i) + 1];
+		//		uint8 three = map[3 * (j * width + i) + 2];
+		//		if (one == 255 && two == 255 && three == 255)
+		//		{
+		//		}
+		//		else
+		//		{
+		//			emptyColumn = false;
+		//			if (i > max_x) max_x = i;
+		//			if (i < min_x) min_x = i;
+		//			if (j > max_y) max_y = j;
+		//			if (j < min_y) min_y = j;
+		//			//std::cout << i << "," << j << "\n";
+		//		}
+		//	}
+		//	if (!emptyColumn)
+		//	{
+		//		std::cout
+		//			<< "min_x:" << min_x << " max_x:" << max_x
+		//			<< " min_y:" << min_y << " max_y:" << max_y
+		//			<< "\n";
+		//	}
+
+		//	for (auto y : min_ys)
+		//	{
+		//		std::cout << y << "\n";
+		//	}
+
+		//}
 	}
 };

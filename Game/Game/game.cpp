@@ -45,7 +45,14 @@ const int32 Game::initText()
 const int32 Game::initGame()
 {
 	// Load GUI
-	guiChat = new GUIChat();
+	guiChat = new GUIForm();
+	const float x1 = 0.0f, y1 = 0.0f, x2 = 0.75f, y2 = 0.05f;
+	uint32 tColours[3] = { 0xff0000, 0x00ff00, 0x0000ff };
+	GUIText* guiTextInput = new GUIText("Chat : ", tColours, x1, y1, x2, y2, false);
+	guiChat->setTextInput(guiTextInput);
+	uint32 rColours[3] = { 0xaaaaaa, 0x444444, 0x888888 };
+	GUIRect* guiRect = new GUIRect(x1, y1, x2, y2, rColours, guiTextInput);
+	guiChat->setRect(guiRect);
 
 	// Load textures
 	objectTexture1 = new Texture();
@@ -106,7 +113,6 @@ void Game::gsGameInput()
 				else
 				{
 					// Open menu
-					guiGameMenu = new GUIFormGameMenu();
 					gsPush(&Game::gsGameMenu);
 				}
 			}
@@ -314,7 +320,7 @@ void Game::gsGameRender()
 
 	//win.Gfx().DrawText(*userTextBuffer, 100, 100, 0xffffff);  // test
 
-	win.Gfx().DrawGUIChat(guiChat);
+	win.Gfx().DrawGUIForm(guiChat);
 
 	win.Gfx().DrawPointP(win.Gfx().getWidth() / 2, win.Gfx().getHeight() / 2, 0xff0000);
 }
@@ -323,7 +329,31 @@ void Game::gsMainMenu()
 {
 	if (guiMainMenu == nullptr)
 	{
-		guiMainMenu = new GUIFormMainMenu();
+		// Create GUIMenu for main menu
+		guiMainMenu = new GUIMenu();
+
+		uint32 rColours[3] = { 0xaaaaaa, 0x444444, 0x888888 };
+		GUIRect* guiRect = new GUIRect(0.4f, 0.45f, 0.6f, 0.55f, rColours, nullptr);
+		guiMainMenu->setRect(guiRect);
+
+		uint32 tColours[3] = { 0xdddddd, 0xf362d4, 0xffffff };
+		GUIText* item1 = new GUIText("Start", tColours, 0.45f, 0.5f);
+		GUIText* item2 = new GUIText("Quit", tColours, 0.45f, 0.45f);
+		guiMainMenu->addText(item1);
+		guiMainMenu->addText(item2);
+
+		// WIP
+		Texture* guiSpriteTexture = new Texture();
+		if (!guiSpriteTexture->LoadTextureFromBMP("texture_menu_512x256.bmp"))
+		{
+			std::cerr << "Error loading texure_menu_512x256.bmp\n";
+		}
+
+		std::vector< WIPGUISpriteClickable> vClickable; 
+		vClickable.push_back(WIPGUISpriteClickable(ClickableColours::Start));
+		vClickable.push_back(WIPGUISpriteClickable(ClickableColours::Quit));
+
+		guiSprite = new WIPGUISprite(0.0f, 0.0f, 0.25f, 0.25f, guiSpriteTexture, vClickable);//, vClickable);
 	}
 
 	/* ---------- Input ---------- */
@@ -339,7 +369,7 @@ void Game::gsMainMenu()
 			int32 iY = event.getY();
 			float fX = win.Gfx().pxToScreenX(iX);
 			float fY = win.Gfx().pxToScreenY(iY);
-			for (auto t : guiMainMenu->getVGuiText())
+			for (auto t : guiMainMenu->getVText())
 			{
 				CheckMouseMoveText(fX, fY, t);
 			}
@@ -356,9 +386,15 @@ void Game::gsMainMenu()
 			float fY = win.Gfx().pxToScreenY(iY);
 			//std::cout << "Lpressed at x = " << fX << " y = " << fY << "\n";
 			disableMovement = false;
-			for (auto t : guiMainMenu->getVGuiText())
+			for (auto t : guiMainMenu->getVText())
 			{
 				CheckMousePressedText(fX, fY, t);
+			}
+
+			WIPGUISpriteClickable resultClickable;
+			if (guiSprite->isClickable(fX, fY, resultClickable))
+			{
+				std::cout << (uint32)resultClickable.colour << "\n";
 			}
 		}
 		}
@@ -367,7 +403,7 @@ void Game::gsMainMenu()
 
 	/* ---------- Simulate ---------- */
 
-	for (auto t : guiMainMenu->getVGuiText())
+	for (auto t : guiMainMenu->getVText())
 	{
 		if (t->state == GUI_STATE_ACTIVE)
 		{
@@ -393,14 +429,26 @@ void Game::gsMainMenu()
 
 	win.Gfx().ClearScreen(0x000000);
 
-	win.Gfx().DrawGUIForm(guiMainMenu);
+	win.Gfx().DrawGUIMenu(guiMainMenu);
+
+	win.Gfx().DrawGUIMenuSprite(guiSprite);
 }
 
 void Game::gsGameMenu()
 {
 	if (guiGameMenu == nullptr)
 	{
-		guiGameMenu = new GUIFormGameMenu();
+		guiGameMenu = new GUIMenu();
+
+		uint32 rColours[3] = { 0xaaaaaa, 0x444444, 0x888888 };
+		GUIRect* guiRect = new GUIRect(0.4f, 0.45f, 0.6f, 0.55f, rColours, nullptr);
+		guiGameMenu->setRect(guiRect);
+
+		uint32 tColours[3] = { 0xdddddd, 0xf362d4, 0xffffff };
+		GUIText* item1 = new GUIText("Continue", tColours, 0.45f, 0.5f);
+		GUIText* item2 = new GUIText("Quit", tColours, 0.45f, 0.45f);
+		guiGameMenu->addText(item1);
+		guiGameMenu->addText(item2);
 	}
 
 	/* ---------- Input ---------- */
@@ -434,7 +482,7 @@ void Game::gsGameMenu()
 			int32 iY = event.getY();
 			float fX = win.Gfx().pxToScreenX(iX);
 			float fY = win.Gfx().pxToScreenY(iY);
-			for (auto t : guiGameMenu->getVGuiText())
+			for (auto t : guiGameMenu->getVText())
 			{
 				CheckMouseMoveText(fX, fY, t);
 			}
@@ -449,7 +497,7 @@ void Game::gsGameMenu()
 			int32 iY = event.getY();
 			float fX = win.Gfx().pxToScreenX(iX);
 			float fY = win.Gfx().pxToScreenY(iY);
-			for (auto t : guiGameMenu->getVGuiText())
+			for (auto t : guiGameMenu->getVText())
 			{
 				CheckMousePressedText(fX, fY, t);
 			}
@@ -459,7 +507,7 @@ void Game::gsGameMenu()
 
 	/* ---------- Simulate ---------- */
 
-	for (auto t : guiGameMenu->getVGuiText())
+	for (auto t : guiGameMenu->getVText())
 	{
 		if (t->state == GUI_STATE_ACTIVE)
 		{
@@ -488,5 +536,5 @@ void Game::gsGameMenu()
 
 	gsGameRender();
 
-	win.Gfx().DrawGUIForm(guiGameMenu);
+	win.Gfx().DrawGUIMenu(guiGameMenu);
 }

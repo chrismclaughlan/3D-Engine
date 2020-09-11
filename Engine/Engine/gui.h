@@ -1,6 +1,7 @@
 #pragma once
 #include "types.h"
 #include "graphics.h"
+#include "texture.h"
 #include <string>
 #include <vector>
 
@@ -10,6 +11,13 @@ struct GUIText;
 #define GUI_STATE_INACTIVE 0
 #define GUI_STATE_ACTIVE 1
 #define GUI_STATE_HOVER	 2
+
+enum class ClickableColours : uint32
+{
+	Ininitialised = 0xffffff,
+	Start = 0x22b14c,
+	Quit = 0xed1c24,
+};
 
 struct GUIRect
 {
@@ -27,15 +35,6 @@ struct GUIRect
 		colourPallete[0] = colours[0];
 		colourPallete[1] = colours[1];
 		colourPallete[2] = colours[2];
-	}
-
-	~GUIRect()
-	{
-		//if (guiTextInput != nullptr)
-		//{
-		//	delete guiTextInput;
-		//	guiTextInput = nullptr;
-		//}
 	}
 
 	const bool isAt(float x, float y)
@@ -73,21 +72,6 @@ struct GUIText
 	const bool isAt(const float x, const float y, Graphics* gfx);
 };
 
-//struct GUITextInput : GUIText
-//{
-//	// TODO use these for text wrap
-//	//bool textWrap = false;
-//	std::string* pText = nullptr;
-//
-//	GUITextInput(const std::string sText, const uint32 cText, 
-//		const float x1, const float y1,
-//		const float x2, const float y2,
-//		const bool drawBackground = false,
-//		const uint32 cBackground = 0x000000)
-//		: GUIText(sText, cText, x1, y1, x2, y2, drawBackground, cBackground)
-//	{}
-//};
-
 #include <iostream>
 
 class GUI
@@ -109,24 +93,26 @@ public:
 	{
 		return guiRect;
 	}
+
+	void setRect(GUIRect* r)
+	{
+		if (guiRect != nullptr)
+		{
+			delete guiRect;
+			guiRect = nullptr;
+		}
+
+		guiRect = r;
+	}
 };
 
-class GUIChat : public GUI
+class GUIForm : public GUI
 {
 private:
 	GUIText* guiTextInput = nullptr;
 
 public:
-	GUIChat()
-	{
-		const float x1 = 0.0f, y1 = 0.0f, x2 = 0.75f, y2 = 0.05f;
-		uint32 tColours[3] = { 0xff0000, 0x00ff00, 0x0000ff };
-		uint32 rColours[3] = { 0xaaaaaa, 0x444444, 0x888888 };
-		guiTextInput = new GUIText("Chat : ", tColours, x1, y1, x2, y2, false);
-		guiRect = new GUIRect(x1, y1, x2, y2, rColours, guiTextInput);
-	}
-
-	~GUIChat()
+	~GUIForm()
 	{
 		if (guiTextInput != nullptr)
 		{
@@ -134,15 +120,27 @@ public:
 			guiTextInput = nullptr;
 		}
 	}
+
+	// Changes pointer to text input
+	void setTextInput(GUIText* t)
+	{
+		if (guiTextInput != nullptr)
+		{
+			delete guiTextInput;
+			guiTextInput = nullptr;
+		}
+
+		guiTextInput = t;
+	}
 };
 
-class GUIForm : public GUI
+class GUIMenu : public GUI
 {
 protected:
 	std::vector<GUIText*> vGuiText;
 
 public:
-	~GUIForm()
+	~GUIMenu()
 	{
 		for (auto t : vGuiText)
 		{
@@ -155,50 +153,63 @@ public:
 		vGuiText.clear();
 	}
 
-	std::vector<GUIText*> getVGuiText()
+	std::vector<GUIText*> getVText()
 	{
 		return vGuiText;
 	}
 
-	void tLeftJustify();
-	void tRightJustify();
-
-	// Centers text with center of boundary
-	void tCenterJustify();
-
-	// Contains the text within the rect boundaries
-	// do we need this?
-	void containText();
-};
-
-class GUIFormMainMenu : public GUIForm
-{
-public:
-	GUIFormMainMenu()
+	void addText(GUIText* t)
 	{
-		uint32 tColours[3] = { 0xdddddd, 0xf362d4, 0xffffff };
-		uint32 rColours[3] = { 0xaaaaaa, 0x444444, 0x888888 };
-		guiRect = new GUIRect(0.4f, 0.45f, 0.6f, 0.55f, rColours, nullptr);
-
-		GUIText* item1 = new GUIText("Start", tColours, 0.45f, 0.5f);
-		GUIText* item2 = new GUIText("Quit", tColours, 0.45f, 0.45f);
-		vGuiText.push_back(item1);
-		vGuiText.push_back(item2);
+		vGuiText.push_back(t);
 	}
 };
 
-class GUIFormGameMenu : public GUIForm
+/* -------WIP-------*/
+
+// Contains hitbox normalised coords
+struct WIPGUISpriteClickable
+{
+	ClickableColours colour = ClickableColours::Ininitialised;
+	// Hitbox
+	float x1 = -1.0f;
+	float y1 = -1.0f;
+	float x2 = -1.0f;
+	float y2 = -1.0f;
+
+	WIPGUISpriteClickable() {};
+	WIPGUISpriteClickable(ClickableColours colour) : colour(colour) {};
+
+	const bool isClickable(const float x, const float y)
+	{
+		return x > x1 && y > y1 && x < x2 && y < y2;
+	}
+};
+
+class WIPGUISprite
 {
 public:
-	GUIFormGameMenu()
-	{
-		uint32 tColours[3] = { 0xdddddd, 0xf362d4, 0xffffff };
-		uint32 rColours[3] = { 0xaaaaaa, 0x444444, 0x888888 };
-		guiRect = new GUIRect(0.4f, 0.45f, 0.6f, 0.55f, rColours, nullptr);
+	float x1;
+	float y1;
+	float x2;
+	float y2;
+	Texture* texture = nullptr;
+	std::vector<WIPGUISpriteClickable> vClickable;
 
-		GUIText* item1 = new GUIText("Continue", tColours, 0.45f, 0.5f);
-		GUIText* item2 = new GUIText("Quit", tColours, 0.45f, 0.45f);
-		vGuiText.push_back(item1);
-		vGuiText.push_back(item2);
+public:
+	WIPGUISprite(const float x1, const float y1, const float x2,
+		const float y2, Texture* texture, std::vector<WIPGUISpriteClickable> vClickable)
+		: x1(x1), y1(y1), x2(x2), y2(y2), texture(texture), vClickable(vClickable)
+	{}
+
+	~WIPGUISprite()
+	{
+		if (texture != nullptr)
+		{
+			delete texture;
+			texture = nullptr;
+		}
 	}
+
+	// Returns index of clickable if it is within x, y
+	const bool isClickable(const float x, const float y, WIPGUISpriteClickable& clickable);
 };

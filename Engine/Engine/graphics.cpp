@@ -111,7 +111,7 @@ void Graphics::DrawPointP(int32 x, int32 y, uint32 colour)
 	pixel[x + (y * width)] = colour;
 }
 
-//void Graphics::DrawPoint(float x, float y, uint32 colour)
+//void Graphics::DrawPoint(double x, double y, uint32 colour)
 //{
 //	int32 xi = screenToPxX(x);
 //	int32 yi = screenToPxY(y);
@@ -765,9 +765,9 @@ const bool Graphics::DrawChar(const char c, const int32 posX, const int32 posY, 
 	return true;
 }
 
-void Graphics::DrawGUIChat(GUIChat* guiChat)
+void Graphics::DrawGUIForm(GUIForm* guiForm)
 {
-	GUIRect* r = guiChat->getRect();
+	GUIRect* r = guiForm->getRect();
 	DrawRect(r->x1, r->y1, r->x2, r->y2, r->colourPallete[r->state]);
 	if (r->guiTextInput != nullptr)
 	{
@@ -775,15 +775,36 @@ void Graphics::DrawGUIChat(GUIChat* guiChat)
 	}
 }
 
-void Graphics::DrawGUIForm(GUIForm* guiForm)
+void Graphics::DrawGUIMenu(GUIMenu* guiMenu)
 {
-	GUIRect* r = guiForm->getRect();
+	GUIRect* r = guiMenu->getRect();
 	DrawRect(r->x1, r->y1, r->x2, r->y2, r->colourPallete[r->state]);
 
-
-	std::vector<GUIText*> vGuiText = guiForm->getVGuiText();
+	std::vector<GUIText*> vGuiText = guiMenu->getVText();
 	for (auto t : vGuiText)
 	{
 		DrawText(*t);
+	}
+}
+
+const float Graphics::normalise(const float min, const float max, float input)
+{
+	return (input - min) / (max - min);
+}
+
+void Graphics::DrawGUIMenuSprite(WIPGUISprite* guiSprite)
+{
+	const int32 x1 = screenToPxX(guiSprite->x1);
+	const int32 y1 = screenToPxY(guiSprite->y1);
+	const int32 x2 = screenToPxX(guiSprite->x2);
+	const int32 y2 = screenToPxY(guiSprite->y2);
+	for (int32 j = y1; j < y2; j++)
+	{
+		for (int32 i = x1; i < x2; i++)
+		{
+			const double x_ = normalise(x1, x2, i);
+			const double y_ = normalise(y1, y2, j);
+			DrawPointP(i, j, guiSprite->texture->lookUp(x_, y_, LOOKUP_LEFT));
+		}
 	}
 }

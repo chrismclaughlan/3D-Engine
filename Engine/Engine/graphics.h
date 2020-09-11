@@ -10,9 +10,10 @@ float ratio = 1080.0f / nscale_y;\
 scale_x = nscale_x * ratio;\
 scale_y = nscale_y * ratio;\
 
-struct GUIChat;
 struct GUIText;
 struct GUIForm;
+struct GUIMenu;
+class WIPGUISprite;
 
 class Graphics
 {
@@ -63,10 +64,12 @@ public:
 	int32 screenToPxX(const float a);  // inline
 	int32 screenToPxY(const float a);  // inline
 
+	static const float normalise(const float min, const float max, float input);
+
 public:
 	void ClearScreen(uint32 colour);
 	void DrawPointP(int32 x, int32 y, uint32 colour);
-	//void DrawPoint(float x, float y, uint32 colour);
+	//void DrawPoint(double x, double y, uint32 colour);
 	void DrawRectP(int32 x1, int32 y1, int32 x2, int32 y2, uint32 colour);
 	void DrawRect(float x, float y, float w, float h, uint32 colour);
 
@@ -91,6 +94,7 @@ public:
 	void DrawText(const GUIText guiText);
 	const bool DrawChar(const char c, const int32 posX, const int32 posY, const uint32 colour);
 
-	void DrawGUIChat(GUIChat* guiChat);
 	void DrawGUIForm(GUIForm* guiForm);
+	void DrawGUIMenu(GUIMenu* guiMenu);
+	void DrawGUIMenuSprite(WIPGUISprite* guiSprite);
 };

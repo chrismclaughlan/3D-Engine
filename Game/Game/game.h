@@ -114,6 +114,11 @@ public:
 
 	~Game()
 	{
+		if (guiSprite != nullptr)
+		{
+			delete guiSprite;
+			guiSprite = nullptr;
+		}
 		if (guiChat != nullptr)
 		{
 			delete guiChat;
@@ -165,9 +170,10 @@ private:
 
 	//GUILayout guiChat;
 
-	GUIChat* guiChat = nullptr;
-	GUIFormMainMenu* guiMainMenu = nullptr;
-	GUIFormGameMenu* guiGameMenu = nullptr;
+	GUIForm* guiChat = nullptr;
+	GUIMenu* guiMainMenu = nullptr;
+	GUIMenu* guiGameMenu = nullptr;
+	WIPGUISprite* guiSprite = nullptr;
 
 private:
 	// returns true if string occupied

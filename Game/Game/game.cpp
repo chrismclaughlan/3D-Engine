@@ -327,33 +327,37 @@ void Game::gsGameRender()
 
 void Game::gsMainMenu()
 {
-	if (guiMainMenu == nullptr)
+	/* GUIForm */
+	//if (guiMainMenu == nullptr)
+	//{
+		//guiMainMenu = new GUIMenu();
+
+		//uint32 rColours[3] = { 0xaaaaaa, 0x444444, 0x888888 };
+		//GUIRect* guiRect = new GUIRect(0.4f, 0.45f, 0.6f, 0.55f, rColours, nullptr);
+		//guiMainMenu->setRect(guiRect);
+
+		//uint32 tColours[3] = { 0xdddddd, 0xf362d4, 0xffffff };
+		//GUIText* item1 = new GUIText("Start", tColours, 0.45f, 0.5f);
+		//GUIText* item2 = new GUIText("Quit", tColours, 0.45f, 0.45f);
+		//guiMainMenu->addText(item1);
+		//guiMainMenu->addText(item2);
+	//}
+
+	/* SPRITES */
+	if (guiSprite == nullptr)
 	{
-		// Create GUIMenu for main menu
-		guiMainMenu = new GUIMenu();
-
-		uint32 rColours[3] = { 0xaaaaaa, 0x444444, 0x888888 };
-		GUIRect* guiRect = new GUIRect(0.4f, 0.45f, 0.6f, 0.55f, rColours, nullptr);
-		guiMainMenu->setRect(guiRect);
-
-		uint32 tColours[3] = { 0xdddddd, 0xf362d4, 0xffffff };
-		GUIText* item1 = new GUIText("Start", tColours, 0.45f, 0.5f);
-		GUIText* item2 = new GUIText("Quit", tColours, 0.45f, 0.45f);
-		guiMainMenu->addText(item1);
-		guiMainMenu->addText(item2);
-
-		// WIP
 		Texture* guiSpriteTexture = new Texture();
-		if (!guiSpriteTexture->LoadTextureFromBMP("texture_menu_512x256.bmp"))
+		const char* filename = "Texture_MainMenu.bmp";
+		if (!guiSpriteTexture->LoadTextureFromBMP(filename))
 		{
-			std::cerr << "Error loading texure_menu_512x256.bmp\n";
+			std::cerr << "Error loading " << filename << "\n";
 		}
 
-		std::vector< WIPGUISpriteClickable> vClickable; 
+		std::vector< WIPGUISpriteClickable> vClickable;
 		vClickable.push_back(WIPGUISpriteClickable(ClickableColours::Start));
 		vClickable.push_back(WIPGUISpriteClickable(ClickableColours::Quit));
 
-		guiSprite = new WIPGUISprite(0.0f, 0.0f, 0.25f, 0.25f, guiSpriteTexture, vClickable);//, vClickable);
+		guiSprite = new WIPGUISprite(0.25f, 0.25f, 0.75f, 0.75f, guiSpriteTexture, vClickable);
 	}
 
 	/* ---------- Input ---------- */
@@ -369,10 +373,11 @@ void Game::gsMainMenu()
 			int32 iY = event.getY();
 			float fX = win.Gfx().pxToScreenX(iX);
 			float fY = win.Gfx().pxToScreenY(iY);
-			for (auto t : guiMainMenu->getVText())
-			{
-				CheckMouseMoveText(fX, fY, t);
-			}
+
+			//for (auto t : guiMainMenu->getVText())
+			//{
+			//	CheckMouseMoveText(fX, fY, t);
+			//}
 			//#if DISPLAY_DEBUG_CONSOLE && DISPLAY_MOUSE_COORDS
 			//			std::cout << event.getX() << " " << event.getY() << "\n";
 			//#endif
@@ -385,16 +390,32 @@ void Game::gsMainMenu()
 			float fX = win.Gfx().pxToScreenX(iX);
 			float fY = win.Gfx().pxToScreenY(iY);
 			//std::cout << "Lpressed at x = " << fX << " y = " << fY << "\n";
-			disableMovement = false;
-			for (auto t : guiMainMenu->getVText())
-			{
-				CheckMousePressedText(fX, fY, t);
-			}
+			//for (auto t : guiMainMenu->getVText())
+			//{
+			//	CheckMousePressedText(fX, fY, t);
+			//}
 
-			WIPGUISpriteClickable resultClickable;
-			if (guiSprite->isClickable(fX, fY, resultClickable))
+			ClickableColours cc;
+			if (guiSprite->isClickable(fX, fY, cc))
 			{
-				std::cout << (uint32)resultClickable.colour << "\n";
+				switch (cc)
+				{
+				case ClickableColours::Start:
+				{
+					delete guiSprite;
+					guiSprite = nullptr;
+					initGame();
+					gsPush(&Game::gsGame);
+					return;
+				} break;
+				case ClickableColours::Quit:
+				{
+					delete guiSprite;
+					guiSprite = nullptr;
+					gsPop();
+					return;
+				} break;
+				}
 			}
 		}
 		}
@@ -403,33 +424,33 @@ void Game::gsMainMenu()
 
 	/* ---------- Simulate ---------- */
 
-	for (auto t : guiMainMenu->getVText())
-	{
-		if (t->state == GUI_STATE_ACTIVE)
-		{
-			if (t->sText == "Start")  // TODO enum?
-			{
-				delete guiMainMenu;
-				guiMainMenu = nullptr;
-				initGame();
-				gsPush(&Game::gsGame);
-				return;
-			}
-			else if (t->sText == "Quit")  // TODO enum?
-			{
-				delete guiMainMenu;
-				guiMainMenu = nullptr;
-				gsPop();
-				return;
-			}
-		}
-	}
+	//for (auto t : guiMainMenu->getVText())
+	//{
+	//	if (t->state == GUI_STATE_ACTIVE)
+	//	{
+	//		if (t->sText == "Start")  // TODO enum?
+	//		{
+	//			delete guiMainMenu;
+	//			guiMainMenu = nullptr;
+	//			initGame();
+	//			gsPush(&Game::gsGame);
+	//			return;
+	//		}
+	//		else if (t->sText == "Quit")  // TODO enum?
+	//		{
+	//			delete guiMainMenu;
+	//			guiMainMenu = nullptr;
+	//			gsPop();
+	//			return;
+	//		}
+	//	}
+	//}
 
 	/* ---------- Render ---------- */
 
 	win.Gfx().ClearScreen(0x000000);
 
-	win.Gfx().DrawGUIMenu(guiMainMenu);
+	//win.Gfx().DrawGUIMenu(guiMainMenu);
 
 	win.Gfx().DrawGUIMenuSprite(guiSprite);
 }

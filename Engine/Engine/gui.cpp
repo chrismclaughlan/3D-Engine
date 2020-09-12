@@ -25,7 +25,7 @@ const bool GUIText::isAt(const float x, const float y, Graphics* gfx)
 	return  false;
 }
 
-const bool WIPGUISprite::isClickable(const float x, const float y, WIPGUISpriteClickable& clickable)
+const bool WIPGUISprite::isClickable(const float x, const float y, ClickableColours& clickable)
 {
 	if (x > x1 && y > y1 && x < x2 && y < y2)
 	{
@@ -34,11 +34,13 @@ const bool WIPGUISprite::isClickable(const float x, const float y, WIPGUISpriteC
 		const float y_ = Graphics::normalise(y1, y2, y);
 		colour = texture->lookUp(x_, y_, LOOKUP_RIGHT);
 
+		//std::cout << colour << "\n";
+
 		for (auto c : vClickable)
 		{
 			if (c.colour == colour)
 			{
-				clickable = c;
+				clickable = c.colour;
 				return true;
 			}
 		}

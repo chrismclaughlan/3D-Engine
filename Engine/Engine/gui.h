@@ -15,8 +15,8 @@ struct GUIText;
 enum class ClickableColours : uint32
 {
 	Ininitialised = 0xffffff,
-	Start = 0x22b14c,
-	Quit = 0xed1c24,
+	Start = 0xff0000,// 0x22b14c,
+	Quit = 0x00ff00,// 0xed1c24,
 };
 
 struct GUIRect
@@ -211,5 +211,5 @@ public:
 	}
 
 	// Returns index of clickable if it is within x, y
-	const bool isClickable(const float x, const float y, WIPGUISpriteClickable& clickable);
+	const bool isClickable(const float x, const float y, ClickableColours& clickable);
 };

@@ -238,3 +238,23 @@ public:
 		//}
 	}
 };
+
+struct Pixel24
+{
+	uint32 colour;
+};
+
+struct Pixel32 : Pixel24
+{
+	uint8 alpha;
+};
+
+struct Texture24
+{
+
+};
+
+struct Texture32
+{
+
+};

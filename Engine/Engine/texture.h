@@ -8,12 +8,6 @@
 #include <string>
 #include <assert.h>
 
-#define LOOKUP_WHOLE 0
-#define LOOKUP_LEFT  1
-#define LOOKUP_RIGHT 2
-
-struct GUISpriteClickable;
-
 class Texture
 {
 protected:
@@ -60,6 +54,8 @@ public:
 			scaleH = 1.0f / scaleW;
 		}
 
+		std::cout << "width=" << width << " height=" << height << " scaleW=" << scaleW << " scaleH=" << scaleH << "\n";
+
 		writeData(f);
 
 		fclose(f);
@@ -87,31 +83,6 @@ public:
 		}
 	}
 
-	//inline void writeTo(int x, int y, uint32 a)
-	//{
-	//	map[x * width + y] = a;
-	//}
-	//
-	//inline uint32 readFrom(int x, int y) const
-	//{
-	//	return map[x * width + y];
-	//}
-
-	//static long int binToHex(long int binaryval)
-	//{
-	//	long int hexadecimalval = 0, i = 1, remainder;
-	//
-	//	while (binaryval != 0)
-	//	{
-	//		remainder = binaryval % 10;
-	//		hexadecimalval = hexadecimalval + remainder * i;
-	//		i = i * 2;
-	//		binaryval = binaryval / 10;
-	//	}
-	//
-	//	return hexadecimalval;
-	//}
-
 	const int32 headerSize() const { return 54; };
 	static uint32 rgbToHex(const uint8 r, const uint8 g, const uint8 b)
 	{
@@ -132,80 +103,57 @@ public:
 		fread(data, sizeof(uint8), size, f);
 	}
 
-	uint32 lookUp(const float y, const float x, const int32 segments = 1, const int32 index = 1) const override
+	const uint32 readData(int32 x, int32 y) const
 	{
-		// Flip values (array stored differently)
-		int32 xIndex;
-		int32 yIndex;
-
-		xIndex = (x * width) / scaleW;
-		yIndex = (y * height) / scaleH;
-
-		//switch (flag)
-		//{
-		//case LOOKUP_WHOLE:
-		//{
-		//	xIndex = (x * width) / scaleW;
-		//	yIndex = (y * height) / scaleH;
-		//} break;
-		//case LOOKUP_RIGHT:
-		//{
-		//	xIndex = (x * width) / scaleW;
-		//	yIndex = ((y * height) / scaleH);
-		//	yIndex *= 0.5f;
-		//	yIndex += height;
-		//} break;
-		//case LOOKUP_LEFT:
-		//{
-		//	xIndex = (x * width) / scaleW;
-		//	yIndex = (y * height) / scaleH;
-		//	yIndex *= 0.5f;
-		//} break;
-		//}
+		x = height - x;  // flip
 
 		return rgbToHex(
-			data[3 * (xIndex * width + yIndex) + 2],
-			data[3 * (xIndex * width + yIndex) + 1],
-			data[3 * (xIndex * width + yIndex) + 0]);
+			data[3 * (x * width + y) + 2],
+			data[3 * (x * width + y) + 1],
+			data[3 * (x * width + y) + 0]);
+	}
+
+	uint32 lookUp(const float y, const float x, const int32 segments = 1, const int32 index = 1) const override
+	{
+
+		int32 xIndex = (x * width) / scaleW;
+		int32 yIndex = (y * height) / scaleH;
+
+		return readData(xIndex + 1, yIndex);
 	}
 
 	// bool: keep -> Keep left if true; Keep right if false
-	void crop(const float multiplier, const bool left = true)
-	{
-		assert(multiplier > 0.0f);
-		assert(multiplier < 1.0f);
-
-		int32 newSize = 3 * width * height;
-		uint8* newData = new uint8[newSize];
-
-		int32 newWidth = width * multiplier;
-		int32 start = left ? 0 : newWidth;
-		int32 end = left ? newWidth : width;
-
-		for (int32 j = 0; j < height; j++)
-		{
-			for (int32 i = start; i < end; i++)
-			{
-				newData[3 * (i + (j * (int32)(width - newWidth))) + 0] = data[3 * (i + (j * width)) + 0];
-				newData[3 * (i + (j * (int32)(width - newWidth))) + 1] = data[3 * (i + (j * width)) + 1];
-				newData[3 * (i + (j * (int32)(width - newWidth))) + 2] = data[3 * (i + (j * width)) + 2];
-			}
-		}
-
-		memset(data, 0, 3 * width * height);
-		delete data;
-		data = nullptr;
-
-		scaleH *= 1.0f / multiplier;
-		scaleW *= multiplier;
-		width = newWidth;
-		data = newData;
-	}
-};
-
-struct Pixel32
-{
-	uint32 aRGB;
+	//void crop(const float multiplier, const bool left = true)
+	//{
+	//	assert(multiplier > 0.0f);
+	//	assert(multiplier < 1.0f);
+	//
+	//	int32 newSize = 3 * width * height;
+	//	uint8* newData = new uint8[newSize];
+	//
+	//	int32 newWidth = width * multiplier;
+	//	int32 start = left ? 0 : newWidth;
+	//	int32 end = left ? newWidth : width;
+	//
+	//	for (int32 j = 0; j < height; j++)
+	//	{
+	//		for (int32 i = start; i < end; i++)
+	//		{
+	//			newData[3 * (i + (j * (int32)(width - newWidth))) + 0] = data[3 * (i + (j * width)) + 0];
+	//			newData[3 * (i + (j * (int32)(width - newWidth))) + 1] = data[3 * (i + (j * width)) + 1];
+	//			newData[3 * (i + (j * (int32)(width - newWidth))) + 2] = data[3 * (i + (j * width)) + 2];
+	//		}
+	//	}
+	//
+	//	memset(data, 0, 3 * width * height);
+	//	delete data;
+	//	data = nullptr;
+	//
+	//	scaleH *= 1.0f / multiplier;
+	//	scaleW *= multiplier;
+	//	width = newWidth;
+	//	data = newData;
+	//}
 };
 
 class Texture32 : public Texture

@@ -39,13 +39,13 @@ struct MainMenu
 	MainMenu()
 	{
 		MenuButton* b1 = new MenuButton(
-			new GUISprite32("Texture_Start.bmp", 0.4f, 0.6f, 0.6f, 0.8f),
+			new GUISprite32("MainMenu_NewGame.bmp",  0.4f, 0.560f, 0.6f, 0.640f),
 			MenuAction::Start);
 		MenuButton* b2 = new MenuButton(
-			new GUISprite32("Texture_Start.bmp", 0.4f, 0.4f, 0.6f, 0.6f),
+			new GUISprite32("MainMenu_Continue.bmp", 0.4f, 0.460f, 0.6f, 0.540f),
 			MenuAction::Continue);
 		MenuButton* b3 = new MenuButton(
-			new GUISprite32("Texture_Start.bmp", 0.4f, 0.2f, 0.6f, 0.4f),
+			new GUISprite32("MainMenu_Quit.bmp",     0.4f, 0.360f, 0.6f, 0.440f),
 			MenuAction::Quit);
 
 		buttons.push_back(b1);

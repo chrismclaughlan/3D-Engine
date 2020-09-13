@@ -73,6 +73,7 @@ public:
 public:
 	void ClearScreen(uint32 colour);
 	void DrawPointP(int32 x, int32 y, uint32 colour);
+	void DrawPointPAlpha(const int32 x, const int32 y, const uint32 colour);
 	//void DrawPoint(double x, double y, uint32 colour);
 	void DrawRectP(int32 x1, int32 y1, int32 x2, int32 y2, uint32 colour);
 	void DrawRect(float x, float y, float w, float h, uint32 colour);

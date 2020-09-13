@@ -14,10 +14,10 @@ struct GUIText;
 
 enum class GUIState : int32
 {
+	Pressed  = 0,
 	Inactive = 1, 
 	Hover    = 2, 
 	Active   = 3,
-	Pressed  = 3,
 };
 
 struct GUIRect
@@ -175,7 +175,7 @@ public:
 	float x2;
 	float y2;
 	GUIState state = GUIState::Inactive;  // index of sprite to draw
-	int32 numStates = 4;
+	int32 numStates = 3;
 
 public:
 	GUISprite(const float x1, const float y1, const float x2,

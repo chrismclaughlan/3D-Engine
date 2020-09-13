@@ -9,7 +9,7 @@ int32 Game::run()
 	gsPush(&Game::gsCloseApplication);  // should be first in stack
 
 	win.Gfx().text2D = new Text2D();
-	if (win.Gfx().text2D->LoadTextMapFromBMP("texture_font_252x108_monochrome.bmp"))
+	if (win.Gfx().text2D->LoadTextMapFromBMP("Text2D_Font_252x108_monochrome.bmp"))
 	{
 		gsPush(&Game::gsMainMenu);
 	}
@@ -49,6 +49,36 @@ void Game::gsCloseApplication()
 
 void Game::gsInitGame()
 {
+	// Reset everything incase overwriting existing game
+
+	if (guiChat != nullptr)
+	{
+		delete guiChat;
+		guiChat = nullptr;
+	}
+	delete guiChat;
+	guiChat = nullptr;
+
+	if (object1 != nullptr)
+	{
+		delete object1;
+		object1 = nullptr;
+	}
+	delete object1;
+	object1 = nullptr;
+
+	if (object2 != nullptr)
+	{
+		delete object2;
+		object2 = nullptr;
+	}
+	delete object2;
+	object2 = nullptr;
+
+	player.resetCamera();
+	player.resetPosition();
+
+
 	// Load GUI
 	guiChat = new GUIForm();
 	const float x1 = 0.0f, y1 = 0.0f, x2 = 0.75f, y2 = 0.05f;
@@ -62,11 +92,11 @@ void Game::gsInitGame()
 	// Load textures
 	objectTexture1 = new Texture24();
 	objectTexture2 = new Texture24();
-	if (!objectTexture1->LoadTextureFromBMP("texture_16x32.bmp"))
+	if (!objectTexture1->LoadTextureFromBMP("CubeMap_Test.bmp"))
 	{
 		// error
 	};
-	if (!objectTexture2->LoadTextureFromBMP("texture_32x32.bmp"))
+	if (!objectTexture2->LoadTextureFromBMP("Object_Texture_16x32_24bit.bmp"))
 	{
 		// error
 	};
@@ -325,7 +355,7 @@ void Game::gsGameRender()
 
 	win.Gfx().DrawGUIForm(guiChat);
 
-	win.Gfx().DrawPointP(win.Gfx().getWidth() / 2, win.Gfx().getHeight() / 2, 0xff0000);
+	//win.Gfx().DrawPointP(win.Gfx().getWidth() / 2, win.Gfx().getHeight() / 2, 0xff0000);
 }
 
 void Game::gsMainMenu()
@@ -397,6 +427,7 @@ void Game::gsMainMenu()
 					if (b->sprite->state == GUIState::Active)
 					{
 						b->sprite->state = GUIState::Pressed;
+						std::cout << "Pressed\n";
 					}
 				}
 				else
@@ -433,7 +464,7 @@ void Game::gsMainMenu()
 			{
 				delete mainMenu;
 				mainMenu = nullptr;
-				gsPush(&Game::gsInitGame);
+				gsPush(&Game::gsGame);
 			} return;
 			default:
 			{
@@ -445,7 +476,7 @@ void Game::gsMainMenu()
 
 	/* ---------- Render ---------- */
 
-	win.Gfx().ClearScreen(0x000000);
+	win.Gfx().ClearScreen(0xCDCDCD);
 
 	for (auto b : mainMenu->buttons)
 	{

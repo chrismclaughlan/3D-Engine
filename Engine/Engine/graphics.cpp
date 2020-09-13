@@ -105,16 +105,21 @@ void Graphics::ClearScreen(uint32 colour)
 
 void Graphics::DrawPointP(int32 x, int32 y, uint32 colour)
 {
+	Clamp(0, &x, width - 1);
+	Clamp(0, &y, height - 1);
+	uint32* pixel = (uint32*)memory;
+	pixel[x + (y * width)] = colour;
+}
+
+void Graphics::DrawPointPAlpha(const int32 x, const int32 y, const uint32 colour)
+{
 	// If alpha above threshold; draw
 	if ((colour & UINT32_ALPHA_CHANNEL) <= ALPHA_THRESHOLD)
 	{
 		return;
 	}
 
-	Clamp(0, &x, width - 1);
-	Clamp(0, &y, height - 1);
-	uint32* pixel = (uint32*)memory;
-	pixel[x + (y * width)] = colour;
+	DrawPointP(x, y, colour);
 }
 
 //void Graphics::DrawPoint(double x, double y, uint32 colour)
@@ -761,7 +766,9 @@ const bool Graphics::DrawChar(const char c, const int32 posX, const int32 posY, 
 			int bit = 1 << (7 - x % 8);
 			int v = (text2D->map[pos] & bit) > 0;
 			if (v)
+			{
 				DrawPointP(posX + (x - left), posY + (y - bottom), colour);
+			}
 				//DrawPointP(posX + (x - left), posY + (y - bottom), text2D->colortable[1]);
 			//else  // draw background
 				//DrawPointP(posX + (x - left), posY + (y - bottom), textTexture->colortable[0]);
@@ -810,13 +817,7 @@ void Graphics::DrawGUIMenuSprite(GUISprite* guiSprite)
 		{
 			const double x_ = normalise(x1, x2, i);
 			const double y_ = normalise(y1, y2, j);
-			//uint32 aRGB = guiSprite->Tex()->lookUp(x_, y_, LOOKUP_LEFT);
-			//// If alpha above threshold; draw
-			//if ((aRGB & UINT32_ALPHA_CHANNEL) > 0)
-			//{
-			//	DrawPointP(i, j, aRGB & UINT32_RGB_CHANNEL);
-			//}
-			DrawPointP(i, j, guiSprite->Tex()->lookUp(x_, y_, 4, guiSprite->getState()));
+			DrawPointPAlpha(i, j, guiSprite->Tex()->lookUp(x_, y_, guiSprite->getNumStates(), guiSprite->getState()));
 		}
 	}
 }

@@ -8,6 +8,65 @@
 
 class Player;
 
+enum class MenuAction
+{
+	Start, Quit, Continue, Invalid,
+};
+
+struct MenuButton
+{
+	GUISprite32* sprite = nullptr;
+	MenuAction action = MenuAction::Invalid;
+
+	MenuButton(GUISprite32* sprite, MenuAction action)
+		: sprite(sprite), action(action)
+	{}
+
+	~MenuButton()
+	{
+		if (sprite != nullptr)
+		{
+			delete sprite;
+			sprite = nullptr;
+		}
+	}
+};
+
+struct MainMenu
+{
+	std::vector<MenuButton*> buttons;
+
+	MainMenu()
+	{
+		MenuButton* b1 = new MenuButton(
+			new GUISprite32("Texture_Start.bmp", 0.4f, 0.6f, 0.6f, 0.8f),
+			MenuAction::Start);
+		MenuButton* b2 = new MenuButton(
+			new GUISprite32("Texture_Start.bmp", 0.4f, 0.4f, 0.6f, 0.6f),
+			MenuAction::Continue);
+		MenuButton* b3 = new MenuButton(
+			new GUISprite32("Texture_Start.bmp", 0.4f, 0.2f, 0.6f, 0.4f),
+			MenuAction::Quit);
+
+		buttons.push_back(b1);
+		buttons.push_back(b2);
+		buttons.push_back(b3);
+	}
+
+	~MainMenu()
+	{
+		for (auto b : buttons)
+		{
+			if (b != nullptr)
+			{
+				delete b;
+				b = nullptr;
+			}
+		}
+		buttons.clear();
+	}
+};
+
 class Game
 {
 private:
@@ -92,9 +151,9 @@ private:
 	//	}
 	//}
 
-	const int32 initText();
+	void gsCloseApplication();
+	void gsInitGame();
 	void gsMainMenu();
-	const int32 initGame();
 	void gsGame();
 	void gsGameInput();
 	void gsGameSimulate();
@@ -114,20 +173,15 @@ public:
 
 	~Game()
 	{
-		if (guiSprite != nullptr)
+		if (mainMenu != nullptr)
 		{
-			delete guiSprite;
-			guiSprite = nullptr;
+			delete mainMenu;
+			mainMenu = nullptr;
 		}
 		if (guiChat != nullptr)
 		{
 			delete guiChat;
 			guiChat     = nullptr;
-		}
-		if (guiMainMenu != nullptr)
-		{
-			delete guiMainMenu;
-			guiMainMenu = nullptr;
 		}
 		if (guiGameMenu != nullptr)
 		{
@@ -171,10 +225,10 @@ private:
 	//GUILayout guiChat;
 
 	GUIForm* guiChat = nullptr;
-	GUIMenu* guiMainMenu = nullptr;
 	GUIMenu* guiGameMenu = nullptr;
-	//GUISprite24* guiSprite = nullptr;
-	GUISprite32* guiSprite = nullptr;
+	//GUISprite32* guiSprite = nullptr;
+	//std::vector<GUISprite32*> guiMainMenu;
+	MainMenu* mainMenu = nullptr;
 
 private:
 	// returns true if string occupied

@@ -3,12 +3,6 @@
 
 class Graphics;
 
-// Compare ignoring alpha values
-const bool operator==(const ClickableColours& a, const uint32 k)
-{
-	return (((uint32)(a) & UINT32_RGB_CHANNEL) == (k & UINT32_RGB_CHANNEL));
-}
-
 const bool GUIText::isAt(const float x, const float y, Graphics* gfx)
 {
 	if (x > x1 && y > y1)
@@ -35,10 +29,9 @@ const bool GUISprite::isClickable(const float x, const float y)//, ClickableColo
 		const float y_ = Graphics::normalise(y1, y2, y);
 		colour = Tex()->lookUp(x_, y_, getNumStates(), getState());
 
-		uint32 colourA = colour & UINT32_ALPHA_CHANNEL;
-		std::cout << colourA << "\n";
+		//std::cout << colourA << "\n";
 
-		return colourA > ALPHA_THRESHOLD;
+		return ((uint32)(colour & UINT32_ALPHA_CHANNEL)) > ALPHA_THRESHOLD;
 
 		//uint32 colour;
 		//const float x_ = Graphics::normalise(x1, x2, x);

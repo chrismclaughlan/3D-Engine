@@ -6,7 +6,10 @@
 
 int32 Game::run()
 {
-	if (initText() == 0)
+	gsPush(&Game::gsCloseApplication);  // should be first in stack
+
+	win.Gfx().text2D = new Text2D();
+	if (win.Gfx().text2D->LoadTextMapFromBMP("texture_font_252x108_monochrome.bmp"))
 	{
 		gsPush(&Game::gsMainMenu);
 	}
@@ -34,15 +37,17 @@ int32 Game::run()
 	return Window::getExitCode();
 }
 
-const int32 Game::initText()
+void Game::gsCloseApplication()
 {
-	win.Gfx().text2D = new Text2D();
-	win.Gfx().text2D->LoadTextMapFromBMP("texture_font_252x108_monochrome.bmp");
+	gsPop();
 	
-	return 0;
+	if (!gStates.empty())
+	{
+		std::cerr << "Application closing unexpectedly\n";
+	}
 }
 
-const int32 Game::initGame()
+void Game::gsInitGame()
 {
 	// Load GUI
 	guiChat = new GUIForm();
@@ -60,12 +65,10 @@ const int32 Game::initGame()
 	if (!objectTexture1->LoadTextureFromBMP("texture_16x32.bmp"))
 	{
 		// error
-		return -1;
 	};
 	if (!objectTexture2->LoadTextureFromBMP("texture_32x32.bmp"))
 	{
 		// error
-		return -1;
 	};
 
 	// Load wavefront files
@@ -84,7 +87,7 @@ const int32 Game::initGame()
 		0.1f,
 		1000.0f);
 
-	return 0;
+	gsPush(&Game::gsGame);
 }
 
 void Game::gsGame()
@@ -327,44 +330,9 @@ void Game::gsGameRender()
 
 void Game::gsMainMenu()
 {
-	/* GUIForm */
-	//if (guiMainMenu == nullptr)
-	//{
-		//guiMainMenu = new GUIMenu();
-
-		//uint32 rColours[3] = { 0xaaaaaa, 0x444444, 0x888888 };
-		//GUIRect* guiRect = new GUIRect(0.4f, 0.45f, 0.6f, 0.55f, rColours, nullptr);
-		//guiMainMenu->setRect(guiRect);
-
-		//uint32 tColours[3] = { 0xdddddd, 0xf362d4, 0xffffff };
-		//GUIText* item1 = new GUIText("Start", tColours, 0.45f, 0.5f);
-		//GUIText* item2 = new GUIText("Quit", tColours, 0.45f, 0.45f);
-		//guiMainMenu->addText(item1);
-		//guiMainMenu->addText(item2);
-	//}
-
-	/* SPRITES */
-	if (guiSprite == nullptr)
+	if (mainMenu == nullptr)
 	{
-		//Texture24* guiSpriteTexture = new Texture24();
-		//const char* filename1 = "Texture_MainMenu.bmp";
-		//if (!guiSpriteTexture->LoadTextureFromBMP(filename1))
-		//{
-		//	std::cerr << "Error loading " << filename1 << "\n";
-		//}
-
-		Texture32* guiSpriteTexture32 = new Texture32();
-		const char* filename2 = "Texture_Start.bmp";
-		if (!guiSpriteTexture32->LoadTextureFromBMP(filename2))
-		{
-			std::cerr << "Error loading " << filename2 << "\n";
-		}
-
-		std::vector< GUISpriteClickable> vClickable;
-		vClickable.push_back(GUISpriteClickable(ClickableColours::Start));
-		vClickable.push_back(GUISpriteClickable(ClickableColours::Quit));
-
-		guiSprite = new GUISprite32(guiSpriteTexture32, 0.4f, 0.4f, 0.6f, 0.6f, vClickable);
+		mainMenu = new MainMenu();
 	}
 
 	/* ---------- Input ---------- */
@@ -380,20 +348,22 @@ void Game::gsMainMenu()
 			int32 iY = event.getY();
 			float fX = win.Gfx().pxToScreenX(iX);
 			float fY = win.Gfx().pxToScreenY(iY);
-			if (guiSprite->isClickable(fX, fY))
+
+			for (auto b : mainMenu->buttons)
 			{
-				if (guiSprite->state == GUIState::Inactive)
+				if (b->sprite->isClickable(fX, fY))
 				{
-					guiSprite->state = GUIState::Hover;
-					std::cout << "Hover\n";
+					if (b->sprite->state == GUIState::Inactive)
+					{
+						b->sprite->state = GUIState::Hover;
+					}
 				}
-			}
-			else
-			{
-				if (guiSprite->state == GUIState::Hover)
+				else
 				{
-					guiSprite->state = GUIState::Inactive;
-					std::cout << "x=" << iX << " y=" << iY << "\n";
+					if (b->sprite->state == GUIState::Hover)
+					{
+						b->sprite->state = GUIState::Inactive;
+					}
 				}
 			}
 		} break;
@@ -403,12 +373,14 @@ void Game::gsMainMenu()
 			int32 iY = event.getY();
 			float fX = win.Gfx().pxToScreenX(iX);
 			float fY = win.Gfx().pxToScreenY(iY);
-			if (guiSprite->isClickable(fX, fY))
-			{
-				guiSprite->state = GUIState::Active;
-				std::cout << "Active\n";
-			}
 
+			for (auto b : mainMenu->buttons)
+			{				
+				if (b->sprite->isClickable(fX, fY))
+				{
+					b->sprite->state = GUIState::Active;
+				}
+			}
 		} break;
 		case Mouse::Event::Type::LReleased:
 		{
@@ -417,41 +389,21 @@ void Game::gsMainMenu()
 			int32 iY = event.getY();
 			float fX = win.Gfx().pxToScreenX(iX);
 			float fY = win.Gfx().pxToScreenY(iY);
-			if (guiSprite->isClickable(fX, fY))
+
+			for (auto b : mainMenu->buttons)
 			{
-				if (guiSprite->state == GUIState::Active)
+				if (b->sprite->isClickable(fX, fY))
 				{
-					guiSprite->state = GUIState::Pressed;
-					std::cout << "Pressed\n";
+					if (b->sprite->state == GUIState::Active)
+					{
+						b->sprite->state = GUIState::Pressed;
+					}
+				}
+				else
+				{
+					b->sprite->state = GUIState::Inactive;
 				}
 			}
-			else
-			{
-				guiSprite->state = GUIState::Inactive;
-			}
-
-			//ClickableColours cc;
-			//if (guiSprite->isClickable(fX, fY, cc))
-			//{
-			//	switch (cc)
-			//	{
-			//	case ClickableColours::Start:
-			//	{
-			//		delete guiSprite;
-			//		guiSprite = nullptr;
-			//		initGame();
-			//		gsPush(&Game::gsGame);
-			//		return;
-			//	} break;
-			//	case ClickableColours::Quit:
-			//	{
-			//		delete guiSprite;
-			//		guiSprite = nullptr;
-			//		gsPop();
-			//		return;
-			//	} break;
-			//	}
-			//}
 		}
 		}
 	}
@@ -459,35 +411,46 @@ void Game::gsMainMenu()
 
 	/* ---------- Simulate ---------- */
 
-	//for (auto t : guiMainMenu->getVText())
-	//{
-	//	if (t->state == GUI_STATE_ACTIVE)
-	//	{
-	//		if (t->sText == "Start")  // TODO enum?
-	//		{
-	//			delete guiMainMenu;
-	//			guiMainMenu = nullptr;
-	//			initGame();
-	//			gsPush(&Game::gsGame);
-	//			return;
-	//		}
-	//		else if (t->sText == "Quit")  // TODO enum?
-	//		{
-	//			delete guiMainMenu;
-	//			guiMainMenu = nullptr;
-	//			gsPop();
-	//			return;
-	//		}
-	//	}
-	//}
+	for (auto b : mainMenu->buttons)
+	{
+		if (b->sprite->state == GUIState::Pressed)
+		{
+			switch (b->action)
+			{
+			case MenuAction::Start:
+			{
+				delete mainMenu;
+				mainMenu = nullptr;
+				gsPush(&Game::gsInitGame);
+			} return;
+			case MenuAction::Quit:
+			{
+				delete mainMenu;
+				mainMenu = nullptr;
+				gsPopUntil(&Game::gsCloseApplication);
+			} return;
+			case MenuAction::Continue:
+			{
+				delete mainMenu;
+				mainMenu = nullptr;
+				gsPush(&Game::gsInitGame);
+			} return;
+			default:
+			{
+				std::cerr << "MenuAction not recognised\n";
+			} break;
+			}
+		}
+	}
 
 	/* ---------- Render ---------- */
 
 	win.Gfx().ClearScreen(0x000000);
 
-	//win.Gfx().DrawGUIMenu(guiMainMenu);
-
-	win.Gfx().DrawGUIMenuSprite(guiSprite);
+	for (auto b : mainMenu->buttons)
+	{
+		win.Gfx().DrawGUIMenuSprite(b->sprite);
+	}
 }
 
 void Game::gsGameMenu()

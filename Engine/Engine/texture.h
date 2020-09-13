@@ -214,6 +214,14 @@ private:
 	uint32* data = nullptr;
 
 public:
+	Texture32(const char* filename)
+	{
+		if (!LoadTextureFromBMP(filename))
+		{
+			std::cerr << "Error loading " << filename << "\n";
+		}
+	}
+
 	~Texture32()
 	{
 		if (data != nullptr)

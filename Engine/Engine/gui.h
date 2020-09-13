@@ -20,13 +20,6 @@ enum class GUIState : int32
 	Pressed  = 3,
 };
 
-enum class ClickableColours : uint32
-{
-	Ininitialised = 0xffffff,
-	Start         = 0xff0000,
-	Quit          = 0x00ff00,
-};
-
 struct GUIRect
 {
 	GUIText* guiTextInput = nullptr;
@@ -174,25 +167,6 @@ public:
 
 /* -------WIP-------*/
 
-// Contains hitbox normalised coords
-struct GUISpriteClickable
-{
-	ClickableColours colour = ClickableColours::Ininitialised;
-	// Hitbox
-	float x1 = -1.0f;
-	float y1 = -1.0f;
-	float x2 = -1.0f;
-	float y2 = -1.0f;
-
-	GUISpriteClickable() {};
-	GUISpriteClickable(ClickableColours colour) : colour(colour) {};
-
-	//const bool isClickable(const float x, const float y)
-	//{
-	//	return x > x1 && y > y1 && x < x2 && y < y2;
-	//}
-};
-
 class GUISprite
 {
 public:
@@ -200,14 +174,13 @@ public:
 	float y1;
 	float x2;
 	float y2;
-	std::vector<GUISpriteClickable> vClickable;
 	GUIState state = GUIState::Inactive;  // index of sprite to draw
 	int32 numStates = 4;
 
 public:
 	GUISprite(const float x1, const float y1, const float x2,
-		const float y2, std::vector<GUISpriteClickable> vClickable)
-		: x1(x1), y1(y1), x2(x2), y2(y2), vClickable(vClickable)
+		const float y2)
+		: x1(x1), y1(y1), x2(x2), y2(y2)
 	{}
 
 	// Returns index of clickable if it is within x, y
@@ -224,8 +197,8 @@ public:
 
 public:
 	GUISprite24(Texture24* texture, const float x1, const float y1, const float x2,
-		const float y2, std::vector<GUISpriteClickable> vClickable)
-		: texture(texture), GUISprite(x1, y1, x2, y2, vClickable)
+		const float y2)
+		: texture(texture), GUISprite(x1, y1, x2, y2)
 	{}
 
 	~GUISprite24()
@@ -251,10 +224,12 @@ public:
 	Texture32* texture = nullptr;
 
 public:
-	GUISprite32(Texture32* texture, const float x1, const float y1, const float x2,
-		const float y2, std::vector<GUISpriteClickable> vClickable)
-		: texture(texture), GUISprite(x1, y1, x2, y2, vClickable)
-	{}
+	GUISprite32(const char* filename, const float x1, const float y1, const float x2,
+		const float y2)
+		: GUISprite(x1, y1, x2, y2)
+	{
+		texture = new Texture32(filename);
+	}
 
 	~GUISprite32()
 	{

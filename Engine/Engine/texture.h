@@ -12,24 +12,78 @@
 #define LOOKUP_LEFT  1
 #define LOOKUP_RIGHT 2
 
-struct WIPGUISpriteClickable;
+struct GUISpriteClickable;
 
 class Texture
 {
-public:
+protected:
 	int32 width = -1;
 	int32 height = -1;
 	float scaleW = 1.0f;
 	float scaleH = 1.0f;
-	uint8* map = nullptr;
 
 public:
-	~Texture()
+	virtual const int32 headerSize() const = 0;
+	virtual void writeData(FILE* f) = 0;
+	virtual uint32 lookUp(const float y, const float x, const int32 segments = 1, const int32 index = 1) const = 0;
+	bool LoadTextureFromBMP(const char* filename)
 	{
-		if (map != nullptr)
+		int i;
+		FILE* f;
+		errno_t err = fopen_s(&f, filename, "r");
+		if (err != 0)
 		{
-			delete[] map;
-			map = nullptr;
+			std::cerr << "Error opening file " << filename << "\n";
+			return false;
+		}
+
+		uint8* info = new uint8[headerSize()];
+
+		// read the 54-byte header
+		fread(info, sizeof(uint8), headerSize(), f);
+
+		const int32 bOffset = info[10];
+
+		std::cout << "Offset: " << bOffset << std::endl;
+
+		// extract image height and width from header
+		width = *(int32*)& info[18];
+		height = *(int32*)& info[22];
+		if (width < height)
+		{
+			scaleH = height / width;
+			scaleW = 1.0f / scaleH;
+		}
+		else
+		{
+			scaleW = width / height;
+			scaleH = 1.0f / scaleW;
+		}
+
+		writeData(f);
+
+		fclose(f);
+
+		delete[] info;
+		info = nullptr;
+
+		return true;
+	}
+
+};
+
+class Texture24 : public Texture
+{
+private:
+	uint8* data = nullptr;
+
+public:
+	~Texture24()
+	{
+		if (data != nullptr)
+		{
+			delete[] data;
+			data = nullptr;
 		}
 	}
 
@@ -58,6 +112,7 @@ public:
 	//	return hexadecimalval;
 	//}
 
+	const int32 headerSize() const { return 54; };
 	static uint32 rgbToHex(const uint8 r, const uint8 g, const uint8 b)
 	{
 		uint32 h = 0x0;
@@ -67,78 +122,51 @@ public:
 		return h;
 	}
 
-	bool LoadTextureFromBMP(const char* filename)
+	void writeData(FILE* f) override
 	{
-		int i;
-		FILE* f;
-		errno_t err = fopen_s(&f, filename, "r");
-		if (err != 0)
-		{
-			std::cerr << "Error opening file " << filename << "\n";
-			return false;
-		}
-		unsigned char info[54];
-
-		// read the 54-byte header
-		fread(info, sizeof(uint8), 54, f);
-
-		// extract image height and width from header
-		width = *(int*)& info[18];
-		height = *(int*)& info[22];
-		if (width < height)
-		{
-			scaleH = height / width;
-			scaleW = 1.0f / scaleH;
-		}
-		else
-		{
-			scaleW = width / height;
-			scaleH = 1.0f / scaleW;
-		}
-
 		// allocate 3 bytes per pixel
 		int size = 3 * width * height;
-		map = new uint8[size];
+		data = new uint8[size];
 
 		// read the rest of the data at once
-		fread(map, sizeof(uint8), size, f);
-		fclose(f);
-
-		return true;
+		fread(data, sizeof(uint8), size, f);
 	}
 
-	uint32 lookUp(const float y, const float x, const int32 flag = LOOKUP_WHOLE) const
+	uint32 lookUp(const float y, const float x, const int32 segments = 1, const int32 index = 1) const override
 	{
 		// Flip values (array stored differently)
 		int32 xIndex;
 		int32 yIndex;
 
-		switch (flag)
-		{
-		case LOOKUP_WHOLE:
-		{
-			xIndex = (x * width) / scaleW;
-			yIndex = (y * height) / scaleH;
-		} break;
-		case LOOKUP_RIGHT:
-		{
-			xIndex = (x * width) / scaleW;
-			yIndex = ((y * height) / scaleH);
-			yIndex *= 0.5f;
-			yIndex += height;
-		} break;
-		case LOOKUP_LEFT:
-		{
-			xIndex = (x * width) / scaleW;
-			yIndex = (y * height) / scaleH;
-			yIndex *= 0.5f;
-		} break;
-		}
+		xIndex = (x * width) / scaleW;
+		yIndex = (y * height) / scaleH;
+
+		//switch (flag)
+		//{
+		//case LOOKUP_WHOLE:
+		//{
+		//	xIndex = (x * width) / scaleW;
+		//	yIndex = (y * height) / scaleH;
+		//} break;
+		//case LOOKUP_RIGHT:
+		//{
+		//	xIndex = (x * width) / scaleW;
+		//	yIndex = ((y * height) / scaleH);
+		//	yIndex *= 0.5f;
+		//	yIndex += height;
+		//} break;
+		//case LOOKUP_LEFT:
+		//{
+		//	xIndex = (x * width) / scaleW;
+		//	yIndex = (y * height) / scaleH;
+		//	yIndex *= 0.5f;
+		//} break;
+		//}
 
 		return rgbToHex(
-			map[3 * (xIndex * width + yIndex) + 2],
-			map[3 * (xIndex * width + yIndex) + 1],
-			map[3 * (xIndex * width + yIndex) + 0]);
+			data[3 * (xIndex * width + yIndex) + 2],
+			data[3 * (xIndex * width + yIndex) + 1],
+			data[3 * (xIndex * width + yIndex) + 0]);
 	}
 
 	// bool: keep -> Keep left if true; Keep right if false
@@ -148,7 +176,7 @@ public:
 		assert(multiplier < 1.0f);
 
 		int32 newSize = 3 * width * height;
-		uint8* newMap = new uint8[newSize];
+		uint8* newData = new uint8[newSize];
 
 		int32 newWidth = width * multiplier;
 		int32 start = left ? 0 : newWidth;
@@ -158,103 +186,65 @@ public:
 		{
 			for (int32 i = start; i < end; i++)
 			{
-				newMap[3 * (i + (j * (int32)(width - newWidth))) + 0] = map[3 * (i + (j * width)) + 0];
-				newMap[3 * (i + (j * (int32)(width - newWidth))) + 1] = map[3 * (i + (j * width)) + 1];
-				newMap[3 * (i + (j * (int32)(width - newWidth))) + 2] = map[3 * (i + (j * width)) + 2];
+				newData[3 * (i + (j * (int32)(width - newWidth))) + 0] = data[3 * (i + (j * width)) + 0];
+				newData[3 * (i + (j * (int32)(width - newWidth))) + 1] = data[3 * (i + (j * width)) + 1];
+				newData[3 * (i + (j * (int32)(width - newWidth))) + 2] = data[3 * (i + (j * width)) + 2];
 			}
 		}
 
-		memset(map, 0, 3 * width * height);
-		delete map;
-		map = nullptr;
+		memset(data, 0, 3 * width * height);
+		delete data;
+		data = nullptr;
 
 		scaleH *= 1.0f / multiplier;
 		scaleW *= multiplier;
 		width = newWidth;
-		map = newMap;
+		data = newData;
 	}
+};
 
+struct Pixel32
+{
+	uint32 aRGB;
+};
 
+class Texture32 : public Texture
+{
+private:
+	uint32* data = nullptr;
 
-	/*
-	
-	keep all texture but just check for values shifted along
-
-	OR
-
-	keep two textures with same size just shifted left or right
-
-	draw left
-
-	check right for collisions
-	
-	*/
-
-
-
-	void getColourBlocks(std::vector<WIPGUISpriteClickable> vClickable)
+public:
+	~Texture32()
 	{
-		//std::vector<int32> min_ys;
-
-		//bool emptyColumn = true;
-		//int32 max_y = 0;
-		//int32 min_y = height;
-		//for (int32 j = 0; j < height; j++)
-		//{
-		//	int32 max_x = (width / 2) + 1;
-		//	int32 min_x = width;
-		//	emptyColumn = true;
-		//	for (int32 i = (width / 2) + 1; i < width; i++)
-		//	{
-		//		uint8 one =   map[3 * (j * width + i) + 0];
-		//		uint8 two =   map[3 * (j * width + i) + 1];
-		//		uint8 three = map[3 * (j * width + i) + 2];
-		//		if (one == 255 && two == 255 && three == 255)
-		//		{
-		//		}
-		//		else
-		//		{
-		//			emptyColumn = false;
-		//			if (i > max_x) max_x = i;
-		//			if (i < min_x) min_x = i;
-		//			if (j > max_y) max_y = j;
-		//			if (j < min_y) min_y = j;
-		//			//std::cout << i << "," << j << "\n";
-		//		}
-		//	}
-		//	if (!emptyColumn)
-		//	{
-		//		std::cout
-		//			<< "min_x:" << min_x << " max_x:" << max_x
-		//			<< " min_y:" << min_y << " max_y:" << max_y
-		//			<< "\n";
-		//	}
-
-		//	for (auto y : min_ys)
-		//	{
-		//		std::cout << y << "\n";
-		//	}
-
-		//}
+		if (data != nullptr)
+		{
+			delete[] data;
+			data = nullptr;
+		}
 	}
-};
 
-struct Pixel24
-{
-	uint32 colour;
-};
+	const int32 headerSize() const { return 66; };
+	void writeData(FILE* f) override
+	{
+		// allocate 3 bytes per pixel
+		int size = width * height;
+		data = new uint32[size];
 
-struct Pixel32 : Pixel24
-{
-	uint8 alpha;
-};
+		// read the rest of the data at once
+		fread(data, sizeof(uint32), size, f);
+	}
 
-struct Texture24
-{
+	// Divide into segments peices and draw the content in index
+	uint32 lookUp(const float y, const float x, const int32 segments = 1, const int32 index = 1) const override
+	{
+		// Flip values (array stored differently)
+		int32 xIndex;
+		int32 yIndex;
 
-};
+		yIndex = (x * (float)width) / scaleW;
+		xIndex = (((y * (float)height) / (scaleH * (float)index)) * 
+			((1.0f * (float)index) / (float)segments)) + (float)height * 2.0f * ((float)index - 1.0f);
 
-struct Texture32
-{
-
+		return data[xIndex + (yIndex * width)];
+	}
 };

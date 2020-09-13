@@ -156,8 +156,8 @@ private:
 
 	Object* object1 = nullptr;
 	Object* object2 = nullptr;
-	Texture* objectTexture1 = nullptr;
-	Texture* objectTexture2 = nullptr;
+	Texture24* objectTexture1 = nullptr;
+	Texture24* objectTexture2 = nullptr;
 
 	Player player;
 
@@ -173,7 +173,8 @@ private:
 	GUIForm* guiChat = nullptr;
 	GUIMenu* guiMainMenu = nullptr;
 	GUIMenu* guiGameMenu = nullptr;
-	WIPGUISprite* guiSprite = nullptr;
+	//GUISprite24* guiSprite = nullptr;
+	GUISprite32* guiSprite = nullptr;
 
 private:
 	// returns true if string occupied

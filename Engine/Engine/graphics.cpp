@@ -105,6 +105,12 @@ void Graphics::ClearScreen(uint32 colour)
 
 void Graphics::DrawPointP(int32 x, int32 y, uint32 colour)
 {
+	// If alpha above threshold; draw
+	if ((colour & UINT32_ALPHA_CHANNEL) <= ALPHA_THRESHOLD)
+	{
+		return;
+	}
+
 	Clamp(0, &x, width - 1);
 	Clamp(0, &y, height - 1);
 	uint32* pixel = (uint32*)memory;
@@ -280,7 +286,7 @@ float* Graphics::readDepthBuffer(const int32 x, const int32 y)
 void Graphics::DrawTexturedTriangle(int x1, int y1, float u1, float v1, float w1,
 	int x2, int y2, float u2, float v2, float w2,
 	int x3, int y3, float u3, float v3, float w3,
-	const Texture* texture)
+	const Texture24* texture)
 {
 
 	if (y2 < y1)
@@ -792,7 +798,7 @@ const float Graphics::normalise(const float min, const float max, float input)
 	return (input - min) / (max - min);
 }
 
-void Graphics::DrawGUIMenuSprite(WIPGUISprite* guiSprite)
+void Graphics::DrawGUIMenuSprite(GUISprite* guiSprite)
 {
 	const int32 x1 = screenToPxX(guiSprite->x1);
 	const int32 y1 = screenToPxY(guiSprite->y1);
@@ -804,7 +810,13 @@ void Graphics::DrawGUIMenuSprite(WIPGUISprite* guiSprite)
 		{
 			const double x_ = normalise(x1, x2, i);
 			const double y_ = normalise(y1, y2, j);
-			DrawPointP(i, j, guiSprite->texture->lookUp(x_, y_, LOOKUP_LEFT));
+			//uint32 aRGB = guiSprite->Tex()->lookUp(x_, y_, LOOKUP_LEFT);
+			//// If alpha above threshold; draw
+			//if ((aRGB & UINT32_ALPHA_CHANNEL) > 0)
+			//{
+			//	DrawPointP(i, j, aRGB & UINT32_RGB_CHANNEL);
+			//}
+			DrawPointP(i, j, guiSprite->Tex()->lookUp(x_, y_, 4, guiSprite->getState()));
 		}
 	}
 }

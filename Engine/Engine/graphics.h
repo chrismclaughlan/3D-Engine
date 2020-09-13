@@ -5,6 +5,10 @@
 #include "vector.h"
 #include "texture.h"
 
+#define UINT32_RGB_CHANNEL   (0x00FFFFFF)
+#define UINT32_ALPHA_CHANNEL (0xFF000000)
+#define ALPHA_THRESHOLD      (0)
+
 #define calculate_scales()\
 float ratio = 1080.0f / nscale_y;\
 scale_x = nscale_x * ratio;\
@@ -13,7 +17,7 @@ scale_y = nscale_y * ratio;\
 struct GUIText;
 struct GUIForm;
 struct GUIMenu;
-class WIPGUISprite;
+class GUISprite;
 
 class Graphics
 {
@@ -79,7 +83,7 @@ public:
 	void DrawTexturedTriangle(int x1, int y1, float u1, float v1, float w1,
 		int x2, int y2, float u2, float v2, float w2,
 		int x3, int y3, float u3, float v3, float w3,
-		const Texture* texture);
+		const Texture24* texture);
 	void RasterTexturedTriangles(
 		const Matrix4x4& projectionMatrix,
 		const Matrix4x4& matrixCamera,
@@ -96,5 +100,5 @@ public:
 
 	void DrawGUIForm(GUIForm* guiForm);
 	void DrawGUIMenu(GUIMenu* guiMenu);
-	void DrawGUIMenuSprite(WIPGUISprite* guiSprite);
+	void DrawGUIMenuSprite(GUISprite* guiSprite);
 };

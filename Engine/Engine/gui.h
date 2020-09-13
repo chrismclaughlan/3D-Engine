@@ -12,11 +12,19 @@ struct GUIText;
 #define GUI_STATE_ACTIVE 1
 #define GUI_STATE_HOVER	 2
 
+enum class GUIState : int32
+{
+	Inactive = 1, 
+	Hover    = 2, 
+	Active   = 3,
+	Pressed  = 3,
+};
+
 enum class ClickableColours : uint32
 {
 	Ininitialised = 0xffffff,
-	Start = 0xff0000,// 0x22b14c,
-	Quit = 0x00ff00,// 0xed1c24,
+	Start         = 0xff0000,
+	Quit          = 0x00ff00,
 };
 
 struct GUIRect
@@ -167,7 +175,7 @@ public:
 /* -------WIP-------*/
 
 // Contains hitbox normalised coords
-struct WIPGUISpriteClickable
+struct GUISpriteClickable
 {
 	ClickableColours colour = ClickableColours::Ininitialised;
 	// Hitbox
@@ -176,32 +184,51 @@ struct WIPGUISpriteClickable
 	float x2 = -1.0f;
 	float y2 = -1.0f;
 
-	WIPGUISpriteClickable() {};
-	WIPGUISpriteClickable(ClickableColours colour) : colour(colour) {};
+	GUISpriteClickable() {};
+	GUISpriteClickable(ClickableColours colour) : colour(colour) {};
 
-	const bool isClickable(const float x, const float y)
-	{
-		return x > x1 && y > y1 && x < x2 && y < y2;
-	}
+	//const bool isClickable(const float x, const float y)
+	//{
+	//	return x > x1 && y > y1 && x < x2 && y < y2;
+	//}
 };
 
-class WIPGUISprite
+class GUISprite
 {
 public:
 	float x1;
 	float y1;
 	float x2;
 	float y2;
-	Texture* texture = nullptr;
-	std::vector<WIPGUISpriteClickable> vClickable;
+	std::vector<GUISpriteClickable> vClickable;
+	GUIState state = GUIState::Inactive;  // index of sprite to draw
+	int32 numStates = 4;
 
 public:
-	WIPGUISprite(const float x1, const float y1, const float x2,
-		const float y2, Texture* texture, std::vector<WIPGUISpriteClickable> vClickable)
-		: x1(x1), y1(y1), x2(x2), y2(y2), texture(texture), vClickable(vClickable)
+	GUISprite(const float x1, const float y1, const float x2,
+		const float y2, std::vector<GUISpriteClickable> vClickable)
+		: x1(x1), y1(y1), x2(x2), y2(y2), vClickable(vClickable)
 	{}
 
-	~WIPGUISprite()
+	// Returns index of clickable if it is within x, y
+	const int32 getState() { return (int32)state; }
+	const int32 getNumStates() { return numStates; }
+	virtual Texture* Tex() const = 0;
+	const bool isClickable(const float x, const float y);//, ClickableColours& clickable);
+};
+
+class GUISprite24 : public GUISprite
+{
+public:
+	Texture24* texture = nullptr;
+
+public:
+	GUISprite24(Texture24* texture, const float x1, const float y1, const float x2,
+		const float y2, std::vector<GUISpriteClickable> vClickable)
+		: texture(texture), GUISprite(x1, y1, x2, y2, vClickable)
+	{}
+
+	~GUISprite24()
 	{
 		if (texture != nullptr)
 		{
@@ -210,6 +237,36 @@ public:
 		}
 	}
 
-	// Returns index of clickable if it is within x, y
-	const bool isClickable(const float x, const float y, ClickableColours& clickable);
+	Texture* Tex() const
+	{
+		return texture;
+	}
+
+	//const bool isClickable(const float x, const float y, ClickableColours& clickable);
+};
+
+class GUISprite32 : public GUISprite
+{
+public:
+	Texture32* texture = nullptr;
+
+public:
+	GUISprite32(Texture32* texture, const float x1, const float y1, const float x2,
+		const float y2, std::vector<GUISpriteClickable> vClickable)
+		: texture(texture), GUISprite(x1, y1, x2, y2, vClickable)
+	{}
+
+	~GUISprite32()
+	{
+		if (texture != nullptr)
+		{
+			delete texture;
+			texture = nullptr;
+		}
+	}
+
+	Texture* Tex() const
+	{
+		return texture;
+	}
 };

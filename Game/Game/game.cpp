@@ -55,8 +55,8 @@ const int32 Game::initGame()
 	guiChat->setRect(guiRect);
 
 	// Load textures
-	objectTexture1 = new Texture();
-	objectTexture2 = new Texture();
+	objectTexture1 = new Texture24();
+	objectTexture2 = new Texture24();
 	if (!objectTexture1->LoadTextureFromBMP("texture_16x32.bmp"))
 	{
 		// error
@@ -346,18 +346,25 @@ void Game::gsMainMenu()
 	/* SPRITES */
 	if (guiSprite == nullptr)
 	{
-		Texture* guiSpriteTexture = new Texture();
-		const char* filename = "Texture_MainMenu.bmp";
-		if (!guiSpriteTexture->LoadTextureFromBMP(filename))
+		//Texture24* guiSpriteTexture = new Texture24();
+		//const char* filename1 = "Texture_MainMenu.bmp";
+		//if (!guiSpriteTexture->LoadTextureFromBMP(filename1))
+		//{
+		//	std::cerr << "Error loading " << filename1 << "\n";
+		//}
+
+		Texture32* guiSpriteTexture32 = new Texture32();
+		const char* filename2 = "Texture_Start.bmp";
+		if (!guiSpriteTexture32->LoadTextureFromBMP(filename2))
 		{
-			std::cerr << "Error loading " << filename << "\n";
+			std::cerr << "Error loading " << filename2 << "\n";
 		}
 
-		std::vector< WIPGUISpriteClickable> vClickable;
-		vClickable.push_back(WIPGUISpriteClickable(ClickableColours::Start));
-		vClickable.push_back(WIPGUISpriteClickable(ClickableColours::Quit));
+		std::vector< GUISpriteClickable> vClickable;
+		vClickable.push_back(GUISpriteClickable(ClickableColours::Start));
+		vClickable.push_back(GUISpriteClickable(ClickableColours::Quit));
 
-		guiSprite = new WIPGUISprite(0.25f, 0.25f, 0.75f, 0.75f, guiSpriteTexture, vClickable);
+		guiSprite = new GUISprite32(guiSpriteTexture32, 0.4f, 0.4f, 0.6f, 0.6f, vClickable);
 	}
 
 	/* ---------- Input ---------- */
@@ -373,14 +380,35 @@ void Game::gsMainMenu()
 			int32 iY = event.getY();
 			float fX = win.Gfx().pxToScreenX(iX);
 			float fY = win.Gfx().pxToScreenY(iY);
+			if (guiSprite->isClickable(fX, fY))
+			{
+				if (guiSprite->state == GUIState::Inactive)
+				{
+					guiSprite->state = GUIState::Hover;
+					std::cout << "Hover\n";
+				}
+			}
+			else
+			{
+				if (guiSprite->state == GUIState::Hover)
+				{
+					guiSprite->state = GUIState::Inactive;
+					std::cout << "x=" << iX << " y=" << iY << "\n";
+				}
+			}
+		} break;
+		case Mouse::Event::Type::LPressed:
+		{
+			int32 iX = event.getX();
+			int32 iY = event.getY();
+			float fX = win.Gfx().pxToScreenX(iX);
+			float fY = win.Gfx().pxToScreenY(iY);
+			if (guiSprite->isClickable(fX, fY))
+			{
+				guiSprite->state = GUIState::Active;
+				std::cout << "Active\n";
+			}
 
-			//for (auto t : guiMainMenu->getVText())
-			//{
-			//	CheckMouseMoveText(fX, fY, t);
-			//}
-			//#if DISPLAY_DEBUG_CONSOLE && DISPLAY_MOUSE_COORDS
-			//			std::cout << event.getX() << " " << event.getY() << "\n";
-			//#endif
 		} break;
 		case Mouse::Event::Type::LReleased:
 		{
@@ -389,34 +417,41 @@ void Game::gsMainMenu()
 			int32 iY = event.getY();
 			float fX = win.Gfx().pxToScreenX(iX);
 			float fY = win.Gfx().pxToScreenY(iY);
-			//std::cout << "Lpressed at x = " << fX << " y = " << fY << "\n";
-			//for (auto t : guiMainMenu->getVText())
-			//{
-			//	CheckMousePressedText(fX, fY, t);
-			//}
-
-			ClickableColours cc;
-			if (guiSprite->isClickable(fX, fY, cc))
+			if (guiSprite->isClickable(fX, fY))
 			{
-				switch (cc)
+				if (guiSprite->state == GUIState::Active)
 				{
-				case ClickableColours::Start:
-				{
-					delete guiSprite;
-					guiSprite = nullptr;
-					initGame();
-					gsPush(&Game::gsGame);
-					return;
-				} break;
-				case ClickableColours::Quit:
-				{
-					delete guiSprite;
-					guiSprite = nullptr;
-					gsPop();
-					return;
-				} break;
+					guiSprite->state = GUIState::Pressed;
+					std::cout << "Pressed\n";
 				}
 			}
+			else
+			{
+				guiSprite->state = GUIState::Inactive;
+			}
+
+			//ClickableColours cc;
+			//if (guiSprite->isClickable(fX, fY, cc))
+			//{
+			//	switch (cc)
+			//	{
+			//	case ClickableColours::Start:
+			//	{
+			//		delete guiSprite;
+			//		guiSprite = nullptr;
+			//		initGame();
+			//		gsPush(&Game::gsGame);
+			//		return;
+			//	} break;
+			//	case ClickableColours::Quit:
+			//	{
+			//		delete guiSprite;
+			//		guiSprite = nullptr;
+			//		gsPop();
+			//		return;
+			//	} break;
+			//	}
+			//}
 		}
 		}
 	}

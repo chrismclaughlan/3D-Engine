@@ -191,10 +191,10 @@ public:
 class GUISprite24 : public GUISprite
 {
 public:
-	TextureBase* texture = nullptr;
+	Texture* texture = nullptr;
 
 public:
-	GUISprite24(TextureBase* texture, const float x1, const float y1, const float x2,
+	GUISprite24(Texture* texture, const float x1, const float y1, const float x2,
 		const float y2)
 		: texture(texture), GUISprite(x1, y1, x2, y2)
 	{}
@@ -219,14 +219,14 @@ public:
 class GUISprite32 : public GUISprite
 {
 public:
-	TextureBase* texture = nullptr;
+	Texture* texture = nullptr;
 
 public:
 	GUISprite32(const char* filename, const float x1, const float y1, const float x2,
 		const float y2)
 		: GUISprite(x1, y1, x2, y2)
 	{
-		texture = new TextureBase(TextureType::RGBA, filename, 256, 128);
+		texture = new Texture(TextureType::RGBA, filename, 256, 128);
 	}
 
 	~GUISprite32()

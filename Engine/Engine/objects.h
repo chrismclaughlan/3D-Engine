@@ -18,7 +18,7 @@ class Object
 public:
 	Matrix4x4 matrixWorldPos;
 	std::vector<Triangle> tris;
-	TextureBase* texture = nullptr;
+	Texture* texture = nullptr;
 	// check all right
 	float x = 0.0f;  // + left / - right
 	float y = 0.0f;  // + upwards / - downwards

@@ -9,40 +9,16 @@
 #define HEADER_SIZE_24_BIT_BMP (54)
 #define HEADER_SIZE_32_BIT_BMP (66)
 
-TextureBase::TextureBase(TextureType textureType, const char* filename, const int sectionWidth, const int sectionHeight)
+Texture::Texture(TextureType textureType, const char* filename, const int sectionWidth, const int sectionHeight)
 	: textureType(textureType)
 {
-	bool error = false;
-
-	switch (textureType)
-	{
-	case TextureType::RGB:
-	{
-		if (!loadRGBTextureFromBMP(filename))
-		{
-			error = true;
-		}
-	} break;
-	case TextureType::RGBA:
-	{
-		if (!loadRGBATextureFromBMP(filename, sectionWidth, sectionHeight))
-		{
-			error = true;
-		}
-	} break;
-	default:
-	{
-		error = true;
-	} break;
-	}
-
-	if (error)
+	if (!loadTextureFromBMP(filename, sectionWidth, sectionHeight))
 	{
 		std::cerr << "Error loading " << filename << "\n";
 	}
 }
 
-TextureBase::~TextureBase()
+Texture::~Texture()
 {
 	if (data != nullptr)
 	{
@@ -51,7 +27,7 @@ TextureBase::~TextureBase()
 	}
 }
 
-bool TextureBase::loadRGBATextureFromBMP(const char* filename, const int sectionWidth, const int sectionHeight)
+bool Texture::loadTextureFromBMP(const char* filename, const int sectionWidth, const int sectionHeight)
 {
 	int i;
 	FILE* file;
@@ -62,16 +38,30 @@ bool TextureBase::loadRGBATextureFromBMP(const char* filename, const int section
 		return false;
 	}
 
-	uint8* info = new uint8[HEADER_SIZE_32_BIT_BMP];
+	int headerSize;
+	if (textureType == TextureType::RGB)
+	{
+		headerSize = HEADER_SIZE_24_BIT_BMP;
+	}
+	else if (textureType == TextureType::RGBA)
+	{
+		headerSize = HEADER_SIZE_32_BIT_BMP;
+	}
+	else
+	{
+		return false;
+	}
+	
+	uint8* info = new uint8[headerSize];
 
 	// read header
-	fread(info, sizeof(uint8), HEADER_SIZE_32_BIT_BMP, file);
+	fread(info, sizeof(uint8), headerSize, file);
 
 	// Check valid
 	const int bitOffset = info[10];
 	std::cout << "bitOffset: " << bitOffset << std::endl;
 
-	if (bitOffset != HEADER_SIZE_32_BIT_BMP)
+	if (bitOffset != headerSize)
 	{
 		std::cerr << "Error reading " << filename << "\n";
 		delete[] info;
@@ -83,8 +73,11 @@ bool TextureBase::loadRGBATextureFromBMP(const char* filename, const int section
 	width = *(int*)& info[18];
 	height = *(int*)& info[22];
 
+	delete[] info;
+	info = nullptr;
+
 	assert(height > 0);
-	scale = width / height;
+	scale = (float)width / (float)height;
 
 	assert(sectionWidth > 0);
 	assert(sectionHeight > 0);
@@ -96,8 +89,6 @@ bool TextureBase::loadRGBATextureFromBMP(const char* filename, const int section
 			<< "Width = " << sectionWidth
 			<< "Height = " << sectionHeight
 			<< "\n";
-		delete[] info;
-		info = nullptr;
 		return false;
 	}
 
@@ -113,68 +104,36 @@ bool TextureBase::loadRGBATextureFromBMP(const char* filename, const int section
 		<< " stepX=" << stepX << " stepY=" << stepY
 		<< "\n";
 
-	int size = width * height;
-	data = new uint[size];
-	fread(data, sizeof(uint), size, file);
-
-	fclose(file);
-
-	delete[] info;
-	info = nullptr;
-
-	return true;
-}
-
-bool TextureBase::loadRGBTextureFromBMP(const char* filename)
-{
-	int i;
-	FILE* f;
-	errno_t err = fopen_s(&f, filename, "r");
-	if (err != 0)
+	int size;
+	if (textureType == TextureType::RGB)
 	{
-		std::cerr << "Error opening file " << filename << "\n";
+		size = 3 * width * height;
+		data = new uint8[size];
+		fread(data, sizeof(uint8), size, file);
+	}
+	else if (textureType == TextureType::RGBA)
+	{
+		size = width * height;
+		data = new uint[size];
+		fread(data, sizeof(uint), size, file);
+	}
+	else
+	{
 		return false;
 	}
 
-	uint8* info = new uint8[HEADER_SIZE_24_BIT_BMP];
-
-	// read the 54-byte header
-	fread(info, sizeof(uint8), HEADER_SIZE_24_BIT_BMP, f);
-
-	const int bOffset = info[10];
-
-	std::cout << "Offset: " << bOffset << std::endl;
-
-	// extract image height and width from header
-	width = *(int*)& info[18];
-	height = *(int*)& info[22];
-
-	assert(height > 0);
-	scale = (float)width / (float)height;
-
-	std::cout << "TextureRGB width=" << width << " height=" << height
-		<< " scale=" << scale << "\n";
-
-	// allocate 3 bytes per pixel
-	int size = 3 * width * height;
-	data = new uint8[size];
-
-	// read the rest of the data at once
-	fread(data, sizeof(uint8), size, f);
-
-	fclose(f);
-
-	delete[] info;
-	info = nullptr;
+	fclose(file);
 
 	return true;
 }
 
 // Take normalised x and y values and maps them to texture coords
-uint TextureBase::lookUp(float x, float y, int cycleX, int cycleY) const
+uint Texture::lookUp(float x, float y, int cycleX, int cycleY) const
 {
 	if (textureType == TextureType::RGB)
 	{
+		std::swap(x, y);  // flip
+
 		int xInd, yInd;
 		xInd = x * (float)width / scale;
 		yInd = y * (float)height * scale;

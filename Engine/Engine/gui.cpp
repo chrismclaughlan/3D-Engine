@@ -28,7 +28,7 @@ const bool GUISprite::isClickable(const float x, const float y)//, ClickableColo
 		uint colour;
 		const float x_ = normalise(x1, x2, x);
 		const float y_ = normalise(y1, y2, y);
-		colour = ((TextureBase*)Tex())->lookUp(x_, y_);// , getNumStates(), getState());
+		colour = ((Texture*)Tex())->lookUp(x_, y_);// , getNumStates(), getState());
 
 		//std::cout << colourA << "\n";
 

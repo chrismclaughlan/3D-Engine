@@ -86,8 +86,8 @@ void Game::gsInitGame()
 	guiChat->setRect(guiRect);
 
 	// Load textures
-	objectTexture1 = new TextureBase(TextureType::RGB, "CubeMap_Test.bmp", 2, 2);
-	objectTexture2 = new TextureBase(TextureType::RGB, "Object_Texture_16x32_24bit.bmp", 2, 2);
+	objectTexture1 = new Texture(TextureType::RGB, "CubeMap_Test.bmp", 2, 2);
+	objectTexture2 = new Texture(TextureType::RGB, "Object_Texture_16x32_24bit.bmp", 2, 2);
 
 	// Load wavefront files
 	object1 = new Object();

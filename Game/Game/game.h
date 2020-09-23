@@ -70,8 +70,8 @@ struct MainMenu
 class Game
 {
 private:
-	int32 mouseXPrev = -1;
-	int32 mouseYPrev = -1;
+	int mouseXPrev = -1;
+	int mouseYPrev = -1;
 
 private:
 	// Game States
@@ -165,7 +165,7 @@ private:
 	Window win;
 
 public:
-	Game(const char* name, int32 width, int32 height)
+	Game(const char* name, int width, int height)
 		: win(name, width, height)
 	{
 		userTextBuffer = new std::string;
@@ -200,8 +200,8 @@ public:
 		objectTexture2 = nullptr;
 	}
 
-	//virtual int32 run() = 0;
-	int32 run();
+	//virtual int run() = 0;
+	int run();
 
 private:
 	// 3D

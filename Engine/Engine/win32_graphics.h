@@ -11,5 +11,5 @@ private:
 public:
 	Win32Graphics(HWND hwnd, HDC hdc);
 	void Render();
-	void ChangeSize(int32 width, int32 height);
+	void ChangeSize(int width, int height);
 };

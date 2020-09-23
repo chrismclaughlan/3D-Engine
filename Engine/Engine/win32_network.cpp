@@ -16,9 +16,9 @@ void Network::deliver(NETWORK::Packet& packet)
 		packet.numBytes = NETWORK::maxBufferSize - 1;
 	}
 
-	int32 res, flags = 0;
+	int res, flags = 0;
 	res = sendto(sock, packet.buffer, packet.numBytes, flags,
-		(struct sockaddr*) & incomingAddr, (int32)sizeof(incomingAddr));
+		(struct sockaddr*) & incomingAddr, (int)sizeof(incomingAddr));
 
 	if (SOCKET_ERROR == res)
 	{
@@ -28,13 +28,13 @@ void Network::deliver(NETWORK::Packet& packet)
 
 bool Network::receive(NETWORK::Packet& packet)
 {
-	int32 server_addr_size = sizeof(incomingAddr);
+	int server_addr_size = sizeof(incomingAddr);
 	packet.numBytes = recvfrom(sock, packet.buffer, sizeof(packet.buffer) - 1, 0,
 		(struct sockaddr*) & incomingAddr, &server_addr_size);
 
 	if (packet.numBytes == SOCKET_ERROR)
 	{
-		int32 WSALastError = WSAGetLastError();
+		int WSALastError = WSAGetLastError();
 		if (WSALastError == WSAEWOULDBLOCK)
 		{
 			return false;

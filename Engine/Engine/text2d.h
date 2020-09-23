@@ -21,9 +21,9 @@ class Text2D
 {
 public:
 	uint8* map;
-	int32 width;
-	int32 height;
-	int32 linesize;
+	int width;
+	int height;
+	int linesize;
 	uint32_t colortable[2];
 	//                                      1         2         3         4         5         6          7         8         9
 	//                           012 3456789012345678901234567890123456789012345678901234567890 123456789012345678901234567890123456789

@@ -1,12 +1,14 @@
+#include "utils.h"
 #include "objects.h"
 #include "graphics.h"
 #include <algorithm>
 #include <list>
 #include <assert.h>
+#include "types.h"
 
-void Graphics::DrawLineP(int32 x1, int32 y1, int32 x2, int32 y2, uint32 colour)
+void Graphics::DrawLineP(int x1, int y1, int x2, int y2, uint colour)
 {
-	int32 dx, sx, dy, sy, err, e2;
+	int dx, sx, dy, sy, err, e2;
 	dx = abs(x2 - x1);
 	dy = -(abs(y2 - y1));
 	if (x1 < x2)
@@ -37,28 +39,10 @@ void Graphics::DrawLineP(int32 x1, int32 y1, int32 x2, int32 y2, uint32 colour)
 	}
 }
 
-//void Graphics::DrawLine(float x1, float y1, float x2, float y2, uint32 colour)
+//void Graphics::DrawLine(float x1, float y1, float x2, float y2, uint colour)
 //{
 //	DrawLineP(screenToPxX(x1), screenToPxY(y1), screenToPxX(x2), screenToPxY(y2), colour);
 //}
-
-void Graphics::Clamp(int32 min, int32* val, int32 max)
-{
-	if (*val < min) *val = min;
-	else if (*val > max) *val = max;
-}
-
-void Graphics::Clamp(float min, float* val, float max)
-{
-	if (*val < min) *val = min;
-	else if (*val > max) *val = max;
-}
-
-void Graphics::Clamp(double min, double* val, double max)
-{
-	if (*val < min) *val = min;
-	else if (*val > max) *val = max;
-}
 
 inline void Graphics::ScaleX(float* val)
 {
@@ -71,47 +55,47 @@ inline void Graphics::ScaleY(float* val)
 }
 
 // 0.0f <> 1.0f
-float Graphics::pxToScreenX(const int32 x)
+float Graphics::pxToScreenX(const int x)
 {
 	return (float)x / (float)width;
 }
 
 // 0.0f <> 1.0f
-float Graphics::pxToScreenY(const int32 y)
+float Graphics::pxToScreenY(const int y)
 {
 	return (float)y / (float)height;
 }
 
 // 0 <> screenWidth
-int32 Graphics::screenToPxX(const float x)
+int Graphics::screenToPxX(const float x)
 {
-	return (int32)(x * width);
+	return (int)(x * width);
 }
 
 // 0 <> screenHeight
-int32 Graphics::screenToPxY(const float y)
+int Graphics::screenToPxY(const float y)
 {
-	return (int32)(y* height);
+	return (int)(y* height);
 }
 
-void Graphics::ClearScreen(uint32 colour)
+void Graphics::ClearScreen(uint colour)
 {
-	uint32* pixel = (uint32*)memory;
-	for (int32 i = 0; i < width * height; i++)
+	uint* pixel = (uint*)memory;
+	for (int i = 0; i < width * height; i++)
 	{
 		*pixel++ = colour;
 	}
 }
 
-void Graphics::DrawPointP(int32 x, int32 y, uint32 colour)
+void Graphics::DrawPointP(int x, int y, uint colour)
 {
 	Clamp(0, &x, width - 1);
 	Clamp(0, &y, height - 1);
-	uint32* pixel = (uint32*)memory;
+	uint* pixel = (uint*)memory;
 	pixel[x + (y * width)] = colour;
 }
 
-void Graphics::DrawPointPAlpha(const int32 x, const int32 y, const uint32 colour)
+void Graphics::DrawPointPAlpha(const int x, const int y, const uint colour)
 {
 	// If alpha above threshold; draw
 	if ((colour & UINT32_ALPHA_CHANNEL) <= ALPHA_THRESHOLD)
@@ -122,55 +106,55 @@ void Graphics::DrawPointPAlpha(const int32 x, const int32 y, const uint32 colour
 	DrawPointP(x, y, colour);
 }
 
-//void Graphics::DrawPoint(double x, double y, uint32 colour)
+//void Graphics::DrawPoint(double x, double y, uint colour)
 //{
-//	int32 xi = screenToPxX(x);
-//	int32 yi = screenToPxY(y);
+//	int xi = screenToPxX(x);
+//	int yi = screenToPxY(y);
 //	Clamp(0, &xi, width - 1);
 //	Clamp(0, &yi, height - 1);
-//	uint32* pixel = (uint32*)memory;
+//	uint* pixel = (uint*)memory;
 //	pixel[xi + (yi * width)] = colour;
 //}
 
-void Graphics::DrawRectP(int32 x1, int32 y1, int32 x2, int32 y2, uint32 colour)
+void Graphics::DrawRectP(int x1, int y1, int x2, int y2, uint colour)
 {
 	Clamp(0, &x1, width);
 	Clamp(0, &x2, width);
 	Clamp(0, &y1, height);
 	Clamp(0, &y2, height);
 
-	for (int32 y = y1; y < y2; y++)
+	for (int y = y1; y < y2; y++)
 	{
-		uint32* pixel = (uint32*)memory + x1 + (y * width);
-		for (int32 x = x1; x < x2; x++)
+		uint* pixel = (uint*)memory + x1 + (y * width);
+		for (int x = x1; x < x2; x++)
 		{
 			*pixel++ = colour;
 		}
 	}
 }
 
-void Graphics::DrawTriangleP(int32 x1, int32 y1, int32 x2, int32 y2, int32 x3, int32 y3, const uint32 colour)
+void Graphics::DrawTriangleP(int x1, int y1, int x2, int y2, int x3, int y3, const uint colour)
 {
 	DrawLineP(x1, y1, x2, y2, colour);
 	DrawLineP(x2, y2, x3, y3, colour);
 	DrawLineP(x3, y3, x1, y1, colour);
 }
 
-//void Graphics::DrawTriangle(float x1, float y1, float x2, float y2, float x3, float y3, uint32 colour)
+//void Graphics::DrawTriangle(float x1, float y1, float x2, float y2, float x3, float y3, uint colour)
 //{
 //	DrawLine(x1, y1, x2, y2, colour);
 //	DrawLine(x2, y2, x3, y3, colour);
 //	DrawLine(x3, y3, x1, y1, colour);
 //}
 
-static void swap(int32* a, int32* b)
+static void swap(int* a, int* b)
 {
-	int32 temp = *a;
+	int temp = *a;
 	*a = *b;
 	*b = temp;
 }
 
-void Graphics::FillTriangleP(int32 x1, int32 y1, int32 x2, int32 y2, int32 x3, int32 y3, uint32 colour)
+void Graphics::FillTriangleP(int x1, int y1, int x2, int y2, int x3, int y3, uint colour)
 {
 	// Sort ascending by Y
 	if (y1 > y2)
@@ -204,14 +188,14 @@ void Graphics::FillTriangleP(int32 x1, int32 y1, int32 x2, int32 y2, int32 x3, i
 	else
 	{
 		// Split triangle into flat top and flat bottom
-		int32 x4 = (int32)(x1 + ((float)(y2 - y1) / (float)(y3 - y1)) * (x3 - x1));
-		int32 y4 = y2;
+		int x4 = (int)(x1 + ((float)(y2 - y1) / (float)(y3 - y1)) * (x3 - x1));
+		int y4 = y2;
 		FillBottomFlatTriangleP(x1, y1, x2, y2, x4, y4, colour);
 		FillTopFlatTriangleP(x2, y2, x4, y4, x3, y3, colour);
 	}
 }
 
-//void Graphics::FillTriangle(float x1, float y1, float x2, float y2, float x3, float y3, uint32 colour)
+//void Graphics::FillTriangle(float x1, float y1, float x2, float y2, float x3, float y3, uint colour)
 //{
 //	FillTriangleP(
 //		screenToPxX(x1),
@@ -224,7 +208,7 @@ void Graphics::FillTriangleP(int32 x1, int32 y1, int32 x2, int32 y2, int32 x3, i
 //	);
 //}
 
-void Graphics::FillTopFlatTriangleP(int32 x1, int32 y1, int32 x2, int32 y2, int32 x3, int32 y3, uint32 colour)
+void Graphics::FillTopFlatTriangleP(int x1, int y1, int x2, int y2, int x3, int y3, uint colour)
 {
 	//assert(y3 - y1 != 0);
 	//assert(y3 - y2 != 0);
@@ -234,7 +218,7 @@ void Graphics::FillTopFlatTriangleP(int32 x1, int32 y1, int32 x2, int32 y2, int3
 	float curx1 = x3;
 	float curx2 = x3;
 
-	for (int32 scanlineY = y3; scanlineY <= y1; scanlineY++)
+	for (int scanlineY = y3; scanlineY <= y1; scanlineY++)
 	{
 		DrawLineP(curx1, scanlineY, curx2, scanlineY, colour);
 		curx1 += invslope1;
@@ -242,7 +226,7 @@ void Graphics::FillTopFlatTriangleP(int32 x1, int32 y1, int32 x2, int32 y2, int3
 	}
 }
 
-void Graphics::FillBottomFlatTriangleP(int32 x1, int32 y1, int32 x2, int32 y2, int32 x3, int32 y3, uint32 colour)
+void Graphics::FillBottomFlatTriangleP(int x1, int y1, int x2, int y2, int x3, int y3, uint colour)
 {
 	//assert(y2 - y1 != 0);
 	//assert(y3 - y1 != 0);
@@ -252,7 +236,7 @@ void Graphics::FillBottomFlatTriangleP(int32 x1, int32 y1, int32 x2, int32 y2, i
 	float curx1 = x1;
 	float curx2 = x1;
 
-	for (int32 scanlineY = y1; scanlineY >= y2; scanlineY--)
+	for (int scanlineY = y1; scanlineY >= y2; scanlineY--)
 	{
 		DrawLineP(curx1, scanlineY, curx2, scanlineY, colour);
 		curx1 -= invslope1;
@@ -260,7 +244,7 @@ void Graphics::FillBottomFlatTriangleP(int32 x1, int32 y1, int32 x2, int32 y2, i
 	}
 }
 
-void Graphics::DrawRect(float x1, float y1, float x2, float y2, uint32 colour)
+void Graphics::DrawRect(float x1, float y1, float x2, float y2, uint colour)
 {
 	DrawRectP(
 		screenToPxX(x1), 
@@ -276,13 +260,13 @@ void Graphics::DrawRect(float x1, float y1, float x2, float y2, uint32 colour)
 void Graphics::ClearDepthBuffer()
 {
 	float* depthBuffer = (float*)pDepthBuffer;
-	for (int32 i = 0; i < width * height; i++)
+	for (int i = 0; i < width * height; i++)
 	{
 		*depthBuffer++ = 0.0f;
 	}
 }
 
-float* Graphics::readDepthBuffer(const int32 x, const int32 y)
+float* Graphics::readDepthBuffer(const int x, const int y)
 {
 	float* depthBuffer = (float*)pDepthBuffer;
 	return &depthBuffer[x * width + y];
@@ -389,7 +373,7 @@ void Graphics::DrawTexturedTriangle(int x1, int y1, float u1, float v1, float w1
 				float* z = readDepthBuffer(i, j);
 				if (tex_w > * z)
 				{
-					uint32 colour = texture->lookUp(tex_u / tex_w, tex_v / tex_w);
+					uint colour = texture->lookUp(tex_u / tex_w, tex_v / tex_w);
 					DrawPointP(j, i, colour);
 					*z = tex_w;
 				}
@@ -452,7 +436,7 @@ void Graphics::DrawTexturedTriangle(int x1, int y1, float u1, float v1, float w1
 				float* z = readDepthBuffer(i, j);
 				if (tex_w > * z)
 				{
-					uint32 colour = texture->lookUp(tex_u / tex_w, tex_v / tex_w);
+					uint colour = texture->lookUp(tex_u / tex_w, tex_v / tex_w);
 					DrawPointP(j, i, colour);
 					*z = tex_w;
 				}
@@ -467,7 +451,7 @@ void Graphics::RasterTexturedTriangles(
 	const Matrix4x4& matrixCamera,
 	const Vector& vCamera,
 	const std::vector<Object*> meshes,
-	const uint32* strokeColour)
+	const uint* strokeColour)
 {
 	// Triangles
 	std::vector<Triangle> trianglesToRaster;
@@ -514,11 +498,11 @@ void Graphics::RasterTexturedTriangles(
 				triCamera.t[2] = triTransformed.t[2];
 				triCamera.parent = triTransformed.parent;
 
-				int32 nClippedTriangles = 0;
+				int nClippedTriangles = 0;
 				Triangle clipped[2];
 				nClippedTriangles = Vector::TriangleClipAgainstPlane({ 0.0f, 0.0f, 0.1f }, { 0.0f, 0.0f, 1.0f }, triCamera, clipped[0], clipped[1]);
 
-				for (int32 n = 0; n < nClippedTriangles; n++)
+				for (int n = 0; n < nClippedTriangles; n++)
 				{
 					triProjected.p[0] = projectionMatrix * clipped[n].p[0];
 					triProjected.p[1] = projectionMatrix * clipped[n].p[1];
@@ -586,11 +570,11 @@ void Graphics::RasterTexturedTriangles(
 		Triangle clipped[2];
 		std::list<Triangle> listTriangles;
 		listTriangles.push_back(triToRaster);
-		int32 newTriangles = 1;
+		int newTriangles = 1;
 
-		for (int32 p = 0; p < 4; p++)
+		for (int p = 0; p < 4; p++)
 		{
-			int32 trianglesToAdd = 0;
+			int trianglesToAdd = 0;
 			while (newTriangles > 0)
 			{
 				Triangle test = listTriangles.front();
@@ -617,7 +601,7 @@ void Graphics::RasterTexturedTriangles(
 				case 3:	trianglesToAdd = Vector::TriangleClipAgainstPlane(pRight,  nLeft, test, clipped[0], clipped[1]); break;
 				}
 
-				for (int32 w = 0; w < trianglesToAdd; w++)
+				for (int w = 0; w < trianglesToAdd; w++)
 				{
 					clipped[w].parent = triToRaster.parent;
 					listTriangles.push_back(clipped[w]);
@@ -660,7 +644,7 @@ void Graphics::RasterTexturedTriangles(
 	}
 }
 
-void Graphics::DrawText(std::string str, int32 posX, const int32 posY, const uint32 colour)
+void Graphics::DrawText(std::string str, int posX, const int posY, const uint colour)
 {
 	// assert ...
 
@@ -682,10 +666,10 @@ void Graphics::DrawText(const GUIText guiText)
 	float fPosY = guiText.y1;
 	float fMaxX = guiText.x2;
 	float fMaxY = guiText.y2;
-	int32 iPosX = screenToPxX(fPosX);
-	int32 iPosY = screenToPxY(fPosY);
-	int32 iMaxX = screenToPxX(fMaxX);
-	int32 iMaxY = screenToPxY(fMaxY);
+	int iPosX = screenToPxX(fPosX);
+	int iPosY = screenToPxY(fPosY);
+	int iMaxX = screenToPxX(fMaxX);
+	int iMaxY = screenToPxY(fMaxY);
 
 	std::string txt;
 	if (guiText.pText == nullptr && guiText.sText.empty())
@@ -702,8 +686,8 @@ void Graphics::DrawText(const GUIText guiText)
 		// Cut off beginning of pText if it flows off end of rect
 		if ((guiText.sText.size() * 14) + (guiText.pText->size() * 14) + (sTrailing.size() * 14) >= iMaxX - iPosX)
 		{
-			int32 num_chars_that_fit = ((iMaxX - iPosX) / 14) - guiText.sText.size();
-			//int32 difference = guiText.pText->size() - num_chars_that_fit;
+			int num_chars_that_fit = ((iMaxX - iPosX) / 14) - guiText.sText.size();
+			//int difference = guiText.pText->size() - num_chars_that_fit;
 			
 			txt += fill;
 			num_chars_that_fit -= fill.size();
@@ -731,30 +715,30 @@ void Graphics::DrawText(const GUIText guiText)
 	}
 }
 
-const bool Graphics::DrawChar(const char c, const int32 posX, const int32 posY, const uint32 colour)
+const bool Graphics::DrawChar(const char c, const int posX, const int posY, const uint colour)
 {
 	// assert ...
 
 	// Check acceptable character
-	int32 charIndex = text2D->acceptedChars.find(c);
+	int charIndex = text2D->acceptedChars.find(c);
 	if (charIndex == std::string::npos)
 	{
 		return false;
 	}
 
 	// Find char in texture
-	int32 num_elements_x = 18;
-	int32 ind_x =  charIndex % num_elements_x;
-	int32 ind_y = floor((charIndex) / (num_elements_x));
+	int num_elements_x = 18;
+	int ind_x =  charIndex % num_elements_x;
+	int ind_y = floor((charIndex) / (num_elements_x));
 
 	// Size of char in texture
-	const int32 size_x = 14;
-	const int32 size_y = 18;
+	const int size_x = 14;
+	const int size_y = 18;
 
-	const int32 top = (text2D->height - 1) - (size_y * ind_y);  // max textTexture->height - 1; min 0
-	const int32 bottom = top - size_y;  // min 0  (clamp etc.)
-	const int32 left = size_x * ind_x;  // min 0; max textTexture->width - size_x
-	const int32 right = left + size_x;  // max textTexture->width
+	const int top = (text2D->height - 1) - (size_y * ind_y);  // max textTexture->height - 1; min 0
+	const int bottom = top - size_y;  // min 0  (clamp etc.)
+	const int left = size_x * ind_x;  // min 0; max textTexture->width - size_x
+	const int right = left + size_x;  // max textTexture->width
 
 	//DrawRectP(posX, posY, posX + size_x, posY + size_y, 0xff0000);  // test boundaries
 
@@ -800,24 +784,19 @@ void Graphics::DrawGUIMenu(GUIMenu* guiMenu)
 	}
 }
 
-const float Graphics::normalise(const float min, const float max, float input)
-{
-	return (input - min) / (max - min);
-}
-
 void Graphics::DrawGUIMenuSprite(GUISprite* guiSprite)
 {
-	const int32 x1 = screenToPxX(guiSprite->x1);
-	const int32 y1 = screenToPxY(guiSprite->y1);
-	const int32 x2 = screenToPxX(guiSprite->x2);
-	const int32 y2 = screenToPxY(guiSprite->y2);
-	for (int32 j = y1; j < y2; j++)
+	const int x1 = screenToPxX(guiSprite->x1);
+	const int y1 = screenToPxY(guiSprite->y1);
+	const int x2 = screenToPxX(guiSprite->x2);
+	const int y2 = screenToPxY(guiSprite->y2);
+	for (int j = y1; j < y2; j++)
 	{
-		for (int32 i = x1; i < x2; i++)
+		for (int i = x1; i < x2; i++)
 		{
 			const double x_ = normalise(x1, x2, i);
 			const double y_ = normalise(y1, y2, j);
-			DrawPointPAlpha(i, j, guiSprite->Tex()->lookUp(x_, y_, guiSprite->getNumStates(), guiSprite->getState()));
+			DrawPointPAlpha(i, j, ((TextureNew*)guiSprite->Tex())->lookUp(x_, y_, guiSprite->getState()));// , guiSprite->getNumStates(), guiSprite->getState()));
 		}
 	}
 }

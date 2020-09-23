@@ -11,15 +11,15 @@
 class Texture
 {
 protected:
-	int32 width = -1;
-	int32 height = -1;
+	int width = -1;
+	int height = -1;
 	float scaleW = 1.0f;
 	float scaleH = 1.0f;
 
 public:
-	virtual const int32 headerSize() const = 0;
+	virtual const int headerSize() const = 0;
 	virtual void writeData(FILE* f) = 0;
-	virtual uint32 lookUp(const float y, const float x, const int32 segments = 1, const int32 index = 1) const = 0;
+	virtual uint lookUp(const float y, const float x, const int segments = 1, const int index = 1) const = 0;
 	bool LoadTextureFromBMP(const char* filename)
 	{
 		int i;
@@ -36,13 +36,13 @@ public:
 		// read the 54-byte header
 		fread(info, sizeof(uint8), headerSize(), f);
 
-		const int32 bOffset = info[10];
+		const int bOffset = info[10];
 
 		std::cout << "Offset: " << bOffset << std::endl;
 
 		// extract image height and width from header
-		width = *(int32*)& info[18];
-		height = *(int32*)& info[22];
+		width = *(int*)& info[18];
+		height = *(int*)& info[22];
 		if (width < height)
 		{
 			scaleH = height / width;
@@ -83,10 +83,10 @@ public:
 		}
 	}
 
-	const int32 headerSize() const { return 54; };
-	static uint32 rgbToHex(const uint8 r, const uint8 g, const uint8 b)
+	const int headerSize() const { return 54; };
+	static uint rgbToHex(const uint8 r, const uint8 g, const uint8 b)
 	{
-		uint32 h = 0x0;
+		uint h = 0x0;
 		h += r << 16;
 		h += g << 8;
 		h += b << 0;
@@ -103,7 +103,7 @@ public:
 		fread(data, sizeof(uint8), size, f);
 	}
 
-	const uint32 readData(int32 x, int32 y) const
+	const uint readData(int x, int y) const
 	{
 		x = height - x;  // flip
 
@@ -113,11 +113,11 @@ public:
 			data[3 * (x * width + y) + 0]);
 	}
 
-	uint32 lookUp(const float y, const float x, const int32 segments = 1, const int32 index = 1) const override
+	uint lookUp(const float y, const float x, const int segments = 1, const int index = 1) const override
 	{
 
-		int32 xIndex = (x * width) / scaleW;
-		int32 yIndex = (y * height) / scaleH;
+		int xIndex = (x * width) / scaleW;
+		int yIndex = (y * height) / scaleH;
 
 		return readData(xIndex + 1, yIndex);
 	}
@@ -128,20 +128,20 @@ public:
 	//	assert(multiplier > 0.0f);
 	//	assert(multiplier < 1.0f);
 	//
-	//	int32 newSize = 3 * width * height;
+	//	int newSize = 3 * width * height;
 	//	uint8* newData = new uint8[newSize];
 	//
-	//	int32 newWidth = width * multiplier;
-	//	int32 start = left ? 0 : newWidth;
-	//	int32 end = left ? newWidth : width;
+	//	int newWidth = width * multiplier;
+	//	int start = left ? 0 : newWidth;
+	//	int end = left ? newWidth : width;
 	//
-	//	for (int32 j = 0; j < height; j++)
+	//	for (int j = 0; j < height; j++)
 	//	{
-	//		for (int32 i = start; i < end; i++)
+	//		for (int i = start; i < end; i++)
 	//		{
-	//			newData[3 * (i + (j * (int32)(width - newWidth))) + 0] = data[3 * (i + (j * width)) + 0];
-	//			newData[3 * (i + (j * (int32)(width - newWidth))) + 1] = data[3 * (i + (j * width)) + 1];
-	//			newData[3 * (i + (j * (int32)(width - newWidth))) + 2] = data[3 * (i + (j * width)) + 2];
+	//			newData[3 * (i + (j * (int)(width - newWidth))) + 0] = data[3 * (i + (j * width)) + 0];
+	//			newData[3 * (i + (j * (int)(width - newWidth))) + 1] = data[3 * (i + (j * width)) + 1];
+	//			newData[3 * (i + (j * (int)(width - newWidth))) + 2] = data[3 * (i + (j * width)) + 2];
 	//		}
 	//	}
 	//
@@ -159,7 +159,7 @@ public:
 class Texture32 : public Texture
 {
 private:
-	uint32* data = nullptr;
+	uint* data = nullptr;
 
 public:
 	Texture32(const char* filename)
@@ -179,23 +179,23 @@ public:
 		}
 	}
 
-	const int32 headerSize() const { return 66; };
+	const int headerSize() const { return 66; };
 	void writeData(FILE* f) override
 	{
 		// allocate 3 bytes per pixel
 		int size = width * height;
-		data = new uint32[size];
+		data = new uint[size];
 
 		// read the rest of the data at once
-		fread(data, sizeof(uint32), size, f);
+		fread(data, sizeof(uint), size, f);
 	}
 
 	// Divide into segments peices and draw the content in index
-	uint32 lookUp(const float y, const float x, const int32 segments = 1, const int32 index = 1) const override
+	uint lookUp(const float y, const float x, const int segments = 1, const int index = 1) const override
 	{
 		// Flip values (array stored differently)
-		int32 xIndex;
-		int32 yIndex;
+		int xIndex;
+		int yIndex;
 
 		yIndex = (x * (float)width) / scaleW;
 		xIndex = (((y * (float)height) / (scaleH * (float)index)) * 

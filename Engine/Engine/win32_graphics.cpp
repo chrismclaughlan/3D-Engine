@@ -3,14 +3,14 @@
 Win32Graphics::Win32Graphics(HWND hwnd, HDC hdc) : hdc(hdc)
 {
 	RECT rect;
-	int32 bufferSize;
+	int bufferSize;
 
 	GetClientRect(hwnd, &rect);
 
 	width = rect.right - rect.left;
 	height = rect.bottom - rect.top;
 
-	bufferSize = width * height * sizeof(uint32);
+	bufferSize = width * height * sizeof(uint);
 
 	if (memory)
 	{
@@ -46,15 +46,15 @@ void Win32Graphics::Render()
 		memory, &bitmapinfo, DIB_RGB_COLORS, SRCCOPY);
 }
 
-void Win32Graphics::ChangeSize(int32 newWidth, int32 newHeight)
+void Win32Graphics::ChangeSize(int newWidth, int newHeight)
 {
-	int32 bufferSize;
+	int bufferSize;
 	//width = rect->right - rect->left;
 	//height = rect->bottom - rect->top;
 	width = newWidth;
 	height = newHeight;
 
-	bufferSize = width * height * sizeof(uint32);
+	bufferSize = width * height * sizeof(uint);
 	if (memory)
 	{
 		VirtualFree(memory, 0, MEM_RELEASE);

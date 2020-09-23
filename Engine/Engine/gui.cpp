@@ -1,3 +1,4 @@
+#include "utils.h"
 #include "gui.h"
 #include "graphics.h"
 
@@ -24,16 +25,16 @@ const bool GUISprite::isClickable(const float x, const float y)//, ClickableColo
 {
 	if (x > x1 && y > y1 && x < x2 && y < y2)
 	{
-		uint32 colour;
-		const float x_ = Graphics::normalise(x1, x2, x);
-		const float y_ = Graphics::normalise(y1, y2, y);
-		colour = Tex()->lookUp(x_, y_, getNumStates(), getState());
+		uint colour;
+		const float x_ = normalise(x1, x2, x);
+		const float y_ = normalise(y1, y2, y);
+		colour = ((TextureNew*)Tex())->lookUp(x_, y_);// , getNumStates(), getState());
 
 		//std::cout << colourA << "\n";
 
-		return ((uint32)(colour & UINT32_ALPHA_CHANNEL)) > ALPHA_THRESHOLD;
+		return ((uint)(colour & UINT32_ALPHA_CHANNEL)) > ALPHA_THRESHOLD;
 
-		//uint32 colour;
+		//uint colour;
 		//const float x_ = Graphics::normalise(x1, x2, x);
 		//const float y_ = Graphics::normalise(y1, y2, y);
 		//colour = Tex()->lookUp(x_, y_, LOOKUP_RIGHT);

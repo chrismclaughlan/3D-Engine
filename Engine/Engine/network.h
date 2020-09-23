@@ -6,11 +6,11 @@
 
 namespace NETWORK
 {
-	static constexpr const int32 maxBufferSize = 100;
+	static constexpr const int maxBufferSize = 100;
 
 	struct Packet
 	{
-		int32 numBytes = 0;
+		int numBytes = 0;
 		int8 buffer[maxBufferSize];
 
 		Packet() : numBytes(0)
@@ -36,7 +36,7 @@ namespace NETWORK
 			assert(numBytes < maxBufferSize);
 		}
 
-		Packet(const int8* _buffer, const int32 _numBytes)
+		Packet(const int8* _buffer, const int _numBytes)
 			: numBytes(_numBytes)
 		{
 			//strncpy_s(buffer, _numBytes, _buffer, _TRUNCATE);

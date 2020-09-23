@@ -4,7 +4,7 @@
 #include "game.h"
 
 int WINAPI wWinMain
-(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int32 nCmdShow)
+(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
 	try
 	{

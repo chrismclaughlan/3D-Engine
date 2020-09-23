@@ -58,8 +58,8 @@ private:
 	template<typename T>
 	static void trimBuffer(std::queue<T>& buffer) noexcept;
 private:
-	static constexpr uint32 numKeys = 256;
-	static constexpr uint32 bufferSize = 16;
+	static constexpr uint numKeys = 256;
+	static constexpr uint bufferSize = 16;
 	bool autorepeatEnabled = false;
 	std::bitset<numKeys> keyStates;
 	std::queue<Event> keyBuffer;

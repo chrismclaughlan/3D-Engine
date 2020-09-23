@@ -28,20 +28,20 @@ public:
 		info += "[" + std::string(type) + "]";
 		info += " " + std::string(msg) + "\n";
 	}
-	Exception(const char* type, const char* msg, const int32 code)
+	Exception(const char* type, const char* msg, const int code)
 	{
 		info += "[" + std::string(type) + "]";
 		info += " " + std::string(msg) + "\n";
 		info += "[CODE] " + std::to_string(code) + "\n";
 	}
-	Exception(const char* type, const char* msg, const char* file, const int32 line)
+	Exception(const char* type, const char* msg, const char* file, const int line)
 	{
 		info += "[" + std::string(type) + "] ";
 		info += " " + std::string(msg) + "\n";
 		info += "[FILE] " + std::string(file) + "\n";
 		info += "[LINE] " + std::to_string(line) + "\n";
 	}
-	Exception(const char* type, const char* msg, const int32 code, const char* file, const int32 line)
+	Exception(const char* type, const char* msg, const int code, const char* file, const int line)
 	{
 		info += "[" + std::string(type) + "] ";
 		info += " " + std::string(msg) + "\n";

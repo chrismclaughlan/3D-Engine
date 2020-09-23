@@ -9,7 +9,7 @@ NServer::NServer(uint16 port)
 
 	incomingAddr = {};
 
-	int32 res;
+	int res;
 	WSADATA wsaData;
 	res = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (NO_ERROR != res)

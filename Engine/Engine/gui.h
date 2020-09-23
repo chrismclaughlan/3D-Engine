@@ -2,8 +2,10 @@
 #include "types.h"
 #include "graphics.h"
 #include "texture.h"
+#include "graphics_texture.h"
 #include <string>
 #include <vector>
+#include "types.h"
 
 class Graphics;
 struct GUIText;
@@ -12,12 +14,13 @@ struct GUIText;
 #define GUI_STATE_ACTIVE 1
 #define GUI_STATE_HOVER	 2
 
-enum class GUIState : int32
+enum class GUIState : int
 {
-	Pressed  = 0,
-	Inactive = 1, 
-	Hover    = 2, 
-	Active   = 3,
+	Pressed  = -1,  // -1 special val
+
+	Inactive = 0, 
+	Hover    = 1, 
+	Active   = 2,
 };
 
 struct GUIRect
@@ -27,10 +30,10 @@ struct GUIRect
 	float y1;
 	float x2;
 	float y2;
-	uint32 colourPallete[3];
-	int32 state = GUI_STATE_INACTIVE;  // enum?
+	uint colourPallete[3];
+	int state = GUI_STATE_INACTIVE;  // enum?
 
-	GUIRect(float x1, float y1, float x2, float y2, uint32 colours[3], GUIText* guiTextInput = nullptr)
+	GUIRect(float x1, float y1, float x2, float y2, uint colours[3], GUIText* guiTextInput = nullptr)
 		: x1(x1), y1(y1), x2(x2), y2(y2), guiTextInput(guiTextInput)
 	{
 		colourPallete[0] = colours[0];
@@ -52,16 +55,16 @@ struct GUIText
 	float y2 = 1.0f;
 	std::string sText;
 	std::string* pText = nullptr;
-	uint32 colourPallete[3];
-	int32 state = GUI_STATE_INACTIVE;  // enum?
-	uint32 cBackground;
+	uint colourPallete[3];
+	int state = GUI_STATE_INACTIVE;  // enum?
+	uint cBackground;
 	bool drawBackground;
 
-	GUIText(const std::string sText, const uint32 colours[3], 
+	GUIText(const std::string sText, const uint colours[3], 
 		const float x1, const float y1,
 		const float x2 = 1.0f, const float y2 = 1.0f,
 		const bool drawBackground = false,
-		const uint32 cBackground = 0x000000)
+		const uint cBackground = 0x000000)
 		: sText(sText), x1(x1), y1(y1), x2(x2), y2(y2),
 		drawBackground(drawBackground), cBackground(cBackground)
 	{
@@ -175,7 +178,7 @@ public:
 	float x2;
 	float y2;
 	GUIState state = GUIState::Inactive;  // index of sprite to draw
-	int32 numStates = 3;
+	int numStates = 3;
 
 public:
 	GUISprite(const float x1, const float y1, const float x2,
@@ -184,9 +187,9 @@ public:
 	{}
 
 	// Returns index of clickable if it is within x, y
-	const int32 getState() { return (int32)state; }
-	const int32 getNumStates() { return numStates; }
-	virtual Texture* Tex() const = 0;
+	const int getState() { return (int)state; }
+	const int getNumStates() { return numStates; }
+	virtual void* Tex() const = 0;
 	const bool isClickable(const float x, const float y);//, ClickableColours& clickable);
 };
 
@@ -210,7 +213,7 @@ public:
 		}
 	}
 
-	Texture* Tex() const
+	void* Tex() const
 	{
 		return texture;
 	}
@@ -221,14 +224,14 @@ public:
 class GUISprite32 : public GUISprite
 {
 public:
-	Texture32* texture = nullptr;
+	TextureNew* texture = nullptr;
 
 public:
 	GUISprite32(const char* filename, const float x1, const float y1, const float x2,
 		const float y2)
 		: GUISprite(x1, y1, x2, y2)
 	{
-		texture = new Texture32(filename);
+		texture = new TextureNew(filename, 256, 128);
 	}
 
 	~GUISprite32()
@@ -240,7 +243,7 @@ public:
 		}
 	}
 
-	Texture* Tex() const
+	void* Tex() const
 	{
 		return texture;
 	}

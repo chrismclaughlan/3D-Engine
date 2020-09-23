@@ -24,7 +24,7 @@ public:
 public:
 	void Update();
 
-	void LimitFps(int32 target);  // Not entirely accurate
+	void LimitFps(int target);  // Not entirely accurate
 	const float getFps() const noexcept;
 	const bool hasTimePassed(float seconds) noexcept;
 	uint8 getFrameMask() const noexcept;

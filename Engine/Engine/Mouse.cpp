@@ -12,11 +12,11 @@ bool Mouse::isInWindow() const noexcept
 {
 	return inWindow;
 }
-int32 Mouse::getPosX() const noexcept
+int Mouse::getPosX() const noexcept
 {
 	return x;
 }
-int32 Mouse::getPosY() const noexcept
+int Mouse::getPosY() const noexcept
 {
 	return y;
 }
@@ -44,7 +44,7 @@ void Mouse::flush() noexcept
 	buffer = std::queue<Event>();
 }
 
-void Mouse::move(int32 newX, int32 newY) noexcept
+void Mouse::move(int newX, int newY) noexcept
 {
 	x = newX;
 	y = newY;
@@ -53,7 +53,7 @@ void Mouse::move(int32 newX, int32 newY) noexcept
 	trimBuffer();
 }
 
-void Mouse::moveRelative(const int32 newX, const int32 newY) noexcept
+void Mouse::moveRelative(const int newX, const int newY) noexcept
 {
 	x = newX;
 	y = newY;
@@ -76,7 +76,7 @@ void Mouse::leave() noexcept
 	trimBuffer();
 }
 
-void Mouse::leftPress(int32 newX, int32 newY) noexcept
+void Mouse::leftPress(int newX, int newY) noexcept
 {
 	x = newX;
 	y = newY;
@@ -85,7 +85,7 @@ void Mouse::leftPress(int32 newX, int32 newY) noexcept
 	buffer.push(Mouse::Event(Mouse::Event::Type::LPressed, *this));
 	trimBuffer();
 }
-void Mouse::leftRelease(int32 newX, int32 newY) noexcept
+void Mouse::leftRelease(int newX, int newY) noexcept
 {
 	x = newX;
 	y = newY;
@@ -94,7 +94,7 @@ void Mouse::leftRelease(int32 newX, int32 newY) noexcept
 	buffer.push(Mouse::Event(Mouse::Event::Type::LReleased, *this));
 	trimBuffer();
 }
-void Mouse::rightPress(int32 newX, int32 newY) noexcept
+void Mouse::rightPress(int newX, int newY) noexcept
 {
 	x = newX;
 	y = newY;
@@ -103,7 +103,7 @@ void Mouse::rightPress(int32 newX, int32 newY) noexcept
 	buffer.push(Mouse::Event(Mouse::Event::Type::RPressed, *this));
 	trimBuffer();
 }
-void Mouse::rightRelease(int32 newX, int32 newY) noexcept
+void Mouse::rightRelease(int newX, int newY) noexcept
 {
 	x = newX;
 	y = newY;
@@ -113,7 +113,7 @@ void Mouse::rightRelease(int32 newX, int32 newY) noexcept
 	trimBuffer();
 }
 
-void Mouse::middlePress(int32 newX, int32 newY) noexcept
+void Mouse::middlePress(int newX, int newY) noexcept
 {
 	x = newX;
 	y = newY;
@@ -121,7 +121,7 @@ void Mouse::middlePress(int32 newX, int32 newY) noexcept
 	buffer.push(Mouse::Event(Mouse::Event::Type::MPressed, *this));
 	trimBuffer();
 }
-void Mouse::middleRelease(int32 newX, int32 newY) noexcept
+void Mouse::middleRelease(int newX, int newY) noexcept
 {
 	x = newX;
 	y = newY;
@@ -130,7 +130,7 @@ void Mouse::middleRelease(int32 newX, int32 newY) noexcept
 	trimBuffer();
 }
 
-void Mouse::wheelUp(int32 newX, int32 newY) noexcept
+void Mouse::wheelUp(int newX, int newY) noexcept
 {
 	x = newX;
 	y = newY;
@@ -138,7 +138,7 @@ void Mouse::wheelUp(int32 newX, int32 newY) noexcept
 	buffer.push(Mouse::Event(Mouse::Event::Type::WheelUp, *this));
 	trimBuffer();
 }
-void Mouse::wheelDown(int32 newX, int32 newY) noexcept
+void Mouse::wheelDown(int newX, int newY) noexcept
 {
 	x = newX;
 	y = newY;
@@ -146,7 +146,7 @@ void Mouse::wheelDown(int32 newX, int32 newY) noexcept
 	buffer.push(Mouse::Event(Mouse::Event::Type::WheelDown, *this));
 	trimBuffer();
 }
-void Mouse::onWheelDelta(int32 newX, int32 newY, int32 delta) noexcept
+void Mouse::onWheelDelta(int newX, int newY, int delta) noexcept
 {
 	x = newX;
 	y = newY;

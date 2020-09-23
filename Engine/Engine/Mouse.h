@@ -26,8 +26,8 @@ public:
 		Type type;
 		bool leftPressed;
 		bool rightPressed;
-		int32 x;
-		int32 y;
+		int x;
+		int y;
 	public:
 		Event() : type(Type::Invalid), leftPressed(false), rightPressed(false), x(-1), y(-1) {}
 		Event(Type type, const Mouse& parent) : type(type), leftPressed(parent.leftPressed), 
@@ -37,8 +37,8 @@ public:
 		bool isValid() const noexcept { return type != Type::Invalid; }
 		bool isLeftPressed() const noexcept { return leftPressed; }
 		bool isRightPressed() const noexcept { return rightPressed; }
-		int32 getX() const noexcept { return x; }
-		int32 getY() const noexcept { return y; }
+		int getX() const noexcept { return x; }
+		int getY() const noexcept { return y; }
 	};
 
 public:
@@ -48,35 +48,35 @@ public:
 	bool leftIsPressed() const noexcept;
 	bool rightIsPressed() const noexcept;
 	bool isInWindow() const noexcept;
-	int32 getPosX() const noexcept;
-	int32 getPosY() const noexcept;
+	int getPosX() const noexcept;
+	int getPosY() const noexcept;
 	Mouse::Event read() noexcept;
 	bool isEmpty() const noexcept;
 	void flush() noexcept;
 
 private:
-	void move(int32 newX, int32 newY) noexcept;
-	void moveRelative(const int32 x, const int32 y) noexcept;
+	void move(int newX, int newY) noexcept;
+	void moveRelative(const int x, const int y) noexcept;
 	void enter() noexcept;
 	void leave() noexcept;
-	void leftPress(int32 newX, int32 newY) noexcept;
-	void leftRelease(int32 newX, int32 newY) noexcept;
-	void rightPress(int32 newX, int32 newY) noexcept;
-	void rightRelease(int32 newX, int32 newY) noexcept;
-	void middlePress(int32 newX, int32 newY) noexcept;
-	void middleRelease(int32 newX, int32 newY) noexcept;
-	void wheelUp(int32 newX, int32 newY) noexcept;
-	void wheelDown(int32 newX, int32 newY) noexcept;
-	void onWheelDelta(int32 newX, int32 newY, int32 delta) noexcept;
+	void leftPress(int newX, int newY) noexcept;
+	void leftRelease(int newX, int newY) noexcept;
+	void rightPress(int newX, int newY) noexcept;
+	void rightRelease(int newX, int newY) noexcept;
+	void middlePress(int newX, int newY) noexcept;
+	void middleRelease(int newX, int newY) noexcept;
+	void wheelUp(int newX, int newY) noexcept;
+	void wheelDown(int newX, int newY) noexcept;
+	void onWheelDelta(int newX, int newY, int delta) noexcept;
 	void trimBuffer() noexcept;
 private:
-	static constexpr uint32 bufferSize = 16;
-	static constexpr int32 wheelDelta = 120;
-	int32 x = -1;
-	int32 y = -1;
+	static constexpr uint bufferSize = 16;
+	static constexpr int wheelDelta = 120;
+	int x = -1;
+	int y = -1;
 	bool inWindow = false;
 	bool leftPressed = false;
 	bool rightPressed = false;
-	int32 wheelDeltaCarry = 0;
+	int wheelDeltaCarry = 0;
 	std::queue<Event> buffer;
 };

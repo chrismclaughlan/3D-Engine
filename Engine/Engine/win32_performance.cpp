@@ -15,14 +15,14 @@ void Performance::Update()
 	QueryPerformanceCounter(&startTime);
 }
 
-void Performance::LimitFps(int32 target)
+void Performance::LimitFps(int target)
 {
 	assert(target > 0);
 	while (getFps() > target)
 	{
 		std::this_thread::sleep_for(
 			std::chrono::milliseconds(
-			(int32)TIME::MILISECONDS_MULTIPLYER / target
+			(int)TIME::MILISECONDS_MULTIPLYER / target
 				)
 			);
 		QueryPerformanceCounter(&elapsedMicroseconds);

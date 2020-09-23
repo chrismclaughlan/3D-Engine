@@ -4,7 +4,7 @@
 #include "game.h"
 #include <list>
 
-int32 Game::run()
+int Game::run()
 {
 	gsPush(&Game::gsCloseApplication);  // should be first in stack
 
@@ -82,10 +82,10 @@ void Game::gsInitGame()
 	// Load GUI
 	guiChat = new GUIForm();
 	const float x1 = 0.0f, y1 = 0.0f, x2 = 0.75f, y2 = 0.05f;
-	uint32 tColours[3] = { 0xff0000, 0x00ff00, 0x0000ff };
+	uint tColours[3] = { 0xff0000, 0x00ff00, 0x0000ff };
 	GUIText* guiTextInput = new GUIText("Chat : ", tColours, x1, y1, x2, y2, false);
 	guiChat->setTextInput(guiTextInput);
-	uint32 rColours[3] = { 0xaaaaaa, 0x444444, 0x888888 };
+	uint rColours[3] = { 0xaaaaaa, 0x444444, 0x888888 };
 	GUIRect* guiRect = new GUIRect(x1, y1, x2, y2, rColours, guiTextInput);
 	guiChat->setRect(guiRect);
 
@@ -258,8 +258,8 @@ void Game::gsGameInput()
 		{
 			if (event.isRightPressed())
 			{
-				int32 iCenterX = win.Gfx().getWidth() / 2;
-				int32 iCenterY = win.Gfx().getHeight() / 2;
+				int iCenterX = win.Gfx().getWidth() / 2;
+				int iCenterY = win.Gfx().getHeight() / 2;
 				win.GetScreenPos(&iCenterX, &iCenterY);
 				win.MoveMouse(iCenterX, iCenterY);
 				player.lookX( event.getX());
@@ -345,7 +345,7 @@ void Game::gsGameRender()
 	objects.push_back(object1);
 	objects.push_back(object2);
 
-	//const uint32 strokeColour = 0xffffff;
+	//const uint strokeColour = 0xffffff;
 	win.Gfx().RasterTexturedTriangles(
 		projectionMatrix, 
 		player.getMCamera(), player.getVCamera(),
@@ -374,8 +374,8 @@ void Game::gsMainMenu()
 		{
 		case Mouse::Event::Type::Move:
 		{
-			int32 iX = event.getX();
-			int32 iY = event.getY();
+			int iX = event.getX();
+			int iY = event.getY();
 			float fX = win.Gfx().pxToScreenX(iX);
 			float fY = win.Gfx().pxToScreenY(iY);
 
@@ -399,8 +399,8 @@ void Game::gsMainMenu()
 		} break;
 		case Mouse::Event::Type::LPressed:
 		{
-			int32 iX = event.getX();
-			int32 iY = event.getY();
+			int iX = event.getX();
+			int iY = event.getY();
 			float fX = win.Gfx().pxToScreenX(iX);
 			float fY = win.Gfx().pxToScreenY(iY);
 
@@ -415,8 +415,8 @@ void Game::gsMainMenu()
 		case Mouse::Event::Type::LReleased:
 		{
 			// find out if gui pressed
-			int32 iX = event.getX();
-			int32 iY = event.getY();
+			int iX = event.getX();
+			int iY = event.getY();
 			float fX = win.Gfx().pxToScreenX(iX);
 			float fY = win.Gfx().pxToScreenY(iY);
 
@@ -490,11 +490,11 @@ void Game::gsGameMenu()
 	{
 		guiGameMenu = new GUIMenu();
 
-		uint32 rColours[3] = { 0xaaaaaa, 0x444444, 0x888888 };
+		uint rColours[3] = { 0xaaaaaa, 0x444444, 0x888888 };
 		GUIRect* guiRect = new GUIRect(0.4f, 0.45f, 0.6f, 0.55f, rColours, nullptr);
 		guiGameMenu->setRect(guiRect);
 
-		uint32 tColours[3] = { 0xdddddd, 0xf362d4, 0xffffff };
+		uint tColours[3] = { 0xdddddd, 0xf362d4, 0xffffff };
 		GUIText* item1 = new GUIText("Continue", tColours, 0.45f, 0.5f);
 		GUIText* item2 = new GUIText("Quit", tColours, 0.45f, 0.45f);
 		guiGameMenu->addText(item1);
@@ -528,8 +528,8 @@ void Game::gsGameMenu()
 		{
 		case Mouse::Event::Type::Move:
 		{
-			int32 iX = event.getX();
-			int32 iY = event.getY();
+			int iX = event.getX();
+			int iY = event.getY();
 			float fX = win.Gfx().pxToScreenX(iX);
 			float fY = win.Gfx().pxToScreenY(iY);
 			for (auto t : guiGameMenu->getVText())
@@ -543,8 +543,8 @@ void Game::gsGameMenu()
 		case Mouse::Event::Type::LReleased:
 		{
 			// find out if gui pressed
-			int32 iX = event.getX();
-			int32 iY = event.getY();
+			int iX = event.getX();
+			int iY = event.getY();
 			float fX = win.Gfx().pxToScreenX(iX);
 			float fY = win.Gfx().pxToScreenY(iY);
 			for (auto t : guiGameMenu->getVText())

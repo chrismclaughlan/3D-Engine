@@ -24,13 +24,13 @@ THROW_EXCEPTION_CODE("Window Error", msg, GetLastError());
 #define WINDOW_STYLE (WS_OVERLAPPEDWINDOW)
 
 #define GetXY()\
-const int32 x = GET_X_LPARAM(lParam); \
-const int32 y = wHeight - GET_Y_LPARAM(lParam); \
+const int x = GET_X_LPARAM(lParam); \
+const int y = wHeight - GET_Y_LPARAM(lParam); \
 
 Window::WindowClass Window::WindowClass::wClass;
-int32 Window::exitCode;
+int Window::exitCode;
 
-const int32 Window::getExitCode() noexcept
+const int Window::getExitCode() noexcept
 {
 	return Window::exitCode;
 }
@@ -74,7 +74,7 @@ HINSTANCE Window::WindowClass::GetHInstance() noexcept
 
 /* --------------------------------------------------------- */
 
-Window::Window(const char* name, int32 width, int32 height)
+Window::Window(const char* name, int width, int height)
 	: wWidth(width), wHeight(height)
 {
 #ifdef DISPLAY_DEBUG_CONSOLE
@@ -144,7 +144,7 @@ void Window::setTitle(const std::string text)
 	SetWindowTextW(hwnd, title.c_str());
 }
 
-bool Window::setSize(const int32 newWidth, const int32 newHeight)
+bool Window::setSize(const int newWidth, const int newHeight)
 {
 	if (NULL == hwnd)
 	{
@@ -157,8 +157,8 @@ bool Window::setSize(const int32 newWidth, const int32 newHeight)
 		THROW_WINDOW_EXCEPTION_CODE("Error setting window size: GetWindowRect() returned NULL");
 	}
 
-	int32 xPos = rect.left;
-	int32 yPos = rect.top;
+	int xPos = rect.left;
+	int yPos = rect.top;
 
 	// Calculate window size
 	rect.right = newWidth + rect.left;
@@ -179,7 +179,7 @@ bool Window::setSize(const int32 newWidth, const int32 newHeight)
 	return true;
 }
 
-bool Window::setPos(const int32 x, const int32 y)
+bool Window::setPos(const int x, const int y)
 {
 	if (NULL == hwnd)
 	{
@@ -207,6 +207,9 @@ Win32Graphics& Window::Gfx()
 
 bool Window::shouldClose()
 {
+	PostQuitMessage(0);
+	return true;  // ignore messagebox
+
 	if (MessageBox(hwnd, L"Really quit?", wName.c_str(), MB_OKCANCEL) == IDOK)
 	{
 		PostQuitMessage(0);
@@ -227,7 +230,7 @@ bool Window::processMessages()
 	{
 		if (msg.message == WM_QUIT)
 		{
-			exitCode = (int32)msg.wParam;
+			exitCode = (int)msg.wParam;
 			return false;
 		}
 
@@ -290,8 +293,8 @@ LRESULT Window::HandleMessage
 	} break;
 	case WM_SIZE:
 	{
-		const int32 newWidth = GET_X_LPARAM(lParam);
-		const int32 newHeight = GET_Y_LPARAM(lParam);
+		const int newWidth = GET_X_LPARAM(lParam);
+		const int newHeight = GET_Y_LPARAM(lParam);
 		wWidth = newWidth;
 		wHeight = newHeight;
 		Gfx().ChangeSize(newWidth, newHeight);
@@ -327,8 +330,8 @@ LRESULT Window::HandleMessage
 
 		if (raw->header.dwType == RIM_TYPEMOUSE)
 		{
-			const int32 xPosRelative = raw->data.mouse.lLastX;
-			const int32 yPosRelative = raw->data.mouse.lLastY;
+			const int xPosRelative = raw->data.mouse.lLastX;
+			const int yPosRelative = raw->data.mouse.lLastY;
 			mouse.moveRelative(xPosRelative, yPosRelative);
 		}
 	} break;
@@ -391,7 +394,7 @@ LRESULT Window::HandleMessage
 	case WM_MOUSEWHEEL:
 	{
 		GetXY();
-		const int32 delta = GET_WHEEL_DELTA_WPARAM(wParam);
+		const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
 		mouse.onWheelDelta(x, y, delta);
 	} break;
 	}

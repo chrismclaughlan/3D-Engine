@@ -8,7 +8,7 @@ struct Triangle
 
 	Vector p[3];
 	Vector2 t[3];
-	uint32 colour;
+	uint colour;
 	// alpha
 };
 
@@ -81,7 +81,7 @@ public:
 				{
 					s >> temp;
 					std::string tokens[6];
-					int32 nTokenCount = -1;
+					int nTokenCount = -1;
 
 					while (!s.eof())
 					{

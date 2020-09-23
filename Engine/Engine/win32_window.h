@@ -39,25 +39,25 @@ private:
 		HINSTANCE hInstance;
 	};
 public:
-	Window(const char* name, int32 width, int32 height);
+	Window(const char* name, int width, int height);
 	~Window();
 	Window(const Window&) = delete;
 	Window& operator=(const Window&) = delete;
-	static const int32 getExitCode() noexcept;
+	static const int getExitCode() noexcept;
 private:
-	static int32 exitCode;
+	static int exitCode;
 	static LRESULT CALLBACK HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 	LRESULT HandleMessage(UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 private:
 	std::wstring wName;
 	HWND hwnd;
-	int32 wWidth;
-	int32 wHeight;
+	int wWidth;
+	int wHeight;
 	std::unique_ptr<Win32Graphics> pGraphics;
 public:
 	void setTitle(const std::string text);
-	bool setSize(const int32 x, const int32 y);
-	bool setPos(const int32 x, const int32 y);
+	bool setSize(const int x, const int y);
+	bool setPos(const int x, const int y);
 	bool shouldClose();
 	static bool processMessages();
 	Win32Graphics& Gfx();
@@ -65,7 +65,7 @@ public:
 	Mouse mouse;
 	Keyboard keyboard;
 
-	void GetScreenPos(int32* x, int32* y)
+	void GetScreenPos(int* x, int* y)
 	{
 		POINT p = { *x, *y };
 		ClientToScreen(hwnd, &p);
@@ -73,7 +73,7 @@ public:
 		*y = p.y;
 	}
 
-	void MoveMouse(const int32 x, const int32 y)
+	void MoveMouse(const int x, const int y)
 	{
 		SetCursorPos(x, y);
 	}

@@ -21,9 +21,11 @@
   <ItemGroup>
     <ClCompile Include="exception.cpp" />
     <ClCompile Include="graphics.cpp" />
+    <ClCompile Include="graphics_texture.cpp" />
     <ClCompile Include="gui.cpp" />
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Mouse.cpp" />
+    <ClCompile Include="utils.cpp" />
     <ClCompile Include="vector.cpp" />
     <ClCompile Include="win32_stopwatch.cpp" />
     <ClCompile Include="win32_performance.cpp" />
@@ -37,6 +39,7 @@
     <ClInclude Include="defines.h" />
     <ClInclude Include="exception.h" />
     <ClInclude Include="graphics.h" />
+    <ClInclude Include="graphics_texture.h" />
     <ClInclude Include="gui.h" />
     <ClInclude Include="hwindows.h" />
     <ClInclude Include="Keyboard.h" />
@@ -47,6 +50,7 @@
     <ClInclude Include="text2d.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="time.h" />
+    <ClInclude Include="utils.h" />
     <ClInclude Include="vector.h" />
     <ClInclude Include="win32_stopwatch.h" />
     <ClInclude Include="types.h" />

@@ -40,6 +40,10 @@
     <ClCompile Include="gui.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="graphics_texture.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="defines.h" />
@@ -95,15 +99,19 @@
     <ClInclude Include="text2d.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="texture.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="objects.h">
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="gui.h">
       <Filter>Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics_texture.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Graphics">

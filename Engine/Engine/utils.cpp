@@ -22,3 +22,12 @@ const float normalise(const float min, const float max, float input)
 {
 	return (input - min) / (max - min);
 }
+
+uint rgbToHex(const uint8 r, const uint8 g, const uint8 b)
+{
+	uint h = 0x0;
+	h += r << 16;
+	h += g << 8;
+	h += b << 0;
+	return h;
+}

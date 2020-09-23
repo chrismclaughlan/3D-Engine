@@ -210,8 +210,8 @@ private:
 
 	Object* object1 = nullptr;
 	Object* object2 = nullptr;
-	Texture24* objectTexture1 = nullptr;
-	Texture24* objectTexture2 = nullptr;
+	TextureRGB* objectTexture1 = nullptr;
+	TextureRGB* objectTexture2 = nullptr;
 
 	Player player;
 
@@ -234,9 +234,9 @@ private:
 	// returns true if string occupied
 	bool CheckReturnRect(GUIRect* r, std::string*& s)
 	{
-		if (r->state == GUI_STATE_ACTIVE && r->guiTextInput != nullptr)
+		if (r->state == GUIState::Active && r->guiTextInput != nullptr)
 		{
-			r->state = GUI_STATE_INACTIVE;
+			r->state = GUIState::Inactive;
 			s = r->guiTextInput->pText;
 			r->guiTextInput->pText = nullptr;
 			userTextBuffer = new std::string;
@@ -252,8 +252,8 @@ private:
 		if (r->guiTextInput != nullptr)
 		{
 			userTextBuffer->clear();
-			if (r->state == GUI_STATE_ACTIVE)
-				r->state = GUI_STATE_INACTIVE;
+			if (r->state == GUIState::Active)
+				r->state = GUIState::Inactive;
 			r->guiTextInput->pText = nullptr;
 			disableMovement = false;
 		}
@@ -262,15 +262,15 @@ private:
 	void CheckMouseMoveRect(const float x, const float y, 
 		GUIRect* r)
 	{
-		if (r->state != GUI_STATE_ACTIVE)
+		if (r->state != GUIState::Active)
 		{
 			if (r->isAt(x, y))
 			{
-				r->state = GUI_STATE_HOVER;
+				r->state = GUIState::Hover;
 			}
 			else
 			{
-				r->state = GUI_STATE_INACTIVE;
+				r->state = GUIState::Inactive;
 			}
 		}
 	}
@@ -282,21 +282,21 @@ private:
 		{
 			if (r->isAt(x, y))
 			{
-				if (r->state != GUI_STATE_ACTIVE)
+				if (r->state != GUIState::Active)
 				{
-					r->state = GUI_STATE_ACTIVE;
+					r->state = GUIState::Active;
 					r->guiTextInput->pText = userTextBuffer;
 					disableMovement = true;
 				}
 				else
 				{
-					r->state = GUI_STATE_INACTIVE;
+					r->state = GUIState::Inactive;
 					r->guiTextInput->pText = nullptr;
 				}
 			}
 			else
 			{
-				r->state = GUI_STATE_INACTIVE;
+				r->state = GUIState::Inactive;
 				r->guiTextInput->pText = nullptr;
 			}
 		}
@@ -307,12 +307,12 @@ private:
 	{
 		if (t->isAt(x, y, &win.Gfx()))
 		{
-			if (t->state != GUI_STATE_ACTIVE)
-				t->state = GUI_STATE_HOVER;
+			if (t->state != GUIState::Active)
+				t->state = GUIState::Hover;
 		}
 		else
 		{
-			t->state = GUI_STATE_INACTIVE;
+			t->state = GUIState::Inactive;
 		}
 	}
 
@@ -321,7 +321,7 @@ private:
 	{
 		if (t->isAt(x, y, &win.Gfx()))
 		{
-			t->state = GUI_STATE_ACTIVE;
+			t->state = GUIState::Active;
 		}
 	}
 };

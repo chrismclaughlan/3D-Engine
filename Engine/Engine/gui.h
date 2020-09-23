@@ -10,10 +10,6 @@
 class Graphics;
 struct GUIText;
 
-#define GUI_STATE_INACTIVE 0
-#define GUI_STATE_ACTIVE 1
-#define GUI_STATE_HOVER	 2
-
 enum class GUIState : int
 {
 	Pressed  = -1,  // -1 special val
@@ -31,7 +27,7 @@ struct GUIRect
 	float x2;
 	float y2;
 	uint colourPallete[3];
-	int state = GUI_STATE_INACTIVE;  // enum?
+	GUIState state = GUIState::Inactive;
 
 	GUIRect(float x1, float y1, float x2, float y2, uint colours[3], GUIText* guiTextInput = nullptr)
 		: x1(x1), y1(y1), x2(x2), y2(y2), guiTextInput(guiTextInput)
@@ -56,7 +52,7 @@ struct GUIText
 	std::string sText;
 	std::string* pText = nullptr;
 	uint colourPallete[3];
-	int state = GUI_STATE_INACTIVE;  // enum?
+	GUIState state = GUIState::Inactive;
 	uint cBackground;
 	bool drawBackground;
 
@@ -196,10 +192,10 @@ public:
 class GUISprite24 : public GUISprite
 {
 public:
-	Texture24* texture = nullptr;
+	TextureRGB* texture = nullptr;
 
 public:
-	GUISprite24(Texture24* texture, const float x1, const float y1, const float x2,
+	GUISprite24(TextureRGB* texture, const float x1, const float y1, const float x2,
 		const float y2)
 		: texture(texture), GUISprite(x1, y1, x2, y2)
 	{}
@@ -224,14 +220,14 @@ public:
 class GUISprite32 : public GUISprite
 {
 public:
-	TextureNew* texture = nullptr;
+	TextureRGBA* texture = nullptr;
 
 public:
 	GUISprite32(const char* filename, const float x1, const float y1, const float x2,
 		const float y2)
 		: GUISprite(x1, y1, x2, y2)
 	{
-		texture = new TextureNew(filename, 256, 128);
+		texture = new TextureRGBA(filename, 256, 128);
 	}
 
 	~GUISprite32()

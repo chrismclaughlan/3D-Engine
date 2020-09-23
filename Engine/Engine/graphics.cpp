@@ -275,7 +275,7 @@ float* Graphics::readDepthBuffer(const int x, const int y)
 void Graphics::DrawTexturedTriangle(int x1, int y1, float u1, float v1, float w1,
 	int x2, int y2, float u2, float v2, float w2,
 	int x3, int y3, float u3, float v3, float w3,
-	const Texture24* texture)
+	const TextureRGB* texture)
 {
 
 	if (y2 < y1)
@@ -710,7 +710,7 @@ void Graphics::DrawText(const GUIText guiText)
 			return;
 		}
 
-		DrawChar(txt[i], iPosX, iPosY, guiText.colourPallete[guiText.state]);
+		DrawChar(txt[i], iPosX, iPosY, guiText.colourPallete[static_cast<int>(guiText.state)]);
 		iPosX += 14;  // ind_x
 	}
 }
@@ -765,7 +765,7 @@ const bool Graphics::DrawChar(const char c, const int posX, const int posY, cons
 void Graphics::DrawGUIForm(GUIForm* guiForm)
 {
 	GUIRect* r = guiForm->getRect();
-	DrawRect(r->x1, r->y1, r->x2, r->y2, r->colourPallete[r->state]);
+	DrawRect(r->x1, r->y1, r->x2, r->y2, r->colourPallete[static_cast<int>(r->state)]);
 	if (r->guiTextInput != nullptr)
 	{
 		DrawText(*r->guiTextInput);
@@ -775,7 +775,7 @@ void Graphics::DrawGUIForm(GUIForm* guiForm)
 void Graphics::DrawGUIMenu(GUIMenu* guiMenu)
 {
 	GUIRect* r = guiMenu->getRect();
-	DrawRect(r->x1, r->y1, r->x2, r->y2, r->colourPallete[r->state]);
+	DrawRect(r->x1, r->y1, r->x2, r->y2, r->colourPallete[static_cast<int>(r->state)]);
 
 	std::vector<GUIText*> vGuiText = guiMenu->getVText();
 	for (auto t : vGuiText)
@@ -796,7 +796,7 @@ void Graphics::DrawGUIMenuSprite(GUISprite* guiSprite)
 		{
 			const double x_ = normalise(x1, x2, i);
 			const double y_ = normalise(y1, y2, j);
-			DrawPointPAlpha(i, j, ((TextureNew*)guiSprite->Tex())->lookUp(x_, y_, guiSprite->getState()));// , guiSprite->getNumStates(), guiSprite->getState()));
+			DrawPointPAlpha(i, j, ((TextureRGBA*)guiSprite->Tex())->lookUp(x_, y_, guiSprite->getState()));// , guiSprite->getNumStates(), guiSprite->getState()));
 		}
 	}
 }

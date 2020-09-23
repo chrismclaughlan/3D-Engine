@@ -6,17 +6,10 @@
 #include <iostream>
 #include <assert.h>
 
-#define HEADER_SIZE_32_BIT_BMP 66
+#define HEADER_SIZE_24_BIT_BMP (54)
+#define HEADER_SIZE_32_BIT_BMP (66)
 
-TextureNew::TextureNew(const char* filename, const int sectionWidth, const int sectionHeight)
-{
-	if (!loadTextureFromBMP(filename, sectionWidth, sectionHeight))
-	{
-		std::cerr << "Error loading " << filename << "\n";
-	}
-}
-
-TextureNew::~TextureNew()
+TextureRGB::~TextureRGB()
 {
 	if (data != nullptr)
 	{
@@ -25,7 +18,88 @@ TextureNew::~TextureNew()
 	}
 }
 
-bool TextureNew::loadTextureFromBMP(const char* filename, const int sectionWidth, const int sectionHeight)
+bool TextureRGB::LoadTextureFromBMP(const char* filename)
+{
+	int i;
+	FILE* f;
+	errno_t err = fopen_s(&f, filename, "r");
+	if (err != 0)
+	{
+		std::cerr << "Error opening file " << filename << "\n";
+		return false;
+	}
+
+	uint8* info = new uint8[HEADER_SIZE_24_BIT_BMP];
+
+	// read the 54-byte header
+	fread(info, sizeof(uint8), HEADER_SIZE_24_BIT_BMP, f);
+
+	const int bOffset = info[10];
+
+	std::cout << "Offset: " << bOffset << std::endl;
+
+	// extract image height and width from header
+	width = *(int*)& info[18];
+	height = *(int*)& info[22];
+
+	assert(height > 0);
+	scale = (float)width / (float)height;
+
+	std::cout << "TextureRGB width=" << width << " height=" << height
+		<< " scale=" << scale << "\n";
+
+	// allocate 3 bytes per pixel
+	int size = 3 * width * height;
+	data = new uint8[size];
+
+	// read the rest of the data at once
+	fread(data, sizeof(uint8), size, f);
+
+	fclose(f);
+
+	delete[] info;
+	info = nullptr;
+
+	return true;
+}
+
+const uint TextureRGB::readData(int x, int y) const
+{
+	x = height - x;  // flip
+
+	return rgbToHex(
+		data[3 * (x * width + y) + 2],
+		data[3 * (x * width + y) + 1],
+		data[3 * (x * width + y) + 0]);
+}
+
+uint TextureRGB::lookUp(const float y, const float x, const int segments, const int index) const
+{
+	int xInd, yInd;
+	xInd = x * (float)width / scale;
+	yInd = y * (float)height * scale;
+
+	return readData(xInd + 1, yInd);
+}
+
+TextureRGBA::TextureRGBA(const char* filename, const int sectionWidth, const int sectionHeight)
+{
+	if (!loadTextureFromBMP(filename, sectionWidth, sectionHeight))
+	{
+		std::cerr << "Error loading " << filename << "\n";
+	}
+}
+
+TextureRGBA::~TextureRGBA()
+{
+	if (data != nullptr)
+	{
+		delete[] data;
+		data = nullptr;
+	}
+}
+
+bool TextureRGBA::loadTextureFromBMP(const char* filename, const int sectionWidth, const int sectionHeight)
 {
 	int i;
 	FILE* file;
@@ -101,7 +175,7 @@ bool TextureNew::loadTextureFromBMP(const char* filename, const int sectionWidth
 
 
 // Take normalised x and y values and maps them to texture coords
-uint TextureNew::lookUp(float x, float y, int cycleX, int cycleY)
+uint TextureRGBA::lookUp(float x, float y, int cycleX, int cycleY)
 {	
 	Clamp(0, &cycleX, maxCylcesX);
 	Clamp(0, &cycleY, maxCylcesY);

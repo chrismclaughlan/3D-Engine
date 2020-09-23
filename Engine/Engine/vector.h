@@ -8,7 +8,7 @@
 #include <assert.h>
 
 class Object;
-class Texture24;
+class TextureRGB;
 struct Triangle;
 
 // make struct?

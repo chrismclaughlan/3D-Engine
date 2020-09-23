@@ -26,11 +26,7 @@ int Game::run()
 		gState = gStates.top();
 		(this->*gState)();  // execute method
 
-		//HandleInput();
-		//DoFrame();
-
 		/* ---------- Draw to window ---------- */
-
 		win.Gfx().Render();  // last
 	}
 
@@ -90,8 +86,8 @@ void Game::gsInitGame()
 	guiChat->setRect(guiRect);
 
 	// Load textures
-	objectTexture1 = new Texture24();
-	objectTexture2 = new Texture24();
+	objectTexture1 = new TextureRGB();
+	objectTexture2 = new TextureRGB();
 	if (!objectTexture1->LoadTextureFromBMP("CubeMap_Test.bmp"))
 	{
 		// error
@@ -559,7 +555,7 @@ void Game::gsGameMenu()
 
 	for (auto t : guiGameMenu->getVText())
 	{
-		if (t->state == GUI_STATE_ACTIVE)
+		if (t->state == GUIState::Active)
 		{
 			if (t->sText == "Continue")  // TODO enum?
 			{

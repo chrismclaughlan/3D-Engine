@@ -259,12 +259,11 @@ private:
 		}
 	}
 
-	void CheckMouseMoveRect(const float x, const float y, 
-		GUIRect* r)
+	void CheckMouseMoveRect(const vec2f& vf, GUIRect* r)
 	{
 		if (r->state != GUIState::Active)
 		{
-			if (r->isAt(x, y))
+			if (r->isAt(vf.x, vf.y))
 			{
 				r->state = GUIState::Hover;
 			}
@@ -275,12 +274,11 @@ private:
 		}
 	}
 
-	void CheckLMousePressedRect(const float x, const float y, 
-		GUIRect* r)
+	void CheckLMousePressedRect(const vec2f& vf, GUIRect* r)
 	{
 		if (r->guiTextInput != nullptr)
 		{
-			if (r->isAt(x, y))
+			if (r->isAt(vf.x, vf.y))
 			{
 				if (r->state != GUIState::Active)
 				{
@@ -302,10 +300,9 @@ private:
 		}
 	}
 
-	void CheckMouseMoveText(const float x, const float y, 
-		GUIText* t)
+	void CheckMouseMoveText(const vec2f& vf, GUIText* t)
 	{
-		if (t->isAt(x, y, &win.Gfx()))
+		if (t->isAt(vf.x, vf.y, &win.Gfx()))
 		{
 			if (t->state != GUIState::Active)
 				t->state = GUIState::Hover;
@@ -316,10 +313,9 @@ private:
 		}
 	}
 
-	void CheckMousePressedText(const float x, const float y, 
-		GUIText* t)
+	void CheckMousePressedText(const vec2f& vf, GUIText* t)
 	{
-		if (t->isAt(x, y, &win.Gfx()))
+		if (t->isAt(vf.x, vf.y, &win.Gfx()))
 		{
 			t->state = GUIState::Active;
 		}

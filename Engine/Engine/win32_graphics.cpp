@@ -25,9 +25,9 @@ Win32Graphics::Win32Graphics(HWND hwnd, HDC hdc) : hdc(hdc)
 	bitmapinfo.bmiHeader.biBitCount = 32;
 	bitmapinfo.bmiHeader.biCompression = BI_RGB;
 
-	float nscale_x = width;
-	float nscale_y = height;
-	calculate_scales();
+	//float ratio = 1080.0f / (float)height;
+	//scale_x = (float)width * ratio;
+	//scale_y = (float)height * ratio;
 
 	// 3D
 	bufferSize = width * height * sizeof(float);
@@ -64,9 +64,9 @@ void Win32Graphics::ChangeSize(int newWidth, int newHeight)
 	bitmapinfo.bmiHeader.biWidth = width;
 	bitmapinfo.bmiHeader.biHeight = height;
 
-	float nscale_x = width;
-	float nscale_y = height;
-	calculate_scales();
+	//float ratio = 1080.0f / (float)height;
+	//scale_x = (float)width * ratio;
+	//scale_y = (float)height * ratio;
 
 	// 3D
 	bufferSize = width * height * sizeof(float);

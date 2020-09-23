@@ -8,6 +8,8 @@
 
 class Graphics;
 struct GUIText;
+struct vec2;
+struct vec2f;
 
 enum class GUIState : int
 {
@@ -185,7 +187,7 @@ public:
 	const int getState() { return (int)state; }
 	const int getNumStates() { return numStates; }
 	virtual void* Tex() const = 0;
-	const bool isClickable(const float x, const float y);//, ClickableColours& clickable);
+	const bool isClickable(const vec2f& vf);//, ClickableColours& clickable);
 };
 
 class GUISprite24 : public GUISprite

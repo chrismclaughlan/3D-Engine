@@ -151,8 +151,8 @@ uint Texture::lookUp(float x, float y, int cycleX, int cycleY) const
 	}
 	else if (textureType == TextureType::RGBA)
 	{
-		Clamp(0, &cycleX, maxCylcesX);
-		Clamp(0, &cycleY, maxCylcesY);
+		clamp(0, &cycleX, maxCylcesX);
+		clamp(0, &cycleY, maxCylcesY);
 
 		// Get texture slice
 		x = (x * stepX) + (stepX * cycleX);

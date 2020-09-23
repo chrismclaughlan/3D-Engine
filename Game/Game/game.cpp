@@ -221,11 +221,11 @@ void Game::gsGameInput()
 		{
 		case Mouse::Event::Type::LPressed:
 		{
-			float fX = win.Gfx().pxToScreenX(event.getX());
-			float fY = win.Gfx().pxToScreenY(event.getY());
+			vec2 v = { event.getX(), event.getY() };
+			vec2f vf = win.Gfx().pxToScreen(v);
 
 			// Hover chat box
-			CheckLMousePressedRect(fX, fY, guiChat->getRect());
+			CheckLMousePressedRect(vf, guiChat->getRect());
 		} break;
 		case Mouse::Event::Type::RPressed:
 		{
@@ -235,12 +235,12 @@ void Game::gsGameInput()
 		{
 			win.showCursor();
 
-			float fX = win.Gfx().pxToScreenX(event.getX());
-			float fY = win.Gfx().pxToScreenY(event.getY());
+			vec2 v = { event.getX(), event.getY() };
+			vec2f vf = win.Gfx().pxToScreen(v);
 
 			// Click chat box
 			disableMovement = false;
-			CheckLMousePressedRect(fX, fY, guiChat->getRect());
+			CheckLMousePressedRect(vf, guiChat->getRect());
 		} break;
 		case Mouse::Event::Type::MoveRelative:
 		{
@@ -256,11 +256,11 @@ void Game::gsGameInput()
 		} break;
 		case Mouse::Event::Type::Move:
 		{
-			float fX = win.Gfx().pxToScreenX(event.getX());
-			float fY = win.Gfx().pxToScreenY(event.getY());
-		
+			vec2 v = { event.getX(), event.getY() };
+			vec2f vf = win.Gfx().pxToScreen(v);
+
 			// Hover chat box
-			CheckMouseMoveRect(fX, fY, guiChat->getRect());
+			CheckMouseMoveRect(vf, guiChat->getRect());
 		} break;
 		}
 	}
@@ -325,8 +325,8 @@ void Game::gsGameSimulate()
 void Game::gsGameRender()
 {
 	// Clear screen and depth buffer
-	win.Gfx().ClearScreen(0x000000);
-	win.Gfx().ClearDepthBuffer();
+	win.Gfx().clearScreen(0x000000);
+	win.Gfx().clearDepthBuffer();
 
 	// Draw objects in scene
 	std::vector<Object*> objects;
@@ -334,14 +334,14 @@ void Game::gsGameRender()
 	objects.push_back(object2);
 
 	//const uint strokeColour = 0xffffff;
-	win.Gfx().RasterTexturedTriangles(
+	win.Gfx().rasterTexturedTriangles(
 		projectionMatrix, 
 		player.getMCamera(), player.getVCamera(),
 		objects);
 
 	//win.Gfx().DrawText(*userTextBuffer, 100, 100, 0xffffff);  // test
 
-	win.Gfx().DrawGUIForm(guiChat);
+	win.Gfx().drawGUIForm(guiChat);
 
 	//win.Gfx().DrawPointP(win.Gfx().getWidth() / 2, win.Gfx().getHeight() / 2, 0xff0000);
 }
@@ -362,14 +362,12 @@ void Game::gsMainMenu()
 		{
 		case Mouse::Event::Type::Move:
 		{
-			int iX = event.getX();
-			int iY = event.getY();
-			float fX = win.Gfx().pxToScreenX(iX);
-			float fY = win.Gfx().pxToScreenY(iY);
+			vec2 v = { event.getX(), event.getY() };
+			vec2f vf = win.Gfx().pxToScreen(v);
 
 			for (auto b : mainMenu->buttons)
 			{
-				if (b->sprite->isClickable(fX, fY))
+				if (b->sprite->isClickable(vf))
 				{
 					if (b->sprite->state == GUIState::Inactive)
 					{
@@ -387,14 +385,12 @@ void Game::gsMainMenu()
 		} break;
 		case Mouse::Event::Type::LPressed:
 		{
-			int iX = event.getX();
-			int iY = event.getY();
-			float fX = win.Gfx().pxToScreenX(iX);
-			float fY = win.Gfx().pxToScreenY(iY);
+			vec2 v = { event.getX(), event.getY() };
+			vec2f vf = win.Gfx().pxToScreen(v);
 
 			for (auto b : mainMenu->buttons)
 			{				
-				if (b->sprite->isClickable(fX, fY))
+				if (b->sprite->isClickable(vf))
 				{
 					b->sprite->state = GUIState::Active;
 				}
@@ -403,14 +399,12 @@ void Game::gsMainMenu()
 		case Mouse::Event::Type::LReleased:
 		{
 			// find out if gui pressed
-			int iX = event.getX();
-			int iY = event.getY();
-			float fX = win.Gfx().pxToScreenX(iX);
-			float fY = win.Gfx().pxToScreenY(iY);
+			vec2 v = { event.getX(), event.getY() };
+			vec2f vf = win.Gfx().pxToScreen(v);
 
 			for (auto b : mainMenu->buttons)
 			{
-				if (b->sprite->isClickable(fX, fY))
+				if (b->sprite->isClickable(vf))
 				{
 					if (b->sprite->state == GUIState::Active)
 					{
@@ -464,11 +458,11 @@ void Game::gsMainMenu()
 
 	/* ---------- Render ---------- */
 
-	win.Gfx().ClearScreen(0xCDCDCD);
+	win.Gfx().clearScreen(0xCDCDCD);
 
 	for (auto b : mainMenu->buttons)
 	{
-		win.Gfx().DrawGUIMenuSprite(b->sprite);
+		win.Gfx().drawGUIMenuSprite(b->sprite);
 	}
 }
 
@@ -516,13 +510,11 @@ void Game::gsGameMenu()
 		{
 		case Mouse::Event::Type::Move:
 		{
-			int iX = event.getX();
-			int iY = event.getY();
-			float fX = win.Gfx().pxToScreenX(iX);
-			float fY = win.Gfx().pxToScreenY(iY);
+			vec2 v = { event.getX(), event.getY() };
+			vec2f vf = win.Gfx().pxToScreen(v);
 			for (auto t : guiGameMenu->getVText())
 			{
-				CheckMouseMoveText(fX, fY, t);
+				CheckMouseMoveText(vf, t);
 			}
 			//#if DISPLAY_DEBUG_CONSOLE && DISPLAY_MOUSE_COORDS
 			//			std::cout << event.getX() << " " << event.getY() << "\n";
@@ -531,13 +523,11 @@ void Game::gsGameMenu()
 		case Mouse::Event::Type::LReleased:
 		{
 			// find out if gui pressed
-			int iX = event.getX();
-			int iY = event.getY();
-			float fX = win.Gfx().pxToScreenX(iX);
-			float fY = win.Gfx().pxToScreenY(iY);
+			vec2 v = { event.getX(), event.getY() };
+			vec2f vf = win.Gfx().pxToScreen(v);
 			for (auto t : guiGameMenu->getVText())
 			{
-				CheckMousePressedText(fX, fY, t);
+				CheckMousePressedText(vf, t);
 			}
 		}
 		}
@@ -574,5 +564,5 @@ void Game::gsGameMenu()
 
 	gsGameRender();
 
-	win.Gfx().DrawGUIMenu(guiGameMenu);
+	win.Gfx().drawGUIMenu(guiGameMenu);
 }

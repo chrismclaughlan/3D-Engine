@@ -8,12 +8,17 @@ const bool GUIText::isAt(const float x, const float y, Graphics* gfx)
 {
 	if (x > x1 && y > y1)
 	{
-		float x_end = x1 + gfx->pxToScreenX(sText.size() * 14);
-		float y_end = y1 + gfx->pxToScreenY(18);
+		vec2 v;
+		v.x = sText.size() * 14;
+		v.y = 18;
+		vec2f vf = gfx->pxToScreen(v);
+
+		float x_end = x1 + vf.x;
+		float y_end = y1 + vf.y;
 
 		if (pText != nullptr)
 		{
-			x_end += gfx->pxToScreenX(pText->size() * 14);
+			x_end += vf.x;
 		}
 
 		return x < x_end && y < y_end;
@@ -21,32 +26,18 @@ const bool GUIText::isAt(const float x, const float y, Graphics* gfx)
 	return  false;
 }
 
-const bool GUISprite::isClickable(const float x, const float y)//, ClickableColours& clickable)
+const bool GUISprite::isClickable(const vec2f& vf)//, ClickableColours& clickable)
 {
-	if (x > x1 && y > y1 && x < x2 && y < y2)
+	if (vf.x > x1 && vf.y > y1 && vf.x < x2 && vf.y < y2)
 	{
 		uint colour;
-		const float x_ = normalise(x1, x2, x);
-		const float y_ = normalise(y1, y2, y);
+		const float x_ = normalise(x1, x2, vf.x);
+		const float y_ = normalise(y1, y2, vf.y);
 		colour = ((Texture*)Tex())->lookUp(x_, y_);// , getNumStates(), getState());
 
 		//std::cout << colourA << "\n";
 
 		return ((uint)(colour & UINT32_ALPHA_CHANNEL)) > ALPHA_THRESHOLD;
-
-		//uint colour;
-		//const float x_ = Graphics::normalise(x1, x2, x);
-		//const float y_ = Graphics::normalise(y1, y2, y);
-		//colour = Tex()->lookUp(x_, y_, LOOKUP_RIGHT);
-
-		//for (auto c : vClickable)
-		//{
-		//	if (c.colour == colour)
-		//	{
-		//		//clickable = c.colour;
-		//		return true;
-		//	}
-		//}
 	}
 
 	return false;

@@ -1,6 +1,7 @@
 #pragma once
 #include "types.h"
 #include "vector.h"
+#include "graphics_texture.h"
 
 struct Triangle
 {
@@ -17,7 +18,7 @@ class Object
 public:
 	Matrix4x4 matrixWorldPos;
 	std::vector<Triangle> tris;
-	TextureRGB* texture = nullptr;
+	TextureBase* texture = nullptr;
 	// check all right
 	float x = 0.0f;  // + left / - right
 	float y = 0.0f;  // + upwards / - downwards

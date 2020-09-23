@@ -210,8 +210,8 @@ private:
 
 	Object* object1 = nullptr;
 	Object* object2 = nullptr;
-	TextureRGB* objectTexture1 = nullptr;
-	TextureRGB* objectTexture2 = nullptr;
+	TextureBase* objectTexture1 = nullptr;
+	TextureBase* objectTexture2 = nullptr;
 
 	Player player;
 

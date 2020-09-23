@@ -48,7 +48,6 @@
     <ClInclude Include="objects.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="text2d.h" />
-    <ClInclude Include="texture.h" />
     <ClInclude Include="time.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="vector.h" />

@@ -275,7 +275,7 @@ float* Graphics::readDepthBuffer(const int x, const int y)
 void Graphics::DrawTexturedTriangle(int x1, int y1, float u1, float v1, float w1,
 	int x2, int y2, float u2, float v2, float w2,
 	int x3, int y3, float u3, float v3, float w3,
-	const TextureRGB* texture)
+	const TextureBase* texture)
 {
 
 	if (y2 < y1)
@@ -796,7 +796,7 @@ void Graphics::DrawGUIMenuSprite(GUISprite* guiSprite)
 		{
 			const double x_ = normalise(x1, x2, i);
 			const double y_ = normalise(y1, y2, j);
-			DrawPointPAlpha(i, j, ((TextureRGBA*)guiSprite->Tex())->lookUp(x_, y_, guiSprite->getState()));// , guiSprite->getNumStates(), guiSprite->getState()));
+			DrawPointPAlpha(i, j, ((TextureBase*)guiSprite->Tex())->lookUp(x_, y_, guiSprite->getState()));// , guiSprite->getNumStates(), guiSprite->getState()));
 		}
 	}
 }

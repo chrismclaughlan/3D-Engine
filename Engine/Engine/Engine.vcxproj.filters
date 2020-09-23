@@ -105,9 +105,6 @@
     <ClInclude Include="gui.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="texture.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="graphics_texture.h">
       <Filter>Graphics</Filter>
     </ClInclude>

@@ -3,7 +3,7 @@
 #include "gui.h"
 #include "text2d.h"
 #include "vector.h"
-#include "texture.h"
+#include "graphics_texture.h"
 
 #define UINT32_RGB_CHANNEL   (0x00FFFFFF)
 #define UINT32_ALPHA_CHANNEL (0xFF000000)
@@ -78,7 +78,7 @@ public:
 	void DrawTexturedTriangle(int x1, int y1, float u1, float v1, float w1,
 		int x2, int y2, float u2, float v2, float w2,
 		int x3, int y3, float u3, float v3, float w3,
-		const TextureRGB* texture);
+		const TextureBase* texture);
 	void RasterTexturedTriangles(
 		const Matrix4x4& projectionMatrix,
 		const Matrix4x4& matrixCamera,

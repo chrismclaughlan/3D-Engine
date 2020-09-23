@@ -1,7 +1,6 @@
 #pragma once
 #include "types.h"
 #include "graphics.h"
-#include "texture.h"
 #include "graphics_texture.h"
 #include <string>
 #include <vector>
@@ -192,10 +191,10 @@ public:
 class GUISprite24 : public GUISprite
 {
 public:
-	TextureRGB* texture = nullptr;
+	TextureBase* texture = nullptr;
 
 public:
-	GUISprite24(TextureRGB* texture, const float x1, const float y1, const float x2,
+	GUISprite24(TextureBase* texture, const float x1, const float y1, const float x2,
 		const float y2)
 		: texture(texture), GUISprite(x1, y1, x2, y2)
 	{}
@@ -220,14 +219,14 @@ public:
 class GUISprite32 : public GUISprite
 {
 public:
-	TextureRGBA* texture = nullptr;
+	TextureBase* texture = nullptr;
 
 public:
 	GUISprite32(const char* filename, const float x1, const float y1, const float x2,
 		const float y2)
 		: GUISprite(x1, y1, x2, y2)
 	{
-		texture = new TextureRGBA(filename, 256, 128);
+		texture = new TextureBase(TextureType::RGBA, filename, 256, 128);
 	}
 
 	~GUISprite32()

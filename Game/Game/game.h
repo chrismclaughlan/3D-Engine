@@ -15,10 +15,10 @@ enum class MenuAction
 
 struct MenuButton
 {
-	GUISprite32* sprite = nullptr;
+	GUISprite* sprite = nullptr;
 	MenuAction action = MenuAction::Invalid;
 
-	MenuButton(GUISprite32* sprite, MenuAction action)
+	MenuButton(GUISprite* sprite, MenuAction action)
 		: sprite(sprite), action(action)
 	{}
 
@@ -39,13 +39,13 @@ struct MainMenu
 	MainMenu()
 	{
 		MenuButton* b1 = new MenuButton(
-			new GUISprite32("MainMenu_NewGame.bmp",  0.4f, 0.560f, 0.6f, 0.640f),
+			new GUISprite("MainMenu_NewGame.bmp", TextureType::RGBA, 256, 128, 0.4f, 0.560f, 0.6f, 0.640f),
 			MenuAction::Start);
 		MenuButton* b2 = new MenuButton(
-			new GUISprite32("MainMenu_Continue.bmp", 0.4f, 0.460f, 0.6f, 0.540f),
+			new GUISprite("MainMenu_Continue.bmp", TextureType::RGBA, 256, 128, 0.4f, 0.460f, 0.6f, 0.540f),
 			MenuAction::Continue);
 		MenuButton* b3 = new MenuButton(
-			new GUISprite32("MainMenu_Quit.bmp",     0.4f, 0.360f, 0.6f, 0.440f),
+			new GUISprite("MainMenu_Quit.bmp", TextureType::RGBA, 256, 128, 0.4f, 0.360f, 0.6f, 0.440f),
 			MenuAction::Quit);
 
 		buttons.push_back(b1);
@@ -226,19 +226,19 @@ private:
 
 	GUIForm* guiChat = nullptr;
 	GUIMenu* guiGameMenu = nullptr;
-	//GUISprite32* guiSprite = nullptr;
-	//std::vector<GUISprite32*> guiMainMenu;
+	//GUISpriteRGBA* guiSprite = nullptr;
+	//std::vector<GUISpriteRGBA*> guiMainMenu;
 	MainMenu* mainMenu = nullptr;
 
 private:
 	// returns true if string occupied
 	bool CheckReturnRect(GUIRect* r, std::string*& s)
 	{
-		if (r->state == GUIState::Active && r->guiTextInput != nullptr)
+		if (r->state == GUIState::Active && r->pGUITextInput != nullptr)
 		{
 			r->state = GUIState::Inactive;
-			s = r->guiTextInput->pText;
-			r->guiTextInput->pText = nullptr;
+			s = r->pGUITextInput->pText;
+			r->pGUITextInput->pText = nullptr;
 			userTextBuffer = new std::string;
 			disableMovement = false;
 			return true;
@@ -249,12 +249,12 @@ private:
 
 	void CheckEscapeRect(GUIRect* r)
 	{
-		if (r->guiTextInput != nullptr)
+		if (r->pGUITextInput != nullptr)
 		{
 			userTextBuffer->clear();
 			if (r->state == GUIState::Active)
 				r->state = GUIState::Inactive;
-			r->guiTextInput->pText = nullptr;
+			r->pGUITextInput->pText = nullptr;
 			disableMovement = false;
 		}
 	}
@@ -276,26 +276,26 @@ private:
 
 	void CheckLMousePressedRect(const vec2f& vf, GUIRect* r)
 	{
-		if (r->guiTextInput != nullptr)
+		if (r->pGUITextInput != nullptr)
 		{
 			if (r->isAt(vf.x, vf.y))
 			{
 				if (r->state != GUIState::Active)
 				{
 					r->state = GUIState::Active;
-					r->guiTextInput->pText = userTextBuffer;
+					r->pGUITextInput->pText = userTextBuffer;
 					disableMovement = true;
 				}
 				else
 				{
 					r->state = GUIState::Inactive;
-					r->guiTextInput->pText = nullptr;
+					r->pGUITextInput->pText = nullptr;
 				}
 			}
 			else
 			{
 				r->state = GUIState::Inactive;
-				r->guiTextInput->pText = nullptr;
+				r->pGUITextInput->pText = nullptr;
 			}
 		}
 	}

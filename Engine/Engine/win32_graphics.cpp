@@ -12,11 +12,11 @@ Win32Graphics::Win32Graphics(HWND hwnd, HDC hdc) : hdc(hdc)
 
 	bufferSize = width * height * sizeof(uint);
 
-	if (memory)
+	if (pBuffer)
 	{
-		VirtualFree(memory, 0, MEM_RELEASE);
+		VirtualFree(pBuffer, 0, MEM_RELEASE);
 	}
-	memory = VirtualAlloc(0, bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+	pBuffer = VirtualAlloc(0, bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 
 	bitmapinfo.bmiHeader.biSize = sizeof(bitmapinfo);
 	bitmapinfo.bmiHeader.biWidth = width;
@@ -43,7 +43,7 @@ void Win32Graphics::Render()
 {
 	// TODO error handling
 	StretchDIBits(hdc, 0, 0, width, height, 0, 0, width, height,
-		memory, &bitmapinfo, DIB_RGB_COLORS, SRCCOPY);
+		pBuffer, &bitmapinfo, DIB_RGB_COLORS, SRCCOPY);
 }
 
 void Win32Graphics::ChangeSize(int newWidth, int newHeight)
@@ -55,11 +55,11 @@ void Win32Graphics::ChangeSize(int newWidth, int newHeight)
 	height = newHeight;
 
 	bufferSize = width * height * sizeof(uint);
-	if (memory)
+	if (pBuffer)
 	{
-		VirtualFree(memory, 0, MEM_RELEASE);
+		VirtualFree(pBuffer, 0, MEM_RELEASE);
 	}
-	memory = VirtualAlloc(0, bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+	pBuffer = VirtualAlloc(0, bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 
 	bitmapinfo.bmiHeader.biWidth = width;
 	bitmapinfo.bmiHeader.biHeight = height;

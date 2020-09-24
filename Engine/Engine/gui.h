@@ -1,4 +1,13 @@
+/*****************************************************************//**
+ * \file   gui.h
+ * \brief  Contains classes for representing different GUIs
+ * 
+ * \author Chris
+ * \date   September 2020
+ *********************************************************************/
+
 #pragma once
+#include "utils.h"
 #include "types.h"
 #include "graphics.h"
 #include "graphics_texture.h"
@@ -8,240 +17,184 @@
 
 class Graphics;
 struct GUIText;
-struct vec2;
-struct vec2f;
 
+/**
+ * \brief Contains states for interactable GUIs.
+ */
 enum class GUIState : int
 {
-	Pressed  = -1,  // -1 special val
+	Pressed		= -1,	///< Special value representing the final/pressed state
 
-	Inactive = 0, 
-	Hover    = 1, 
-	Active   = 2,
+	Inactive	= 0,
+	Hover		= 1, 
+	Active		= 2,
+
+	//NUM_STATES	= 3,	///< Last: holds number of GUIStates
 };
 
+/**
+ * \brief Describes rectangle GUI component.
+ */
 struct GUIRect
 {
-	GUIText* guiTextInput = nullptr;
-	float x1;
-	float y1;
-	float x2;
-	float y2;
-	uint colourPallete[3];
-	GUIState state = GUIState::Inactive;
-
-	GUIRect(float x1, float y1, float x2, float y2, uint colours[3], GUIText* guiTextInput = nullptr)
-		: x1(x1), y1(y1), x2(x2), y2(y2), guiTextInput(guiTextInput)
-	{
-		colourPallete[0] = colours[0];
-		colourPallete[1] = colours[1];
-		colourPallete[2] = colours[2];
-	}
-
-	const bool isAt(float x, float y)
-	{
-		return x > x1 && x < x2 && y > y1 && y < y2;
-	}
+	GUIText* pGUITextInput = nullptr;	///< Pointer to a text input GUI component
+	vec2f vf1;							///< Bottom-left coords
+	vec2f vf2;							///< Top-right coords
+	t_colour colourPallete[3];			///< Contains 3-element array of colours 
+										///< corresponding to GUIState values
+	GUIState state = GUIState::Inactive;///< Current GUIState which corresponds
+										///< to index of colourPallete to draw
+	GUIRect(float x1, float y1, float x2, float y2, t_colour colours[3], GUIText* pGUITextInput = nullptr);
+	const bool isAt(float x, float y);
 };
 
 struct GUIText
 {
-	float x1;
-	float y1;
-	float x2 = 1.0f;
-	float y2 = 1.0f;
-	std::string sText;
-	std::string* pText = nullptr;
-	uint colourPallete[3];
-	GUIState state = GUIState::Inactive;
-	uint cBackground;
-	bool drawBackground;
+	vec2f vf1;							///< Bottom-left coords
+	vec2f vf2;							///< Top-right coords
+	std::string sText;					///< Static text string
+	std::string* pText = nullptr;		///< Pointer to text string
+	t_colour colourPallete[3];			///< Contains 3-element array of colours 
+										///< corresponding to GUIState values
+	GUIState state = GUIState::Inactive;///< Current GUIState which corresponds
+										///< to index of colourPallete to draw
+	t_colour cBackground;				///< Colour of background (whitespace 
+										///< behind text)
+	bool drawBackground;				///< Boolean to draw background colour
 
-	GUIText(const std::string sText, const uint colours[3], 
+	GUIText(const std::string sText, const t_colour colours[3],
 		const float x1, const float y1,
 		const float x2 = 1.0f, const float y2 = 1.0f,
 		const bool drawBackground = false,
-		const uint cBackground = 0x000000)
-		: sText(sText), x1(x1), y1(y1), x2(x2), y2(y2),
-		drawBackground(drawBackground), cBackground(cBackground)
-	{
-		colourPallete[0] = colours[0];
-		colourPallete[1] = colours[1];
-		colourPallete[2] = colours[2];
-	}
-
+		const t_colour cBackground = 0x000000);
 	const bool isAt(const float x, const float y, Graphics* gfx);
 };
 
-#include <iostream>
-
+/**
+ * \brief Base class for some GUI conponents.
+ * 
+ * \see GUIForm, GUIMenu
+ */
 class GUI
 {
 protected:
-	GUIRect* guiRect = nullptr;
-
+	GUIRect* pGUIRect = nullptr;	///< Pointer to GUIRect (contains info about
+									///< coordinates etc.)
 public:
-	~GUI()
-	{
-		if (guiRect != nullptr)
-		{
-			delete guiRect;
-			guiRect = nullptr;
-		}
-	}
-
-	GUIRect* getRect() const
-	{
-		return guiRect;
-	}
-
-	void setRect(GUIRect* r)
-	{
-		if (guiRect != nullptr)
-		{
-			delete guiRect;
-			guiRect = nullptr;
-		}
-
-		guiRect = r;
-	}
+	~GUI();
+	GUIRect* getRect() const;
+	void setRect(GUIRect* r);
 };
 
+/**
+ * \brief GUI component which takes text input.
+ */
 class GUIForm : public GUI
 {
 private:
-	GUIText* guiTextInput = nullptr;
+	GUIText* pGUITextInput = nullptr;	///< Pointer to GUITextInput (optional)
 
 public:
-	~GUIForm()
-	{
-		if (guiTextInput != nullptr)
-		{
-			delete guiTextInput;
-			guiTextInput = nullptr;
-		}
-	}
-
-	// Changes pointer to text input
-	void setTextInput(GUIText* t)
-	{
-		if (guiTextInput != nullptr)
-		{
-			delete guiTextInput;
-			guiTextInput = nullptr;
-		}
-
-		guiTextInput = t;
-	}
+	~GUIForm();
+	void setTextInput(GUIText* t);  // Changes pointer to text input
 };
 
+/**
+ * \brief GUI Component that groups together GUIText elements.
+ */
 class GUIMenu : public GUI
 {
 protected:
-	std::vector<GUIText*> vGuiText;
+	std::vector<GUIText*> vGuiText;	///< Vector of GUIText components
 
 public:
-	~GUIMenu()
-	{
-		for (auto t : vGuiText)
-		{
-			if (t != nullptr)
-			{
-				delete t;
-				t = nullptr;
-			}
-		}
-		vGuiText.clear();
-	}
-
-	std::vector<GUIText*> getVText()
-	{
-		return vGuiText;
-	}
-
-	void addText(GUIText* t)
-	{
-		vGuiText.push_back(t);
-	}
+	~GUIMenu();
+	std::vector<GUIText*> getVText();
+	void addText(GUIText* t);
 };
 
-/* -------WIP-------*/
-
+/**
+ * \brief Contains coordinates, state for a given texture.
+ * 
+ * Meant for GUIMenu implementation
+ */
 class GUISprite
 {
 public:
-	float x1;
-	float y1;
-	float x2;
-	float y2;
-	GUIState state = GUIState::Inactive;  // index of sprite to draw
-	int numStates = 3;
+	vec2f vf1;								///< Bottom-left coords
+	vec2f vf2;								///< Top-right coords
+	GUIState state = GUIState::Inactive;	///< Current GUIState which corresponds
+											///< to index of sprite to draw
+	Texture* pTexture = nullptr;			///< Pointer to the texture of sprite
 
 public:
-	GUISprite(const float x1, const float y1, const float x2,
-		const float y2)
-		: x1(x1), y1(y1), x2(x2), y2(y2)
-	{}
-
-	// Returns index of clickable if it is within x, y
-	const int getState() { return (int)state; }
-	const int getNumStates() { return numStates; }
-	virtual void* Tex() const = 0;
-	const bool isClickable(const vec2f& vf);//, ClickableColours& clickable);
+	GUISprite(
+		const char* filename, TextureType textureType, const int sectionWidth, const int sectionHeight,
+		const float x1, const float y1, const float x2, const float y2);
+	~GUISprite();
+	const int getState();
+	const bool isClickable(const vec2f& vf);
+	Texture* Tex();
 };
 
-class GUISprite24 : public GUISprite
-{
-public:
-	Texture* texture = nullptr;
-
-public:
-	GUISprite24(Texture* texture, const float x1, const float y1, const float x2,
-		const float y2)
-		: texture(texture), GUISprite(x1, y1, x2, y2)
-	{}
-
-	~GUISprite24()
-	{
-		if (texture != nullptr)
-		{
-			delete texture;
-			texture = nullptr;
-		}
-	}
-
-	void* Tex() const
-	{
-		return texture;
-	}
-
-	//const bool isClickable(const float x, const float y, ClickableColours& clickable);
-};
-
-class GUISprite32 : public GUISprite
-{
-public:
-	Texture* texture = nullptr;
-
-public:
-	GUISprite32(const char* filename, const float x1, const float y1, const float x2,
-		const float y2)
-		: GUISprite(x1, y1, x2, y2)
-	{
-		texture = new Texture(TextureType::RGBA, filename, 256, 128);
-	}
-
-	~GUISprite32()
-	{
-		if (texture != nullptr)
-		{
-			delete texture;
-			texture = nullptr;
-		}
-	}
-
-	void* Tex() const
-	{
-		return texture;
-	}
-};
+///**
+// * \brief Derived class of GUISprite for holding RGB textures.
+// */
+//class GUISpriteRGB : public GUISprite
+//{
+//public:
+//	Texture* texture = nullptr;
+//
+//public:
+//	GUISpriteRGB(Texture* texture, const float x1, const float y1, const float x2,
+//		const float y2)
+//		: texture(texture), GUISprite(x1, y1, x2, y2)
+//	{}
+//
+//	~GUISpriteRGB()
+//	{
+//		if (texture != nullptr)
+//		{
+//			delete texture;
+//			texture = nullptr;
+//		}
+//	}
+//
+//	void* Tex() const
+//	{
+//		return texture;
+//	}
+//
+//	//const bool isClickable(const float x, const float y, ClickableColours& clickable);
+//};
+//
+///**
+// * \brief Derived class of GUISprite for holding RGBA textures.
+// */
+//class GUISpriteRGBA : public GUISprite
+//{
+//public:
+//	Texture* texture = nullptr;
+//
+//public:
+//	GUISpriteRGBA(const char* filename, const float x1, const float y1, const float x2,
+//		const float y2)
+//		: GUISprite(x1, y1, x2, y2)
+//	{
+//		texture = new Texture(TextureType::RGBA, filename, 256, 128);
+//	}
+//
+//	~GUISpriteRGBA()
+//	{
+//		if (texture != nullptr)
+//		{
+//			delete texture;
+//			texture = nullptr;
+//		}
+//	}
+//
+//	void* Tex() const
+//	{
+//		return texture;
+//	}
+//};

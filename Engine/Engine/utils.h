@@ -8,6 +8,7 @@
 
 #pragma once
 #include "types.h"
+#include <string>
 
 struct vec2
 {
@@ -38,3 +39,4 @@ extern void clampf(float* val, const float min, const float max);
 extern void clampd(double* val, const double min, const double max);
 extern const float normalise(const float min, const float max, float input);
 extern uint rgbToHex(const uint8 r, const uint8 g, const uint8 b);
+extern const bool stringEndsWith(std::string const& str, std::string const& substr);

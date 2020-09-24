@@ -1,5 +1,5 @@
 /*****************************************************************//**
- * \file   gui.h
+ * \file   graphics_ui.h
  * \brief  Contains classes for representing different GUIs
  * 
  * \author Chris
@@ -116,7 +116,7 @@ public:
 /**
  * \brief Contains coordinates, state for a given texture.
  * 
- * Meant for GUIMenu implementation
+ * \note Meant for GUIMenu implementation
  */
 class GUISprite
 {
@@ -136,65 +136,3 @@ public:
 	const bool isClickable(const vec2f& vf);
 	Texture* Tex();
 };
-
-///**
-// * \brief Derived class of GUISprite for holding RGB textures.
-// */
-//class GUISpriteRGB : public GUISprite
-//{
-//public:
-//	Texture* texture = nullptr;
-//
-//public:
-//	GUISpriteRGB(Texture* texture, const float x1, const float y1, const float x2,
-//		const float y2)
-//		: texture(texture), GUISprite(x1, y1, x2, y2)
-//	{}
-//
-//	~GUISpriteRGB()
-//	{
-//		if (texture != nullptr)
-//		{
-//			delete texture;
-//			texture = nullptr;
-//		}
-//	}
-//
-//	void* Tex() const
-//	{
-//		return texture;
-//	}
-//
-//	//const bool isClickable(const float x, const float y, ClickableColours& clickable);
-//};
-//
-///**
-// * \brief Derived class of GUISprite for holding RGBA textures.
-// */
-//class GUISpriteRGBA : public GUISprite
-//{
-//public:
-//	Texture* texture = nullptr;
-//
-//public:
-//	GUISpriteRGBA(const char* filename, const float x1, const float y1, const float x2,
-//		const float y2)
-//		: GUISprite(x1, y1, x2, y2)
-//	{
-//		texture = new Texture(TextureType::RGBA, filename, 256, 128);
-//	}
-//
-//	~GUISpriteRGBA()
-//	{
-//		if (texture != nullptr)
-//		{
-//			delete texture;
-//			texture = nullptr;
-//		}
-//	}
-//
-//	void* Tex() const
-//	{
-//		return texture;
-//	}
-//};

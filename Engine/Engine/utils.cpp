@@ -97,3 +97,17 @@ uint rgbToHex(const uint8 r, const uint8 g, const uint8 b)
 	h += b << 0;
 	return h;
 }
+
+/**
+ * \brief Returns true if substr is a substring of str.
+ */
+const bool stringEndsWith(std::string const& str, std::string const& substr)
+{
+	if (str.length() >= substr.length())
+	{
+		return (str.compare(str.length() - substr.length(),
+			substr.length(), substr) == 0);
+	}
+
+	return false;
+}

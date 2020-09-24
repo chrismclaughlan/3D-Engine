@@ -1,10 +1,20 @@
+#include "types.h"
 #include "utils.h"
-#include "objects.h"
+#include "graphics_objects.h"
 #include "graphics.h"
 #include <algorithm>
 #include <list>
 #include <assert.h>
-#include "types.h"
+
+
+Graphics::~Graphics()
+{
+	if (text2D != nullptr)
+	{
+		delete text2D;
+		text2D = nullptr;
+	}
+}
 
 /**
  * \brief Converts pixel space vector to a screen space vector.
@@ -512,7 +522,7 @@ void Graphics::rasterTexturedTriangles(
 	std::vector<Triangle> trianglesToRaster;
 	for (auto objectMesh : meshes)
 	{
-		for (auto tri : objectMesh->tris)
+		for (auto tri : objectMesh->vTris)
 		{
 			Triangle triProjected, triTransformed, triCamera;
 
@@ -555,7 +565,7 @@ void Graphics::rasterTexturedTriangles(
 
 				int nClippedTriangles = 0;
 				Triangle clipped[2];
-				nClippedTriangles = Vector::TriangleClipAgainstPlane({ 0.0f, 0.0f, 0.1f }, { 0.0f, 0.0f, 1.0f }, triCamera, clipped[0], clipped[1]);
+				nClippedTriangles = TriangleClipAgainstPlane({ 0.0f, 0.0f, 0.1f }, { 0.0f, 0.0f, 1.0f }, triCamera, clipped[0], clipped[1]);
 
 				for (int n = 0; n < nClippedTriangles; n++)
 				{
@@ -650,10 +660,10 @@ void Graphics::rasterTexturedTriangles(
 
 				switch (p)
 				{
-				case 0:	trianglesToAdd = Vector::TriangleClipAgainstPlane(pTop,	   nDownwards, test, clipped[0], clipped[1]); break;
-				case 1:	trianglesToAdd = Vector::TriangleClipAgainstPlane(pBottom, nUpwards, test, clipped[0], clipped[1]); break;
-				case 2:	trianglesToAdd = Vector::TriangleClipAgainstPlane(pLeft,   nRight, test, clipped[0], clipped[1]); break;
-				case 3:	trianglesToAdd = Vector::TriangleClipAgainstPlane(pRight,  nLeft, test, clipped[0], clipped[1]); break;
+				case 0:	trianglesToAdd = TriangleClipAgainstPlane(pTop,	   nDownwards, test, clipped[0], clipped[1]); break;
+				case 1:	trianglesToAdd = TriangleClipAgainstPlane(pBottom, nUpwards, test, clipped[0], clipped[1]); break;
+				case 2:	trianglesToAdd = TriangleClipAgainstPlane(pLeft,   nRight, test, clipped[0], clipped[1]); break;
+				case 3:	trianglesToAdd = TriangleClipAgainstPlane(pRight,  nLeft, test, clipped[0], clipped[1]); break;
 				}
 
 				for (int w = 0; w < trianglesToAdd; w++)
@@ -685,7 +695,7 @@ void Graphics::rasterTexturedTriangles(
 				t.p[0].x, t.p[0].y, t.t[0].u, t.t[0].v, t.t[0].w,
 				t.p[1].x, t.p[1].y, t.t[1].u, t.t[1].v, t.t[1].w,
 				t.p[2].x, t.p[2].y, t.t[2].u, t.t[2].v, t.t[2].w,
-				t.parent->texture);
+				t.parent->pTexture);
 
 			if (strokeColour != nullptr)
 			{
@@ -746,7 +756,7 @@ void Graphics::drawText(const GUIText guiText)
 		std::string fill = ".. ";
 
 		// Cut off beginning of pText if it flows off end of rect
-		if ((guiText.sText.size() * 14) + (guiText.pText->size() * 14) + (sTrailing.size() * 14) >= vMax.x - vPos.x)
+		if ((guiText.sText.size() * 14u) + (guiText.pText->size() * 14u) + (sTrailing.size() * 14u) >= vMax.x - vPos.x)
 		{
 			int num_chars_that_fit = ((vMax.x - vPos.x) / 14) - guiText.sText.size();
 			//int difference = guiText.pText->size() - num_chars_that_fit;
@@ -820,7 +830,7 @@ const bool Graphics::drawChar(const char c, vec2& v, const t_colour colour)
 		{
 			int pos = y * text2D->linesize + x / 8;
 			int bit = 1 << (7 - x % 8);
-			if ((text2D->map[pos] & bit) > 0)
+			if ((text2D->pCharMap[pos] & bit) > 0)
 			{
 				drawPointP(v.x + (x - left), v.y + (y - bottom), colour);
 			}

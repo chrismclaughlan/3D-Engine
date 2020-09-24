@@ -8,11 +8,13 @@
  *********************************************************************/
 
 #pragma once
+#include "utils.h"
 #include "types.h"
-#include "gui.h"
-#include "text2d.h"
+#include "graphics_ui.h"
+#include "graphics_text2d.h"
 #include "vector.h"
 #include "graphics_texture.h"
+#include <string>
 
 #define UINT32_RGB_CHANNEL   ((t_colour)0x00FFFFFF)
 #define UINT32_ALPHA_CHANNEL ((t_colour)0xFF000000)
@@ -21,6 +23,7 @@
 #define VEC2_TO_XY(v) (v.x, v.y);
 #define VEC23_TO_XYZ(v) (v.x, v.y, v.z);
 
+class Text2D;
 struct GUIText;
 struct GUIForm;
 struct GUIMenu;
@@ -37,14 +40,7 @@ class GUISprite;
 class Graphics
 {
 public:
-	~Graphics()
-	{
-		if (text2D != nullptr)
-		{
-			delete text2D;
-			text2D = nullptr;
-		}
-	}
+	~Graphics();
 protected:
 	int width;			///< width of area to draw to
 	int height;			///< height of area to draw to

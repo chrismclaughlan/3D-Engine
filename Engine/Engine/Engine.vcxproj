@@ -21,10 +21,12 @@
   <ItemGroup>
     <ClCompile Include="exception.cpp" />
     <ClCompile Include="graphics.cpp" />
+    <ClCompile Include="graphics_text2d.cpp" />
     <ClCompile Include="graphics_texture.cpp" />
-    <ClCompile Include="gui.cpp" />
+    <ClCompile Include="graphics_ui.cpp" />
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Mouse.cpp" />
+    <ClCompile Include="graphics_objects.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="vector.cpp" />
     <ClCompile Include="win32_stopwatch.cpp" />
@@ -40,14 +42,14 @@
     <ClInclude Include="exception.h" />
     <ClInclude Include="graphics.h" />
     <ClInclude Include="graphics_texture.h" />
-    <ClInclude Include="gui.h" />
+    <ClInclude Include="graphics_ui.h" />
     <ClInclude Include="hwindows.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="network.h" />
-    <ClInclude Include="objects.h" />
+    <ClInclude Include="graphics_objects.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="text2d.h" />
+    <ClInclude Include="graphics_text2d.h" />
     <ClInclude Include="time.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="vector.h" />

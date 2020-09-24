@@ -1,6 +1,6 @@
 #include "Engine/defines.h"
-#include "Engine/objects.h"
-#include "Engine/gui.h"
+#include "Engine/graphics_objects.h"
+#include "Engine/graphics_ui.h"
 #include "game.h"
 #include <list>
 
@@ -86,17 +86,17 @@ void Game::gsInitGame()
 	guiChat->setRect(guiRect);
 
 	// Load textures
-	objectTexture1 = new Texture(TextureType::RGB, "CubeMap_Test.bmp", 2, 2);
-	objectTexture2 = new Texture(TextureType::RGB, "Object_Texture_16x32_24bit.bmp", 2, 2);
-
+	pObjectTexture1 = new Texture(TextureType::RGB, "CubeMap_Test.bmp", 2, 2);
+	pObjectTexture2 = new Texture(TextureType::RGB, "Object_Texture_16x32_24bit.bmp", 2, 2);
+	
 	// Load wavefront files
 	object1 = new Object();
 	object1->LoadTestCube();
-	object1->texture = objectTexture1;
+	object1->pTexture = pObjectTexture1;
 	object1->setPos(-2.0f, 2.0f, 5.0f);
 	object2 = new Object();
 	object2->LoadTestCube();
-	object2->texture = objectTexture2;
+	object2->pTexture = pObjectTexture2;
 	object2->setPos(2.0f, 2.0f, 5.0f);
 
 	projectionMatrix.MakeProjection(
@@ -197,19 +197,19 @@ void Game::gsGameInput()
 		} break;
 		case VK_UP:
 		{
-			object1->y += 0.1f;
+			object1->vPos.y += 0.1f;
 		} break;
 		case VK_DOWN:
 		{
-			object1->y -= 0.1f;
+			object1->vPos.y -= 0.1f;
 		} break;
 		case VK_LEFT:
 		{
-			object1->x += 0.1f;
+			object1->vPos.x += 0.1f;
 		} break;
 		case VK_RIGHT:
 		{
-			object1->x -= 0.1f;
+			object1->vPos.x -= 0.1f;
 		} break;
 		}
 	}

@@ -2,7 +2,8 @@
 #include "Engine\hwindows.h"  // first
 #include "Engine\win32_window.h"
 #include "Engine\vector.h"
-#include "Engine\gui.h"
+#include "Engine\graphics_ui.h"
+#include "Engine\graphics_objects.h"
 #include "player.h"
 #include <stack>
 
@@ -192,12 +193,12 @@ public:
 		delete userTextBuffer;
 		delete object1;
 		delete object2;
-		delete objectTexture1;
-		delete objectTexture2;
+		delete pObjectTexture1;
+		delete pObjectTexture2;
 		object1 = nullptr;
 		object2 = nullptr;
-		objectTexture1 = nullptr;
-		objectTexture2 = nullptr;
+		pObjectTexture1 = nullptr;
+		pObjectTexture2 = nullptr;
 	}
 
 	//virtual int run() = 0;
@@ -210,8 +211,8 @@ private:
 
 	Object* object1 = nullptr;
 	Object* object2 = nullptr;
-	Texture* objectTexture1 = nullptr;
-	Texture* objectTexture2 = nullptr;
+	Texture* pObjectTexture1 = nullptr;
+	Texture* pObjectTexture2 = nullptr;
 
 	Player player;
 

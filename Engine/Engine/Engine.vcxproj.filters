@@ -37,13 +37,19 @@
     <ClCompile Include="vector.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="gui.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="graphics_texture.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
     <ClCompile Include="utils.cpp" />
+    <ClCompile Include="graphics_text2d.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics_ui.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics_objects.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="defines.h" />
@@ -96,19 +102,19 @@
     <ClInclude Include="vector.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="text2d.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="objects.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="gui.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="graphics_texture.h">
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="utils.h" />
+    <ClInclude Include="graphics_text2d.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics_ui.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics_objects.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Graphics">

@@ -48,7 +48,6 @@ Texture::~Texture()
  */
 bool Texture::loadTextureFromBMP(const char* filename, const int sectionWidth, const int sectionHeight)
 {
-	int i;
 	FILE* file;
 	errno_t err = fopen_s(&file, filename, "r");
 	if (err != 0)
@@ -155,18 +154,18 @@ bool Texture::loadTextureFromBMP(const char* filename, const int sectionWidth, c
  * \param y Normalised y-coord
  * \param cycleX Which slice to read from in x-axis (starting at 0, default 0)
  * \param cycleY Which slice to read from in y-axis (starting at 0, default 0)
- * \return Returns colour (t_colour) of texture coord, if failure occurs returns
+ * \return Returns colour (colour_t) of texture coord, if failure occurs returns
  * 0
  */
-t_colour Texture::lookUp(float x, float y, int cycleX, int cycleY) const
+colour_t Texture::lookUp(float x, float y, int cycleX, int cycleY) const
 {
 	if (textureType == TextureType::RGB)
 	{
 		std::swap(x, y);  // flip
 
 		int xInd, yInd;
-		xInd = x * (float)width / scale;
-		yInd = y * (float)height * scale;
+		xInd = (int)(x * (float)width / scale);
+		yInd = (int)(y * (float)height * scale);
 
 		xInd += 1;
 
@@ -190,10 +189,10 @@ t_colour Texture::lookUp(float x, float y, int cycleX, int cycleY) const
 
 		// Get texture coordinates
 		int xInd, yInd;
-		xInd = x * (float)width;
-		yInd = y * (float)height;
+		xInd = (int)(x * (float)width);
+		yInd = (int)(y * (float)height);
 
-		t_colour* d = (uint*)data;
+		colour_t* d = (uint*)data;
 
 		return d[xInd + (yInd * width)];
 	}

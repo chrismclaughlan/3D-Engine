@@ -223,8 +223,7 @@ int TriangleClipAgainstPlane(Vec4f plane_p, Vec4f plane_n, Triangle& in_tri, Tri
 
 		return 0; // No returned triangles are valid
 	}
-
-	if (nInsidePointCount == 3)
+	else if (nInsidePointCount == 3)
 	{
 		// All points lie on the inside of plane, so do nothing
 		// and allow the triangle to simply pass through
@@ -233,8 +232,7 @@ int TriangleClipAgainstPlane(Vec4f plane_p, Vec4f plane_n, Triangle& in_tri, Tri
 
 		return 1; // Just the one returned original triangle is valid
 	}
-
-	if (nInsidePointCount == 1 && nOutsidePointCount == 2)
+	else if (nInsidePointCount == 1 && nOutsidePointCount == 2)
 	{
 		// Triangle should be clipped. As two points lie outside
 		// the plane, the triangle simply becomes a smaller triangle
@@ -270,8 +268,7 @@ int TriangleClipAgainstPlane(Vec4f plane_p, Vec4f plane_n, Triangle& in_tri, Tri
 
 		return 1; // Return the newly formed single triangle
 	}
-
-	if (nInsidePointCount == 2 && nOutsidePointCount == 1)
+	else if (nInsidePointCount == 2 && nOutsidePointCount == 1)
 	{
 		// Triangle should be clipped. As two points lie inside the plane,
 		// the clipped triangle becomes a "quad". Fortunately, we can
@@ -318,4 +315,9 @@ int TriangleClipAgainstPlane(Vec4f plane_p, Vec4f plane_n, Triangle& in_tri, Tri
 
 		return 2; // Return two newly formed triangles which form a quad
 	}
+
+	// Error we should not end up here
+
+	std::cerr << "Error at TriangleClipAgainstPlane() -> Did not find suitable control path\n";
+	return 0;  // assume triangle clipped
 }

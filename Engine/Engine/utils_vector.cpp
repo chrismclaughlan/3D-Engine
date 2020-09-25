@@ -223,7 +223,7 @@ void Vec4f::setZero()
 
 Matrix4x4::Matrix4x4()
 {
-	memset(&m, 0.0f, sizeof(float) * 4 * 4);
+	memset(&m, 0, sizeof(float) * 4 * 4);
 }
 
 Matrix4x4 operator*(const Matrix4x4& a, const Matrix4x4& b)

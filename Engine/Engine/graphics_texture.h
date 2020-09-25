@@ -38,5 +38,5 @@ struct Texture
 	Texture(TextureType textureType, const char* filename, const int sectionWidth, const int sectionHeight);
 	~Texture();
 	bool loadTextureFromBMP(const char* filename, const int sectionWidth, const int sectionHeight);
-	t_colour lookUp(const float x, const float y, int cycleX = 0, int cycleY = 0) const;
+	colour_t lookUp(const float x, const float y, int cycleX = 0, int cycleY = 0) const;
 };

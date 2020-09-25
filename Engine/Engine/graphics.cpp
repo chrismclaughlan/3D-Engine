@@ -44,8 +44,8 @@ Vec2 Graphics::screenToPx(const Vec2f& vf)
 	assert((vf.x >= 0.0f) && (vf.x <= 1.0f));
 	assert((vf.y >= 0.0f) && (vf.y <= 1.0f));
 	Vec2 v;
-	v.x = vf.x * width;
-	v.y = vf.y * height;
+	v.x = (int)(vf.x * (float)width);
+	v.y = (int)(vf.y * (float)height);
 	return v;
 }
 
@@ -59,7 +59,7 @@ Vec2 Graphics::screenToPx(const Vec2f& vf)
  * \param v2 Vec2 to finish drawing to
  * \param colour colour to draw pixels in line
  */
-void Graphics::drawLineP(Vec2& v1, Vec2& v2, t_colour colour)
+void Graphics::drawLineP(Vec2& v1, Vec2& v2, colour_t colour)
 {
 	int dx, sx, dy, sy, err, e2;
 	dx = abs(v2.x - v1.x);
@@ -97,7 +97,7 @@ void Graphics::drawLineP(Vec2& v1, Vec2& v2, t_colour colour)
  * 
  * \param colour Colour to be drawn
  */
-void Graphics::clearScreen(t_colour colour)
+void Graphics::clearScreen(colour_t colour)
 {
 	uint* pixel = (uint*)pBuffer;
 	for (int i = 0; i < width * height; i++)
@@ -113,7 +113,7 @@ void Graphics::clearScreen(t_colour colour)
  * \param y Y index in pBuffer
  * \param colour Colour to be drawn
  */
-void Graphics::drawPointP(uint x, uint y, t_colour colour)
+void Graphics::drawPointP(uint x, uint y, colour_t colour)
 {
 	clampu(&x, 0, width - 1);
 	clampu(&y, 0, height - 1);
@@ -132,7 +132,7 @@ void Graphics::drawPointP(uint x, uint y, t_colour colour)
  * \param y Y index in pBuffer
  * \param colour Colour whose alpha channel will be checked and possibly drawn
  */
-void Graphics::drawPointPAlpha(const int x, const int y, const t_colour colour)
+void Graphics::drawPointPAlpha(const int x, const int y, const colour_t colour)
 {
 	// If alpha above threshold; draw
 	if ((colour & UINT32_ALPHA_CHANNEL) <= ALPHA_THRESHOLD)
@@ -151,17 +151,17 @@ void Graphics::drawPointPAlpha(const int x, const int y, const t_colour colour)
  * \param v2 Top right of rectangle
  * \param colour Colour of which to fill the rectangle
  */
-void Graphics::drawRectP(Vec2 v1, Vec2 v2, t_colour colour)
+void Graphics::drawRectP(Vec2 v1, Vec2 v2, colour_t colour)
 {
 	clamp(&v1.x, 0, width);
 	clamp(&v2.x, 0, width);
 	clamp(&v1.y, 0, height);
 	clamp(&v2.y, 0, height);
 
-	for (uint y = v1.y; y < v2.y; y++)
+	for (int y = v1.y; y < v2.y; y++)
 	{
-		uint* pixel = (uint*)pBuffer + v1.x + (y * width);
-		for (uint x = v1.x; x < v2.x; x++)
+		uint* pixel = (uint*)pBuffer + v1.x + (uint)(y * width);
+		for (int x = v1.x; x < v2.x; x++)
 		{
 			*pixel++ = colour;
 		}
@@ -171,7 +171,7 @@ void Graphics::drawRectP(Vec2 v1, Vec2 v2, t_colour colour)
 /**
  * \brief Draws outline of triangle using drawLineP function.
  */
-void Graphics::drawTriangleP(Vec2& v1, Vec2& v2, Vec2& v3, const t_colour colour)
+void Graphics::drawTriangleP(Vec2& v1, Vec2& v2, Vec2& v3, const colour_t colour)
 {
 	drawLineP(v1, v2, colour);
 	drawLineP(v2, v3, colour);
@@ -188,7 +188,7 @@ void Graphics::drawTriangleP(Vec2& v1, Vec2& v2, Vec2& v3, const t_colour colour
  * \see fillTopFlatTriangleP
  * \see fillBottomFlatTriangleP
  */
-void Graphics::fillTriangleP(Vec2& v1, Vec2& v2, Vec2& v3, t_colour colour)
+void Graphics::fillTriangleP(Vec2& v1, Vec2& v2, Vec2& v3, colour_t colour)
 {
 	// Sort ascending by Y
 	if (v1.y > v2.y)
@@ -235,20 +235,20 @@ void Graphics::fillTriangleP(Vec2& v1, Vec2& v2, Vec2& v3, t_colour colour)
  * 
  * \see Called by fillTriangleP
  */
-void Graphics::fillTopFlatTriangleP(Vec2& v1, Vec2& v2, Vec2& v3, t_colour colour)
+void Graphics::fillTopFlatTriangleP(Vec2& v1, Vec2& v2, Vec2& v3, colour_t colour)
 {
 	assert(v3.y - v1.y != 0);
 	assert(v3.y - v2.y != 0);
 	float invslope1 = (float)(v3.x - v1.x) / (float)(v3.y - v1.y);
 	float invslope2 = (float)(v3.x - v2.x) / (float)(v3.y - v2.y);
 
-	float curx1 = v3.x;
-	float curx2 = v3.x;
+	float curx1 = (float)v3.x;
+	float curx2 = (float)v3.x;
 
 	for (int scanlineY = v3.y; scanlineY <= v1.y; scanlineY++)
 	{
-		Vec2 v1_ = { curx1, scanlineY };
-		Vec2 v2_ = { curx2, scanlineY };
+		Vec2 v1_ = { (int)curx1, scanlineY };
+		Vec2 v2_ = { (int)curx2, scanlineY };
 		drawLineP(v1_, v2_, colour);
 		curx1 += invslope1;
 		curx2 += invslope2;
@@ -260,20 +260,20 @@ void Graphics::fillTopFlatTriangleP(Vec2& v1, Vec2& v2, Vec2& v3, t_colour colou
  *
  * \see Called by fillTriangleP
  */
-void Graphics::fillBottomFlatTriangleP(Vec2& v1, Vec2& v2, Vec2& v3, t_colour colour)
+void Graphics::fillBottomFlatTriangleP(Vec2& v1, Vec2& v2, Vec2& v3, colour_t colour)
 {
 	assert(v2.y - v1.y != 0);
 	assert(v3.y - v1.y != 0);
 	float invslope1 = (float)(v2.x - v1.x) / (float)(v2.y - v1.y);
 	float invslope2 = (float)(v3.x - v1.x) / (float)(v3.y - v1.y);
 
-	float curx1 = v1.x;
-	float curx2 = v1.x;
+	float curx1 = (float)v1.x;
+	float curx2 = (float)v1.x;
 
 	for (int scanlineY = v1.y; scanlineY >= v2.y; scanlineY--)
 	{
-		Vec2 v1_ = { curx1, scanlineY };
-		Vec2 v2_ = { curx2, scanlineY };
+		Vec2 v1_ = { (int)curx1, scanlineY };
+		Vec2 v2_ = { (int)curx2, scanlineY };
 		drawLineP(v1_, v2_, colour);
 		curx1 -= invslope1;
 		curx2 -= invslope2;
@@ -289,7 +289,7 @@ void Graphics::fillBottomFlatTriangleP(Vec2& v1, Vec2& v2, Vec2& v3, t_colour co
  * \param vf2 Top-right coords
  * \param colour Colour to fill rectangle with
  */
-void Graphics::drawRect(const Vec2f& vf1, const Vec2f& vf2, t_colour colour)
+void Graphics::drawRect(const Vec2f& vf1, const Vec2f& vf2, colour_t colour)
 {
 	Vec2 v1 = screenToPx(vf1);
 	Vec2 v2 = screenToPx(vf2);
@@ -305,7 +305,7 @@ void Graphics::drawRect(const Vec2f& vf1, const Vec2f& vf2, t_colour colour)
 void Graphics::clearDepthBuffer()
 {
 	float* depthBuffer = (float*)pDepthBuffer;
-	for (uint i = 0; i < width * height; i++)
+	for (int i = 0; i < width * height; i++)
 	{
 		*depthBuffer++ = 0.0f;
 	}
@@ -397,8 +397,8 @@ void Graphics::drawTexturedTriangle(
 	{
 		for (int i = y1; i <= y2; i++)
 		{
-			int ax = x1 + (float)(i - y1) * dax_step;
-			int bx = x1 + (float)(i - y1) * dbx_step;
+			int ax = x1 + (int)((float)(i - y1) * dax_step);
+			int bx = x1 + (int)((float)(i - y1) * dbx_step);
 
 			float tex_su = u1 + (float)(i - y1) * du1_step;
 			float tex_sv = v1 + (float)(i - y1) * dv1_step;
@@ -431,7 +431,7 @@ void Graphics::drawTexturedTriangle(
 				float* z = readDepthBuffer(i, j);
 				if (tex_w > * z)
 				{
-					t_colour colour = texture->lookUp(tex_u / tex_w, tex_v / tex_w);
+					colour_t colour = texture->lookUp(tex_u / tex_w, tex_v / tex_w);
 					drawPointP(j, i, colour);
 					*z = tex_w;
 				}
@@ -459,8 +459,8 @@ void Graphics::drawTexturedTriangle(
 	{
 		for (int i = y2; i <= y3; i++)
 		{
-			int ax = x2 + (float)(i - y2) * dax_step;
-			int bx = x1 + (float)(i - y1) * dbx_step;
+			int ax = x2 + (int)((float)(i - y2) * dax_step);
+			int bx = x1 + (int)((float)(i - y1) * dbx_step);
 
 			float tex_su = u2 + (float)(i - y2) * du1_step;
 			float tex_sv = v2 + (float)(i - y2) * dv1_step;
@@ -494,7 +494,7 @@ void Graphics::drawTexturedTriangle(
 				float* z = readDepthBuffer(i, j);
 				if (tex_w > * z)
 				{
-					t_colour colour = texture->lookUp(tex_u / tex_w, tex_v / tex_w);
+					colour_t colour = texture->lookUp(tex_u / tex_w, tex_v / tex_w);
 					drawPointP(j, i, colour);
 					*z = tex_w;
 				}
@@ -516,7 +516,7 @@ void Graphics::rasterTexturedTriangles(
 	const Matrix4x4& matrixCamera,
 	const Vec4f& vCamera,
 	const std::vector<Object*> meshes,
-	const t_colour* strokeColour)
+	const colour_t* strokeColour)
 {
 	// Triangles
 	std::vector<Triangle> trianglesToRaster;
@@ -552,12 +552,11 @@ void Graphics::rasterTexturedTriangles(
 				Vec4f vLightDir = { 0.0f, 1.0f, -1.0f };
 				vLightDir.Normalise();
 				float dp = std::max(0.1f, Vec4f::DotProduct(vLightDir, normal));
-				float triColour = ((dp * 255.0f) * 3.0f) / 5.0f;
 
+				triCamera.colour = (colour_t)(((dp * 255.0f) * 3.0f) / 5.0f);
 				triCamera.p[0] = matrixCamera * triTransformed.p[0];
 				triCamera.p[1] = matrixCamera * triTransformed.p[1];
 				triCamera.p[2] = matrixCamera * triTransformed.p[2];
-				triCamera.colour = triColour;
 				triCamera.t[0] = triTransformed.t[0];
 				triCamera.t[1] = triTransformed.t[1];
 				triCamera.t[2] = triTransformed.t[2];
@@ -672,7 +671,7 @@ void Graphics::rasterTexturedTriangles(
 					listTriangles.push_back(clipped[w]);
 				}
 			}
-			newTriangles = listTriangles.size();
+			newTriangles = (int)listTriangles.size();
 		}
 
 		for (auto& t : listTriangles)
@@ -692,16 +691,16 @@ void Graphics::rasterTexturedTriangles(
 			}
 
 			drawTexturedTriangle(
-				t.p[0].x, t.p[0].y, t.t[0].u, t.t[0].v, t.t[0].w,
-				t.p[1].x, t.p[1].y, t.t[1].u, t.t[1].v, t.t[1].w,
-				t.p[2].x, t.p[2].y, t.t[2].u, t.t[2].v, t.t[2].w,
+				(int)t.p[0].x, (int)t.p[0].y, t.t[0].u, t.t[0].v, t.t[0].w,
+				(int)t.p[1].x, (int)t.p[1].y, t.t[1].u, t.t[1].v, t.t[1].w,
+				(int)t.p[2].x, (int)t.p[2].y, t.t[2].u, t.t[2].v, t.t[2].w,
 				t.parent->pTexture);
 
 			if (strokeColour != nullptr)
 			{
-				Vec2 v1_ = { t.p[0].x, t.p[0].y };
-				Vec2 v2_ = { t.p[1].x, t.p[1].y };
-				Vec2 v3_ = { t.p[2].x, t.p[2].y };
+				Vec2 v1_ = { (int)t.p[0].x, (int)t.p[0].y };
+				Vec2 v2_ = { (int)t.p[1].x, (int)t.p[1].y };
+				Vec2 v3_ = { (int)t.p[2].x, (int)t.p[2].y };
 				drawTriangleP(v1_, v2_, v3_, *strokeColour);
 			}
 		}
@@ -715,7 +714,7 @@ void Graphics::rasterTexturedTriangles(
  * \param v Vec2 where x, y corresspond to bottom-left of area to draw to
  * \param colour Colour of text
  */
-void Graphics::drawText(std::string str, Vec2& v, const t_colour colour)
+void Graphics::drawText(std::string str, Vec2& v, const colour_t colour)
 {
 	// assert ...
 
@@ -758,12 +757,12 @@ void Graphics::drawText(const GUIText guiText)
 		// Cut off beginning of pText if it flows off end of rect
 		if ((guiText.sText.size() * 14u) + (guiText.pText->size() * 14u) + (sTrailing.size() * 14u) >= vMax.x - vPos.x)
 		{
-			int num_chars_that_fit = ((vMax.x - vPos.x) / 14) - guiText.sText.size();
+			int num_chars_that_fit = ((vMax.x - vPos.x) / 14) - (int)guiText.sText.size();
 			//int difference = guiText.pText->size() - num_chars_that_fit;
 			
 			txt += fill;
-			num_chars_that_fit -= fill.size();
-			num_chars_that_fit -= sTrailing.size();
+			num_chars_that_fit -= (int)fill.size();
+			num_chars_that_fit -= (int)sTrailing.size();
 			
 			txt += guiText.pText->substr(guiText.pText->size() - num_chars_that_fit, num_chars_that_fit);
 		}
@@ -797,12 +796,12 @@ void Graphics::drawText(const GUIText guiText)
  * \param colour Colour of character
  * \return Returns true if character was drawn, otherwise false
  */
-const bool Graphics::drawChar(const char c, Vec2& v, const t_colour colour)
+const bool Graphics::drawChar(const char c, Vec2& v, const colour_t colour)
 {
 	// assert ...
 
 	// Check acceptable character
-	int charIndex = text2D->acceptedChars.find(c);
+	int charIndex = (int)text2D->acceptedChars.find(c);
 	if (charIndex == std::string::npos)
 	{
 		return false;
@@ -810,8 +809,8 @@ const bool Graphics::drawChar(const char c, Vec2& v, const t_colour colour)
 
 	// Find char in texture
 	int num_elements_x = 18;
-	int ind_x =  charIndex % num_elements_x;
-	int ind_y = floor((charIndex) / (num_elements_x));
+	int ind_x = charIndex % num_elements_x;
+	int ind_y = (int)floor((charIndex) / (num_elements_x));
 
 	// Size of char in texture
 	const int size_x = 14;
@@ -895,8 +894,8 @@ void Graphics::drawGUIMenuSprite(GUISprite* guiSprite)
 	{
 		for (int i = v1.x; i < v2.x; i++)
 		{
-			const double x_ = normalise(i, v1.x, v2.x);
-			const double y_ = normalise(j, v1.y, v2.y);
+			const float x_ = normalise((float)i, (float)v1.x, (float)v2.x);
+			const float y_ = normalise((float)j, (float)v1.y, (float)v2.y);
 			drawPointPAlpha(i, j, ((Texture*)guiSprite->Tex())->lookUp(x_, y_, guiSprite->getState()));
 		}
 	}

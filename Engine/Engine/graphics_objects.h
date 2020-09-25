@@ -25,7 +25,7 @@ struct Triangle
 									///< Mainly used to get parent's texture
 	Vec4f p[3];						///< Triangle coords as 4D vector
 	Vec3f t[3];						///< Texture coords as 3D vector
-	t_colour colour;				///< Triangle colour.
+	colour_t colour;				///< Triangle colour.
 									///< Used for solid/untextured triangles
 };
 

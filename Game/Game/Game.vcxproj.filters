@@ -1,12 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="player.h" />
     <ClInclude Include="game_menus.h">
       <Filter>Menus</Filter>
     </ClInclude>
     <ClInclude Include="game.h">
       <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="player.h">
+      <Filter>Player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -27,6 +29,9 @@
     </Filter>
     <Filter Include="Game">
       <UniqueIdentifier>{dda9f671-762a-4c7a-9196-0cbd4e0a620c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Player">
+      <UniqueIdentifier>{97293b96-057d-41b5-9bde-971ca72b745d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

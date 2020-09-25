@@ -41,11 +41,11 @@ struct GUIRect
 	GUIText* pGUITextInput = nullptr;	///< Pointer to a text input GUI component
 	Vec2f vf1;							///< Bottom-left coords
 	Vec2f vf2;							///< Top-right coords
-	t_colour colourPallete[3];			///< Contains 3-element array of colours 
+	colour_t colourPallete[3];			///< Contains 3-element array of colours 
 										///< corresponding to GUIState values
 	GUIState state = GUIState::Inactive;///< Current GUIState which corresponds
 										///< to index of colourPallete to draw
-	GUIRect(float x1, float y1, float x2, float y2, t_colour colours[3], GUIText* pGUITextInput = nullptr);
+	GUIRect(float x1, float y1, float x2, float y2, colour_t colours[3], GUIText* pGUITextInput = nullptr);
 	const bool isAt(float x, float y);
 };
 
@@ -55,19 +55,19 @@ struct GUIText
 	Vec2f vf2;							///< Top-right coords
 	std::string sText;					///< Static text string
 	std::string* pText = nullptr;		///< Pointer to text string
-	t_colour colourPallete[3];			///< Contains 3-element array of colours 
+	colour_t colourPallete[3];			///< Contains 3-element array of colours 
 										///< corresponding to GUIState values
 	GUIState state = GUIState::Inactive;///< Current GUIState which corresponds
 										///< to index of colourPallete to draw
-	t_colour cBackground;				///< Colour of background (whitespace 
+	colour_t cBackground;				///< Colour of background (whitespace 
 										///< behind text)
 	bool drawBackground;				///< Boolean to draw background colour
 
-	GUIText(const std::string sText, const t_colour colours[3],
+	GUIText(const std::string sText, const colour_t colours[3],
 		const float x1, const float y1,
 		const float x2 = 1.0f, const float y2 = 1.0f,
 		const bool drawBackground = false,
-		const t_colour cBackground = 0x000000);
+		const colour_t cBackground = 0x000000);
 	const bool isAt(const float x, const float y, Graphics* gfx);
 };
 

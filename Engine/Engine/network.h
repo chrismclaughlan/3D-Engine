@@ -24,7 +24,7 @@ namespace NETWORK
 			if (_buffer.length() >= maxBufferSize)
 				numBytes = maxBufferSize - 1;
 			else
-				numBytes = _buffer.length();
+				numBytes = (int)_buffer.length();
 			_buffer.copy(buffer, numBytes);
 			assert(numBytes < maxBufferSize);
 		}
@@ -32,7 +32,7 @@ namespace NETWORK
 		Packet(const int8* _buffer)
 		{
 			strncpy_s(buffer, _buffer, _TRUNCATE);
-			numBytes = std::strlen(buffer);
+			numBytes = (int)std::strlen(buffer);
 			assert(numBytes < maxBufferSize);
 		}
 

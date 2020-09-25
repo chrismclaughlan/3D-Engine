@@ -23,10 +23,10 @@ const double Stopwatch::stop(double multipler)
 
 const double Stopwatch::getStart() const noexcept
 {
-	return startTime.QuadPart;
+	return (double)startTime.QuadPart;
 }
 
 const double Stopwatch::getEnd() const noexcept
 {
-	return endTime.QuadPart;
+	return (double)endTime.QuadPart;
 }

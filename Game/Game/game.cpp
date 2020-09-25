@@ -646,8 +646,8 @@ void Game::glInput()
 				int iCenterY = win.Gfx().getHeight() / 2;
 				win.GetScreenPos(&iCenterX, &iCenterY);
 				win.MoveMouse(iCenterX, iCenterY);
-				player.lookX( event.getX());
-				player.lookY(-event.getY());
+				player.lookX((float) event.getX());
+				player.lookY((float)-event.getY());
 			}
 		} break;
 		case Mouse::Event::Type::Move:

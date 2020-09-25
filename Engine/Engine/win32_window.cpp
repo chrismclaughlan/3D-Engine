@@ -54,7 +54,16 @@ Window::WindowClass::WindowClass() noexcept : hInstance(GetModuleHandle(NULL))
 	wc.lpszMenuName = NULL;
 	wc.lpszClassName = GetName();
 	wc.hIconSm = hiconsm;
-	RegisterClassEx(&wc);
+
+	// TODO error handling
+	if (!RegisterClassEx(&wc))
+	{
+		//THROW_WINDOW_EXCEPTION_CODE("Window class registration has failed")
+
+		MessageBox(NULL, L"Class registration has failed",
+			L"Error", MB_OK | MB_ICONERROR);
+		exit(-1);
+	}
 }
 
 Window::WindowClass::~WindowClass()

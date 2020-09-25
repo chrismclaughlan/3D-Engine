@@ -10,8 +10,8 @@ class Graphics;
 GUIRect::GUIRect(float x1, float y1, float x2, float y2, t_colour colours[3], GUIText* pGUITextInput)
 	: pGUITextInput(pGUITextInput)
 {
-	vf1 = vec2f(x1, y1);
-	vf2 = vec2f(x2, y2);
+	vf1 = Vec2f(x1, y1);
+	vf2 = Vec2f(x2, y2);
 	colourPallete[0] = colours[0];
 	colourPallete[1] = colours[1];
 	colourPallete[2] = colours[2];
@@ -28,8 +28,8 @@ const bool GUIRect::isAt(float x, float y)
 GUIText::GUIText(const std::string sText, const t_colour colours[3], const float x1, const float y1, const float x2, const float y2, const bool drawBackground, const t_colour cBackground)
 	: sText(sText), drawBackground(drawBackground), cBackground(cBackground)
 {
-	vf1 = vec2f(x1, y1);
-	vf2 = vec2f(x2, y2);
+	vf1 = Vec2f(x1, y1);
+	vf2 = Vec2f(x2, y2);
 	colourPallete[0] = colours[0];
 	colourPallete[1] = colours[1];
 	colourPallete[2] = colours[2];
@@ -39,10 +39,10 @@ const bool GUIText::isAt(const float x, const float y, Graphics* gfx)
 {
 	if (x > vf1.x && y > vf1.y)
 	{
-		vec2 v;
+		Vec2 v;
 		v.x = sText.size() * 14;
 		v.y = 18;
-		vec2f vf_ = gfx->pxToScreen(v);
+		Vec2f vf_ = gfx->pxToScreen(v);
 
 		float x_end = vf1.x + vf_.x;
 		float y_end = vf1.y + vf_.y;
@@ -140,8 +140,8 @@ GUISprite::GUISprite(
 	const char* filename, TextureType textureType, const int sectionWidth, const int sectionHeight, 
 	const float x1, const float y1, const float x2, const float y2)
 {
-	vf1 = vec2f(x1, y1);
-	vf2 = vec2f(x2, y2);
+	vf1 = Vec2f(x1, y1);
+	vf2 = Vec2f(x2, y2);
 
 	pTexture = new Texture(textureType, filename, sectionWidth, sectionHeight);
 }
@@ -160,7 +160,7 @@ const int GUISprite::getState()
 	return (int)state;
 }
 
-const bool GUISprite::isClickable(const vec2f& vf_)
+const bool GUISprite::isClickable(const Vec2f& vf_)
 {
 	if (vf_.x > vf1.x && vf_.y > vf1.y && vf_.x < vf2.x && vf_.y < vf2.y)
 	{

@@ -1,5 +1,5 @@
 #pragma once
-#include "Engine/vector.h"
+#include "Engine/utils_vector.h"
 
 class Player
 {
@@ -17,11 +17,11 @@ private:
 	float turningSpeed = 0.005f;
 	float movementSpeed = 0.005f;
 
-	const Vector vUp;
-	Vector vCamera;
-	Vector vLookDir;
-	Vector vForward;
-	Vector vTarget;
+	const Vec4f vUp;
+	Vec4f vCamera;
+	Vec4f vLookDir;
+	Vec4f vForward;
+	Vec4f vTarget;
 	Matrix4x4 mCameraRotation;
 	Matrix4x4 mCamera;
 
@@ -97,6 +97,6 @@ public:
 	const bool isMovingLeft() { return moveDirX > 0.0f; };
 	const bool isMovingRight() { return moveDirX < 0.0f; };
 
-	const Vector getVCamera() { return vCamera; };
+	const Vec4f getVCamera() { return vCamera; };
 	const Matrix4x4 getMCamera() { return mCamera; };
 };

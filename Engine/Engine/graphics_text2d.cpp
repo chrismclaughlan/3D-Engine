@@ -1,5 +1,7 @@
-#include "graphics_text2d.h"
 #include "utils.h"
+#include "graphics_text2d.h"
+#include <fstream>
+#include <iostream>
 
 /**
  * \brief Destructor for Text2D.

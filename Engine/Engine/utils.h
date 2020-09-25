@@ -10,28 +10,23 @@
 #include "types.h"
 #include <string>
 
-struct vec2
-{
-	int x, y;
-};
-
-struct vec3
-{
-	int x, y, z;
-};
-
-struct vec2f
-{
-	float x, y;
-
-	vec2f() : x(0.0f), y(0.0f) {};
-	vec2f(const float x, const float y) : x(x), y(y) {};
-};
-
-struct vec3f
-{
-	float x, y, z;
-};
+//struct vec3
+//{
+//	int x, y, z;
+//};
+//
+//struct Vec2f
+//{
+//	float x, y;
+//
+//	Vec2f() : x(0.0f), y(0.0f) {};
+//	Vec2f(const float x, const float y) : x(x), y(y) {};
+//};
+//
+//struct Vec3f
+//{
+//	float x, y, z;
+//};
 
 extern void clamp(int* val, const int min, const int max);
 extern void clampu(uint* val, const uint min, const uint max);

@@ -1,5 +1,5 @@
 /*****************************************************************//**
- * \file   objects.h
+ * \file   graphics_objects.h
  * \brief  Contains Triangle struct & Object class to describe 
  * 3D objects in application.
  * 
@@ -10,8 +10,11 @@
 #pragma once
 #include "utils.h"
 #include "types.h"
-#include "vector.h"
+#include "utils_vector.h"
 #include "graphics_texture.h"
+#include <vector>
+
+class Object;
 
 /**
  * \brief Contains positional, texture and colour info.
@@ -20,14 +23,14 @@ struct Triangle
 {
 	const Object* parent = nullptr;	///< Pointer to parent.
 									///< Mainly used to get parent's texture
-	Vector p[3];					///< Triangle coords as 4D vector
-	Vector2 t[3];					///< Texture coords as 3D vector
+	Vec4f p[3];						///< Triangle coords as 4D vector
+	Vec3f t[3];						///< Texture coords as 3D vector
 	t_colour colour;				///< Triangle colour.
 									///< Used for solid/untextured triangles
 };
 
 // TODO move?
-extern int TriangleClipAgainstPlane(Vector plane_p, Vector plane_n, Triangle& in_tri, Triangle& out_tri1, Triangle& out_tri2);
+extern int TriangleClipAgainstPlane(Vec4f plane_p, Vec4f plane_n, Triangle& in_tri, Triangle& out_tri1, Triangle& out_tri2);
 
 
 /**
@@ -42,7 +45,7 @@ public:
 	std::vector<Triangle> vTris;	///< Contains vector of triangles that
 									///< compose the object.
 	Texture* pTexture = nullptr;	///< Pointer to a texture (optional)
-	vec3f vPos;						///< Positional vector.
+	Vec3f vPos;						///< Positional vector.
 									///< x: + left		/ - right
 									///< y: + upwards	/ - downwards
 									///< z: + forwards	/ - backwards

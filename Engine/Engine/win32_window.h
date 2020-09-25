@@ -2,8 +2,8 @@
 #include "hwindows.h"  // first
 #include "types.h"
 #include "win32_graphics.h"
-#include "keyboard.h"
-#include "mouse.h"
+#include "input_keyboard.h"
+#include "input_mouse.h"
 #include <memory>
 #include <string>
 
@@ -55,6 +55,7 @@ private:
 	int wHeight;
 	std::unique_ptr<Win32Graphics> pGraphics;
 public:
+	void setExitCode(const int code);
 	void setTitle(const std::string text);
 	bool setSize(const int x, const int y);
 	bool setPos(const int x, const int y);

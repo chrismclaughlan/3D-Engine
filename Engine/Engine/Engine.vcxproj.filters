@@ -4,12 +4,6 @@
     <ClCompile Include="graphics.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Mouse.cpp">
-      <Filter>Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Keyboard.cpp">
-      <Filter>Input</Filter>
-    </ClCompile>
     <ClCompile Include="exception.cpp">
       <Filter>Exception</Filter>
     </ClCompile>
@@ -34,13 +28,9 @@
     <ClCompile Include="win32_nserver.cpp">
       <Filter>Win32\Network\NServer</Filter>
     </ClCompile>
-    <ClCompile Include="vector.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="graphics_texture.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="utils.cpp" />
     <ClCompile Include="graphics_text2d.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
@@ -49,6 +39,18 @@
     </ClCompile>
     <ClCompile Include="graphics_objects.cpp">
       <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="utils.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="utils_vector.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="input_keyboard.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="input_mouse.cpp">
+      <Filter>Input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -62,12 +64,6 @@
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="Mouse.h">
-      <Filter>Input</Filter>
-    </ClInclude>
-    <ClInclude Include="Keyboard.h">
-      <Filter>Input</Filter>
     </ClInclude>
     <ClInclude Include="exception.h">
       <Filter>Exception</Filter>
@@ -99,13 +95,9 @@
     <ClInclude Include="network.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="vector.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="graphics_texture.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="utils.h" />
     <ClInclude Include="graphics_text2d.h">
       <Filter>Graphics</Filter>
     </ClInclude>
@@ -114,6 +106,18 @@
     </ClInclude>
     <ClInclude Include="graphics_objects.h">
       <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils_vector.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="input_keyboard.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="input_mouse.h">
+      <Filter>Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -152,6 +156,9 @@
     </Filter>
     <Filter Include="Network">
       <UniqueIdentifier>{91f5a2c0-e2ad-47a8-bbc5-36f75e63e21a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{f667dcce-877d-4a44-9fcf-db750714bd3b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

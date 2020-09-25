@@ -1,69 +1,102 @@
-#include "vector.h"
+#include "utils_vector.h"
 #include <assert.h>
 
+/**
+ * \brief Boolean deciding whether triangle clipping is drawn.
+ * 
+ * Used for debug purposes to check if clipping is working correctly.
+ */
 #define SHOW_CLIPPING false
 
-Vector::Vector()
+/* Vec2f */
+
+Vec2f::Vec2f()
+	: x(0.0f), y(0.0f)
+{}
+
+Vec2f::Vec2f(const float x, const float y)
+	: x(x), y(y)
+{};
+
+
+/* Vec3f */
+
+Vec3f::Vec3f()
+	: u(0.0f), v(0.0f), w(1.0f)
+{};
+
+Vec3f::Vec3f(const float u, const float v)
+	: u(u), v(v), w(1.0f)
+{};
+
+Vec3f::Vec3f(const float u, const float v, const float w)
+	: u(u), v(v), w(w)
+{};
+
+
+/* Vec4f */
+
+Vec4f::Vec4f()
 	: x(0.0f), y(0.0f), z(0.0f), w(1.0f)
 {}
 
-Vector::Vector(float x, float y, float z)
+Vec4f::Vec4f(float x, float y, float z)
 	: x(x), y(y), z(z), w(1.0f)
 {}
 
-Vector::Vector(float x, float y, float z, float w)
+Vec4f::Vec4f(float x, float y, float z, float w)
 	: x(x), y(y), z(z), w(w)
 {}
 
-std::ostream& operator<<(std::ostream& os, const Vector& v)
+std::ostream& operator<<(std::ostream& os, const Vec4f& v)
 {
 	os << "(" << v.x << "," << v.y << "," << v.z << "," << v.w << ")";
 	return os;
 }
 
-bool operator==(const Vector& a, const Vector& b)
+bool operator==(const Vec4f& a, const Vec4f& b)
 {
 	return (a.x == b.x && a.y == b.y && a.z == b.z);
 }
 
-Vector operator+(const Vector& a, const Vector& b)
+Vec4f operator+(const Vec4f& a, const Vec4f& b)
 {
-	Vector v;
+	Vec4f v;
 	v.x = a.x + b.x;
 	v.y = a.y + b.y;
 	v.z = a.z + b.z;
 	return v;
 }
 
-Vector operator-(const Vector& a, const Vector& b)
+Vec4f operator-(const Vec4f& a, const Vec4f& b)
 {
-	Vector v;
+	Vec4f v;
 	v.x = a.x - b.x;
 	v.y = a.y - b.y;
 	v.z = a.z - b.z;
 	return v;
 }
 
-Vector operator*(const Vector& a, const float k)
+Vec4f operator*(const Vec4f& a, const float k)
 {
-	Vector v;
+	Vec4f v;
 	v.x = a.x * k;
 	v.y = a.y * k;
 	v.z = a.z * k;
 	return v;
 }
 
-Vector operator/(const Vector& a, const float k)
+Vec4f operator/(const Vec4f& a, const float k)
 {
 	assert(k != 0);
-	Vector v;
+	Vec4f v;
 	v.x = a.x / k;
 	v.y = a.y / k;
 	v.z = a.z / k;
 	return v;
 }
 
-Vector operator+=(Vector& a, const Vector& b)
+Vec4f operator+=(Vec4f& a, const Vec4f& b)
 {
 	a.x += b.x;
 	a.y += b.y;
@@ -71,7 +104,7 @@ Vector operator+=(Vector& a, const Vector& b)
 	return a;
 }
 
-Vector operator-=(Vector& a, const Vector& b)
+Vec4f operator-=(Vec4f& a, const Vec4f& b)
 {
 	a.x -= b.x;
 	a.y -= b.y;
@@ -79,7 +112,7 @@ Vector operator-=(Vector& a, const Vector& b)
 	return a;
 }
 
-Vector operator*=(Vector& a, const float k)
+Vec4f operator*=(Vec4f& a, const float k)
 {
 	a.x *= k;
 	a.y *= k;
@@ -87,13 +120,110 @@ Vector operator*=(Vector& a, const float k)
 	return a;
 }
 
-Vector operator/=(Vector& a, const float k)
+Vec4f operator/=(Vec4f& a, const float k)
 {
 	assert(k != 0);
 	a.x /= k;
 	a.y /= k;
 	a.z /= k;
 	return a;
+}
+
+Vec4f& Vec4f::operator-()
+{
+	x = -x;
+	y = -y;
+	z = -z;
+	return *this;
+}
+
+float Vec4f::DotProduct(const Vec4f& a, const Vec4f& b)
+{
+	return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
+}
+
+float Vec4f::Length(const Vec4f& a)
+{
+	return sqrtf(DotProduct(a, a));
+}
+
+void Vec4f::Normalise()
+{
+	float length = Length(*this);
+	if (length == 0)
+		return;
+	assert(length != 0);
+	x /= length;
+	y /= length;
+	z /= length;
+}
+
+Vec4f Vec4f::Normalise(const Vec4f& a)
+{
+	Vec4f v;
+	float length = Length(a);
+	if (length == 0)
+		return Vec4f();
+	assert(length != 0);
+	v.x = a.x / length;
+	v.y = a.y / length;
+	v.z = a.z / length;
+	return v;
+}
+
+Vec4f Vec4f::CrossProduct(const Vec4f& a, const Vec4f& b)
+{
+	Vec4f v;
+	v.x = (a.y * b.z) - (a.z * b.y);
+	v.y = (a.z * b.x) - (a.x * b.z);
+	v.z = (a.x * b.y) - (a.y * b.x);
+	return v;
+}
+
+Vec4f operator*(const Matrix4x4& m, const Vec4f& v)
+{
+	Vec4f vect;
+	vect.x = (v.x * m.m[0][0]) + (v.y * m.m[1][0]) + (v.z * m.m[2][0]) + (v.w * m.m[3][0]);
+	vect.y = (v.x * m.m[0][1]) + (v.y * m.m[1][1]) + (v.z * m.m[2][1]) + (v.w * m.m[3][1]);
+	vect.z = (v.x * m.m[0][2]) + (v.y * m.m[1][2]) + (v.z * m.m[2][2]) + (v.w * m.m[3][2]);
+	vect.w = (v.x * m.m[0][3]) + (v.y * m.m[1][3]) + (v.z * m.m[2][3]) + (v.w * m.m[3][3]);
+	return vect;
+}
+
+Vec4f operator*=(const Matrix4x4& m, const Vec4f& v)
+{
+	Vec4f vect;
+	vect.x = (v.x * m.m[0][0]) + (v.y * m.m[1][0]) + (v.z * m.m[2][0]) + (v.w * m.m[3][0]);
+	vect.y = (v.x * m.m[0][1]) + (v.y * m.m[1][1]) + (v.z * m.m[2][1]) + (v.w * m.m[3][1]);
+	vect.z = (v.x * m.m[0][2]) + (v.y * m.m[1][2]) + (v.z * m.m[2][2]) + (v.w * m.m[3][2]);
+	vect.w = (v.x * m.m[0][3]) + (v.y * m.m[1][3]) + (v.z * m.m[2][3]) + (v.w * m.m[3][3]);
+	return vect;
+}
+
+Vec4f Vec4f::IntersectPlane(Vec4f& plane_p, Vec4f& plane_n, Vec4f& lineStart, Vec4f& lineEnd, float& t)
+{
+	float plane_d = -Vec4f::DotProduct(plane_n, plane_p);
+	float ad = Vec4f::DotProduct(lineStart, plane_n);
+	float bd = Vec4f::DotProduct(lineEnd, plane_n);
+	t = (-plane_d - ad) / (bd - ad);
+	Vec4f lineStartToEnd = lineEnd - lineStart;
+	Vec4f lineToIntersect = lineStartToEnd * t;
+	return lineStart + lineToIntersect;
+}
+
+void Vec4f::setZero()
+{
+	x = 0.0f;
+	y = 0.0f;
+	z = 0.0f;
+}
+
+
+/* Matrix4x4 */
+
+Matrix4x4::Matrix4x4()
+{
+	memset(&m, 0.0f, sizeof(float) * 4 * 4);
 }
 
 Matrix4x4 operator*(const Matrix4x4& a, const Matrix4x4& b)
@@ -121,82 +251,6 @@ Matrix4x4 operator*=(Matrix4x4& a, const Matrix4x4& b)
 	return a;
 }
 
-Vector& Vector::operator-()
-{
-	x = -x;
-	y = -y;
-	z = -z;
-	return *this;
-}
-
-float Vector::DotProduct(const Vector& a, const Vector& b)
-{
-	return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
-}
-
-float Vector::Length(const Vector& a)
-{
-	return sqrtf(DotProduct(a, a));
-}
-
-void Vector::Normalise()
-{
-	float length = Length(*this);
-	if (length == 0)
-		return;
-	assert(length != 0);
-	x /= length;
-	y /= length;
-	z /= length;
-}
-
-Vector Vector::Normalise(const Vector& a)
-{
-	Vector v;
-	float length = Length(a);
-	if (length == 0)
-		return Vector();
-	assert(length != 0);
-	v.x = a.x / length;
-	v.y = a.y / length;
-	v.z = a.z / length;
-	return v;
-}
-
-Vector Vector::CrossProduct(const Vector& a, const Vector& b)
-{
-	Vector v;
-	v.x = (a.y * b.z) - (a.z * b.y);
-	v.y = (a.z * b.x) - (a.x * b.z);
-	v.z = (a.x * b.y) - (a.y * b.x);
-	return v;
-}
-
-Matrix4x4::Matrix4x4()
-{
-	memset(&m, 0.0f, sizeof(float) * 4 * 4);
-}
-
-Vector operator*(const Matrix4x4& m, const Vector& v)
-{
-	Vector vect;
-	vect.x = (v.x * m.m[0][0]) + (v.y * m.m[1][0]) + (v.z * m.m[2][0]) + (v.w * m.m[3][0]);
-	vect.y = (v.x * m.m[0][1]) + (v.y * m.m[1][1]) + (v.z * m.m[2][1]) + (v.w * m.m[3][1]);
-	vect.z = (v.x * m.m[0][2]) + (v.y * m.m[1][2]) + (v.z * m.m[2][2]) + (v.w * m.m[3][2]);
-	vect.w = (v.x * m.m[0][3]) + (v.y * m.m[1][3]) + (v.z * m.m[2][3]) + (v.w * m.m[3][3]);
-	return vect;
-}
-
-Vector operator*=(const Matrix4x4& m, const Vector& v)
-{
-	Vector vect;
-	vect.x = (v.x * m.m[0][0]) + (v.y * m.m[1][0]) + (v.z * m.m[2][0]) + (v.w * m.m[3][0]);
-	vect.y = (v.x * m.m[0][1]) + (v.y * m.m[1][1]) + (v.z * m.m[2][1]) + (v.w * m.m[3][1]);
-	vect.z = (v.x * m.m[0][2]) + (v.y * m.m[1][2]) + (v.z * m.m[2][2]) + (v.w * m.m[3][2]);
-	vect.w = (v.x * m.m[0][3]) + (v.y * m.m[1][3]) + (v.z * m.m[2][3]) + (v.w * m.m[3][3]);
-	return vect;
-}
-
 void Matrix4x4::MakeIdentity()
 {
 	m[0][0] = 1.0f;
@@ -214,6 +268,7 @@ void Matrix4x4::MakeRotationX(float fRad)
 	m[2][2] = cosf(fRad);
 	m[3][3] = 1.0f;
 }
+
 void Matrix4x4::MakeRotationY(float fRad)
 {
 	m[0][0] = cosf(fRad);
@@ -223,6 +278,7 @@ void Matrix4x4::MakeRotationY(float fRad)
 	m[2][2] = cosf(fRad);
 	m[3][3] = 1.0f;
 }
+
 void Matrix4x4::MakeRotationZ(float fRad)
 {
 	m[0][0] = cosf(fRad);
@@ -255,19 +311,19 @@ void Matrix4x4::MakeProjection(float fFovDeg, float fAspectRatio, float fNear, f
 	m[3][3] = 0.0f;
 }
 
-void Matrix4x4::MakePointAt(const Vector& pos, const Vector& target, const Vector& up)
+void Matrix4x4::MakePointAt(const Vec4f& pos, const Vec4f& target, const Vec4f& up)
 {
 	// Calculate new forward direction
-	Vector newForward = target - pos;
+	Vec4f newForward = target - pos;
 	newForward.Normalise();
 
 	// Calculate new Up direction
-	Vector a = newForward * (Vector::DotProduct(up, newForward));
-	Vector newUp = up - a;
+	Vec4f a = newForward * (Vec4f::DotProduct(up, newForward));
+	Vec4f newUp = up - a;
 	newUp.Normalise();
 
 	// New Right direction is easy, its just cross product
-	Vector newRight = Vector::CrossProduct(newUp, newForward);
+	Vec4f newRight = Vec4f::CrossProduct(newUp, newForward);
 
 	// Construct Dimensioning and Translation Matrix	
 	m[0][0] = newRight.x;		m[0][1] = newRight.y;		m[0][2] = newRight.z;		m[0][3] = 0.0f;
@@ -288,22 +344,4 @@ void Matrix4x4::MakeQuickInverse() // Only for Rotation/Translation Matrices
 	matrix.m[3][3] = 1.0f;
 
 	*this = matrix;
-}
-
-Vector Vector::IntersectPlane(Vector& plane_p, Vector& plane_n, Vector& lineStart, Vector& lineEnd, float& t)
-{
-	float plane_d = -Vector::DotProduct(plane_n, plane_p);
-	float ad = Vector::DotProduct(lineStart, plane_n);
-	float bd = Vector::DotProduct(lineEnd, plane_n);
-	t = (-plane_d - ad) / (bd - ad);
-	Vector lineStartToEnd = lineEnd - lineStart;
-	Vector lineToIntersect = lineStartToEnd * t;
-	return lineStart + lineToIntersect;
-}
-
-void Vector::setZero()
-{
-	x = 0.0f;
-	y = 0.0f;
-	z = 0.0f;
 }

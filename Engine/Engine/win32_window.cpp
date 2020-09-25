@@ -1,6 +1,6 @@
 #include "win32_window.h"  // first
 #include "resource.h"
-#include "Keyboard.h"
+#include "input_keyboard.h"
 #include <windowsX.h>  // mouse movement
 #include <assert.h>
 
@@ -136,6 +136,11 @@ Window::Window(const char* name, int width, int height)
 Window::~Window()
 {
 	DestroyWindow(hwnd);
+}
+
+void Window::setExitCode(const int code)
+{
+	exitCode = code;
 }
 
 void Window::setTitle(const std::string text)

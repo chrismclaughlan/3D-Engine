@@ -1,5 +1,7 @@
 #include "utils.h"
 #include "graphics_objects.h"
+#include <fstream>
+#include <iostream>
 
 /**
  * \brief Loads .obj file and loads data into vTris.
@@ -30,8 +32,8 @@ bool Object::LoadObjectFile(std::string filename, bool hasTexture)
 		return false;
 	}
 
-	std::vector<Vector> verticies;
-	std::vector<Vector2> textures;
+	std::vector<Vec4f> verticies;
+	std::vector<Vec3f> textures;
 
 	while (!file.eof())
 	{
@@ -48,13 +50,13 @@ bool Object::LoadObjectFile(std::string filename, bool hasTexture)
 		{
 			if (line[1] == 't' && line[2] == ' ')
 			{
-				Vector2 v;
+				Vec3f v;
 				s >> temp >> temp >> v.u >> v.v;
 				textures.push_back(v);
 			}
 			else if (line[1] == ' ')
 			{
-				Vector v;
+				Vec4f v;
 				s >> temp >> v.x >> v.y >> v.z;
 				verticies.push_back(v);
 			}
@@ -93,7 +95,7 @@ bool Object::LoadObjectFile(std::string filename, bool hasTexture)
 
 				tokens[nTokenCount].pop_back();
 
-				vTris.push_back({ this, Vector(verticies[std::stoi(tokens[0]) - 1]), Vector(verticies[std::stoi(tokens[2]) - 1]), Vector(verticies[std::stoi(tokens[4]) - 1]), Vector2(textures[std::stoi(tokens[1]) - 1]), Vector2(textures[std::stoi(tokens[3]) - 1]), Vector2(textures[std::stoi(tokens[5]) - 1]) });
+				vTris.push_back({ this, Vec4f(verticies[std::stoi(tokens[0]) - 1]), Vec4f(verticies[std::stoi(tokens[2]) - 1]), Vec4f(verticies[std::stoi(tokens[4]) - 1]), Vec3f(textures[std::stoi(tokens[1]) - 1]), Vec3f(textures[std::stoi(tokens[3]) - 1]), Vec3f(textures[std::stoi(tokens[5]) - 1]) });
 			}
 		}
 	}
@@ -108,23 +110,23 @@ void Object::LoadTestCube()
 {
 	// South
 	vTris.clear();
-	vTris.push_back({ this, Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
-	vTris.push_back({ this, Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
+	vTris.push_back({ this, Vec4f(0.0f, 0.0f, 0.0f, 1.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec4f(1.0f, 1.0f, 0.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(0.0f, 0.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f) });
+	vTris.push_back({ this, Vec4f(0.0f, 0.0f, 0.0f, 1.0f), Vec4f(1.0f, 1.0f, 0.0f, 1.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f), Vec3f(1.0f, 1.0f, 1.0f) });
 
-	vTris.push_back({ this, Vector(1.0f, 0.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
-	vTris.push_back({ this, Vector(1.0f, 0.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 1.0f, 1.0f), Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
+	vTris.push_back({ this, Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec4f(1.0f, 1.0f, 0.0f, 1.0f), Vec4f(1.0f, 1.0f, 1.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(0.0f, 0.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f) });
+	vTris.push_back({ this, Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec4f(1.0f, 1.0f, 1.0f, 1.0f), Vec4f(1.0f, 0.0f, 1.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f), Vec3f(1.0f, 1.0f, 1.0f) });
 
-	vTris.push_back({ this, Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector(1.0f, 1.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
-	vTris.push_back({ this, Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
+	vTris.push_back({ this, Vec4f(1.0f, 0.0f, 1.0f, 1.0f), Vec4f(1.0f, 1.0f, 1.0f, 1.0f), Vec4f(0.0f, 1.0f, 1.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(0.0f, 0.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f) });
+	vTris.push_back({ this, Vec4f(1.0f, 0.0f, 1.0f, 1.0f), Vec4f(0.0f, 1.0f, 1.0f, 1.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f), Vec3f(1.0f, 1.0f, 1.0f) });
 
-	vTris.push_back({ this, Vector(0.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
-	vTris.push_back({ this, Vector(0.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
+	vTris.push_back({ this, Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec4f(0.0f, 1.0f, 1.0f, 1.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(0.0f, 0.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f) });
+	vTris.push_back({ this, Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec4f(0.0f, 0.0f, 0.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f), Vec3f(1.0f, 1.0f, 1.0f) });
 
-	vTris.push_back({ this, Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector(0.0f, 1.0f, 1.0f, 1.0f), Vector(1.0f, 1.0f, 1.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
-	vTris.push_back({ this, Vector(0.0f, 1.0f, 0.0f, 1.0f), Vector(1.0f, 1.0f, 1.0f, 1.0f), Vector(1.0f, 1.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
+	vTris.push_back({ this, Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec4f(0.0f, 1.0f, 1.0f, 1.0f), Vec4f(1.0f, 1.0f, 1.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(0.0f, 0.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f) });
+	vTris.push_back({ this, Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec4f(1.0f, 1.0f, 1.0f, 1.0f), Vec4f(1.0f, 1.0f, 0.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f), Vec3f(1.0f, 1.0f, 1.0f) });
 
-	vTris.push_back({ this, Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f) });
-	vTris.push_back({ this, Vector(1.0f, 0.0f, 1.0f, 1.0f), Vector(0.0f, 0.0f, 0.0f, 1.0f), Vector(1.0f, 0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f, 1.0f), Vector2(1.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f, 1.0f) });
+	vTris.push_back({ this, Vec4f(1.0f, 0.0f, 1.0f, 1.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec4f(0.0f, 0.0f, 0.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(0.0f, 0.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f) });
+	vTris.push_back({ this, Vec4f(1.0f, 0.0f, 1.0f, 1.0f), Vec4f(0.0f, 0.0f, 0.0f, 1.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f), Vec3f(1.0f, 1.0f, 1.0f) });
 }
 
 /**
@@ -168,25 +170,25 @@ void Object::setPos(float x, float y, float z)
  * \param out_tri2 Triangle clip result if 2 triangles clipped
  * \return Number of clipped triangles (0 / 1 / 2)
  */
-int TriangleClipAgainstPlane(Vector plane_p, Vector plane_n, Triangle& in_tri, Triangle& out_tri1, Triangle& out_tri2)
+int TriangleClipAgainstPlane(Vec4f plane_p, Vec4f plane_n, Triangle& in_tri, Triangle& out_tri1, Triangle& out_tri2)
 {
 	// Make sure plane normal is indeed normal
 	plane_n.Normalise();
 
 	// Return signed shortest distance from point to plane, plane normal must be normalised
-	auto dist = [&](Vector& p)
+	auto dist = [&](Vec4f& p)
 	{
-		Vector n = p;
+		Vec4f n = p;
 		n.Normalise();
-		return (plane_n.x * p.x + plane_n.y * p.y + plane_n.z * p.z - Vector::DotProduct(plane_n, plane_p));
+		return (plane_n.x * p.x + plane_n.y * p.y + plane_n.z * p.z - Vec4f::DotProduct(plane_n, plane_p));
 	};
 
 	// Create two temporary storage arrays to classify points either side of plane
 	// If distance sign is positive, point lies on "inside" of plane
-	Vector* inside_points[3];  int nInsidePointCount = 0;
-	Vector* outside_points[3]; int nOutsidePointCount = 0;
-	Vector2* inside_tex[3];	   int nInsideTexCount = 0;
-	Vector2* outside_tex[3];   int nOutsideTexCount = 0;
+	Vec4f* inside_points[3];  int nInsidePointCount = 0;
+	Vec4f* outside_points[3]; int nOutsidePointCount = 0;
+	Vec3f* inside_tex[3];	   int nInsideTexCount = 0;
+	Vec3f* outside_tex[3];   int nOutsideTexCount = 0;
 
 	// Get signed distance of each point in triangle to plane
 	float d0 = dist(in_tri.p[0]);
@@ -253,13 +255,13 @@ int TriangleClipAgainstPlane(Vector plane_p, Vector plane_n, Triangle& in_tri, T
 		// but the two new points are at the locations where the 
 		// original sides of the triangle (lines) intersect with the plane
 		float t;
-		out_tri1.p[1] = Vector::IntersectPlane(plane_p, plane_n, *inside_points[0], *outside_points[0], t);
+		out_tri1.p[1] = Vec4f::IntersectPlane(plane_p, plane_n, *inside_points[0], *outside_points[0], t);
 		out_tri1.t[1].u = t * (outside_tex[0]->u - inside_tex[0]->u) + inside_tex[0]->u;
 		out_tri1.t[1].v = t * (outside_tex[0]->v - inside_tex[0]->v) + inside_tex[0]->v;
 		out_tri1.t[1].w = t * (outside_tex[0]->w - inside_tex[0]->w) + inside_tex[0]->w;
 
 
-		out_tri1.p[2] = Vector::IntersectPlane(plane_p, plane_n, *inside_points[0], *outside_points[1], t);
+		out_tri1.p[2] = Vec4f::IntersectPlane(plane_p, plane_n, *inside_points[0], *outside_points[1], t);
 		out_tri1.t[2].u = t * (outside_tex[1]->u - inside_tex[0]->u) + inside_tex[0]->u;
 		out_tri1.t[2].v = t * (outside_tex[1]->v - inside_tex[0]->v) + inside_tex[0]->v;
 		out_tri1.t[2].w = t * (outside_tex[1]->w - inside_tex[0]->w) + inside_tex[0]->w;
@@ -296,7 +298,7 @@ int TriangleClipAgainstPlane(Vector plane_p, Vector plane_n, Triangle& in_tri, T
 		out_tri1.t[1] = *inside_tex[1];
 
 		float t;
-		out_tri1.p[2] = Vector::IntersectPlane(plane_p, plane_n, *inside_points[0], *outside_points[0], t);
+		out_tri1.p[2] = Vec4f::IntersectPlane(plane_p, plane_n, *inside_points[0], *outside_points[0], t);
 		out_tri1.t[2].u = t * (outside_tex[0]->u - inside_tex[0]->u) + inside_tex[0]->u;
 		out_tri1.t[2].v = t * (outside_tex[0]->v - inside_tex[0]->v) + inside_tex[0]->v;
 		out_tri1.t[2].w = t * (outside_tex[0]->w - inside_tex[0]->w) + inside_tex[0]->w;
@@ -309,7 +311,7 @@ int TriangleClipAgainstPlane(Vector plane_p, Vector plane_n, Triangle& in_tri, T
 		out_tri2.p[1] = out_tri1.p[2];
 		out_tri2.t[0] = *inside_tex[1];
 		out_tri2.t[1] = out_tri1.t[2];
-		out_tri2.p[2] = Vector::IntersectPlane(plane_p, plane_n, *inside_points[1], *outside_points[0], t);
+		out_tri2.p[2] = Vec4f::IntersectPlane(plane_p, plane_n, *inside_points[1], *outside_points[0], t);
 		out_tri2.t[2].u = t * (outside_tex[0]->u - inside_tex[1]->u) + inside_tex[1]->u;
 		out_tri2.t[2].v = t * (outside_tex[0]->v - inside_tex[1]->v) + inside_tex[1]->v;
 		out_tri2.t[2].w = t * (outside_tex[0]->w - inside_tex[1]->w) + inside_tex[1]->w;

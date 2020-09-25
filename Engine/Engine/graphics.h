@@ -12,16 +12,17 @@
 #include "types.h"
 #include "graphics_ui.h"
 #include "graphics_text2d.h"
-#include "vector.h"
+#include "utils_vector.h"
 #include "graphics_texture.h"
+#include "graphics_objects.h"
 #include <string>
 
-#define UINT32_RGB_CHANNEL   ((t_colour)0x00FFFFFF)
-#define UINT32_ALPHA_CHANNEL ((t_colour)0xFF000000)
-#define ALPHA_THRESHOLD      ((t_colour)0x0)
-
-#define VEC2_TO_XY(v) (v.x, v.y);
-#define VEC23_TO_XYZ(v) (v.x, v.y, v.z);
+#define UINT32_RGB_CHANNEL   ((t_colour)0x00FFFFFF)	///< Hex bitmap for rgb 
+													///< channel
+#define UINT32_ALPHA_CHANNEL ((t_colour)0xFF000000)	///< Hex bitmap for alpha  
+													///< channel
+#define ALPHA_THRESHOLD      ((t_colour)0x0)		///< Maximum alpha value 
+													///< for 100% transparency 
 
 class Text2D;
 struct GUIText;
@@ -53,22 +54,22 @@ public:
 	int getWidth() { return width; }
 	int getHeight() { return height; }
 
-	vec2f pxToScreen(const vec2& v);
-	vec2 screenToPx(const vec2f& v);
+	Vec2f pxToScreen(const Vec2& v);
+	Vec2 screenToPx(const Vec2f& v);
 
 	//void MultiplyMatrixVector(vector3& v1, vector3& v2, matrix4x4& m);  // inline
-	void drawLineP(vec2& v1, vec2& v2, t_colour colour);
-	void drawTriangleP(vec2& v1, vec2& v2, vec2& v3, const t_colour colour);
-	void fillTriangleP(vec2& v1, vec2& v2, vec2& v3, t_colour colour);
-	void fillTopFlatTriangleP(vec2& v1, vec2& v2, vec2& v3, t_colour colour);
-	void fillBottomFlatTriangleP(vec2& v1, vec2& v2, vec2& v3, t_colour colour);
+	void drawLineP(Vec2& v1, Vec2& v2, t_colour colour);
+	void drawTriangleP(Vec2& v1, Vec2& v2, Vec2& v3, const t_colour colour);
+	void fillTriangleP(Vec2& v1, Vec2& v2, Vec2& v3, t_colour colour);
+	void fillTopFlatTriangleP(Vec2& v1, Vec2& v2, Vec2& v3, t_colour colour);
+	void fillBottomFlatTriangleP(Vec2& v1, Vec2& v2, Vec2& v3, t_colour colour);
 
 public:
 	void clearScreen(t_colour colour);
 	void drawPointP(uint x, uint y, t_colour colour);
 	void drawPointPAlpha(const int x, const int y, const t_colour colour);
-	void drawRectP(vec2 v1, vec2 v2, t_colour colour);
-	void drawRect(const vec2f& vf1, const vec2f& vf2, t_colour colour);
+	void drawRectP(Vec2 v1, Vec2 v2, t_colour colour);
+	void drawRect(const Vec2f& vf1, const Vec2f& vf2, t_colour colour);
 
 	// 3D
 	void clearDepthBuffer();
@@ -80,16 +81,16 @@ public:
 	void rasterTexturedTriangles(
 		const Matrix4x4& projectionMatrix,
 		const Matrix4x4& matrixCamera,
-		const Vector& vCamera,
+		const Vec4f& vCamera,
 		const std::vector<Object*> meshes,
 		const t_colour* strokeColour = nullptr);
 
 public:
 	// GUI
 	Text2D* text2D;
-	void drawText(std::string str, vec2& v, const t_colour colour);
+	void drawText(std::string str, Vec2& v, const t_colour colour);
 	void drawText(const GUIText guiText);
-	const bool drawChar(const char c, vec2& v, const t_colour colour);
+	const bool drawChar(const char c, Vec2& v, const t_colour colour);
 
 	void drawGUIForm(GUIForm* guiForm);
 	void drawGUIMenu(GUIMenu* guiMenu);

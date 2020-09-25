@@ -1,7 +1,7 @@
 #include "types.h"
 #include "utils.h"
-#include "graphics_objects.h"
 #include "graphics.h"
+#include "graphics_objects.h"
 #include <algorithm>
 #include <list>
 #include <assert.h>
@@ -19,15 +19,15 @@ Graphics::~Graphics()
 /**
  * \brief Converts pixel space vector to a screen space vector.
  * 
- * \param v vec2 within bounds of pBuffer
- * \return Converted vec2f
+ * \param v Vec2 within bounds of pBuffer
+ * \return Converted Vec2f
  */
-vec2f Graphics::pxToScreen(const vec2& v)
+Vec2f Graphics::pxToScreen(const Vec2& v)
 {
 	assert((v.x >= 0) && (v.x <= width));
 	assert((v.y >= 0) && (v.y <= height));
 	assert((width != 0) && height != 0);
-	vec2f vf;
+	Vec2f vf;
 	vf.x = (float)v.x / (float)width;
 	vf.y = (float)v.y / (float)height;
 	return vf;
@@ -36,14 +36,14 @@ vec2f Graphics::pxToScreen(const vec2& v)
 /**
  * \brief Converts screen space vector to a pixel space vector.
  *
- * \param vf vec2f within bounds of 0.0f and 1.0f
- * \return Converted vec2
+ * \param vf Vec2f within bounds of 0.0f and 1.0f
+ * \return Converted Vec2
  */
-vec2 Graphics::screenToPx(const vec2f& vf)
+Vec2 Graphics::screenToPx(const Vec2f& vf)
 {
 	assert((vf.x >= 0.0f) && (vf.x <= 1.0f));
 	assert((vf.y >= 0.0f) && (vf.y <= 1.0f));
-	vec2 v;
+	Vec2 v;
 	v.x = vf.x * width;
 	v.y = vf.y * height;
 	return v;
@@ -55,11 +55,11 @@ vec2 Graphics::screenToPx(const vec2f& vf)
  * 
  * https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
  * 
- * \param v1 vec2 to start drawing from
- * \param v2 vec2 to finish drawing to
+ * \param v1 Vec2 to start drawing from
+ * \param v2 Vec2 to finish drawing to
  * \param colour colour to draw pixels in line
  */
-void Graphics::drawLineP(vec2& v1, vec2& v2, t_colour colour)
+void Graphics::drawLineP(Vec2& v1, Vec2& v2, t_colour colour)
 {
 	int dx, sx, dy, sy, err, e2;
 	dx = abs(v2.x - v1.x);
@@ -93,7 +93,7 @@ void Graphics::drawLineP(vec2& v1, vec2& v2, t_colour colour)
 }
 
 /**
- * \brief Iterates through pBuffer andsets pixels to a common colour.
+ * \brief Iterates through pBuffer and sets pixels to a common colour.
  * 
  * \param colour Colour to be drawn
  */
@@ -151,7 +151,7 @@ void Graphics::drawPointPAlpha(const int x, const int y, const t_colour colour)
  * \param v2 Top right of rectangle
  * \param colour Colour of which to fill the rectangle
  */
-void Graphics::drawRectP(vec2 v1, vec2 v2, t_colour colour)
+void Graphics::drawRectP(Vec2 v1, Vec2 v2, t_colour colour)
 {
 	clamp(&v1.x, 0, width);
 	clamp(&v2.x, 0, width);
@@ -171,7 +171,7 @@ void Graphics::drawRectP(vec2 v1, vec2 v2, t_colour colour)
 /**
  * \brief Draws outline of triangle using drawLineP function.
  */
-void Graphics::drawTriangleP(vec2& v1, vec2& v2, vec2& v3, const t_colour colour)
+void Graphics::drawTriangleP(Vec2& v1, Vec2& v2, Vec2& v3, const t_colour colour)
 {
 	drawLineP(v1, v2, colour);
 	drawLineP(v2, v3, colour);
@@ -188,7 +188,7 @@ void Graphics::drawTriangleP(vec2& v1, vec2& v2, vec2& v3, const t_colour colour
  * \see fillTopFlatTriangleP
  * \see fillBottomFlatTriangleP
  */
-void Graphics::fillTriangleP(vec2& v1, vec2& v2, vec2& v3, t_colour colour)
+void Graphics::fillTriangleP(Vec2& v1, Vec2& v2, Vec2& v3, t_colour colour)
 {
 	// Sort ascending by Y
 	if (v1.y > v2.y)
@@ -222,7 +222,7 @@ void Graphics::fillTriangleP(vec2& v1, vec2& v2, vec2& v3, t_colour colour)
 	else
 	{
 		// Split triangle into flat top and flat bottom
-		vec2 v4;
+		Vec2 v4;
 		v4.x = (int)(v1.x + ((float)(v2.y - v1.y) / (float)(v3.y - v1.y)) * (v3.x - v1.x));
 		v4.y = v2.y;
 		fillBottomFlatTriangleP(v1, v2, v4, colour);
@@ -235,7 +235,7 @@ void Graphics::fillTriangleP(vec2& v1, vec2& v2, vec2& v3, t_colour colour)
  * 
  * \see Called by fillTriangleP
  */
-void Graphics::fillTopFlatTriangleP(vec2& v1, vec2& v2, vec2& v3, t_colour colour)
+void Graphics::fillTopFlatTriangleP(Vec2& v1, Vec2& v2, Vec2& v3, t_colour colour)
 {
 	assert(v3.y - v1.y != 0);
 	assert(v3.y - v2.y != 0);
@@ -247,8 +247,8 @@ void Graphics::fillTopFlatTriangleP(vec2& v1, vec2& v2, vec2& v3, t_colour colou
 
 	for (int scanlineY = v3.y; scanlineY <= v1.y; scanlineY++)
 	{
-		vec2 v1_ = { curx1, scanlineY };
-		vec2 v2_ = { curx2, scanlineY };
+		Vec2 v1_ = { curx1, scanlineY };
+		Vec2 v2_ = { curx2, scanlineY };
 		drawLineP(v1_, v2_, colour);
 		curx1 += invslope1;
 		curx2 += invslope2;
@@ -260,7 +260,7 @@ void Graphics::fillTopFlatTriangleP(vec2& v1, vec2& v2, vec2& v3, t_colour colou
  *
  * \see Called by fillTriangleP
  */
-void Graphics::fillBottomFlatTriangleP(vec2& v1, vec2& v2, vec2& v3, t_colour colour)
+void Graphics::fillBottomFlatTriangleP(Vec2& v1, Vec2& v2, Vec2& v3, t_colour colour)
 {
 	assert(v2.y - v1.y != 0);
 	assert(v3.y - v1.y != 0);
@@ -272,8 +272,8 @@ void Graphics::fillBottomFlatTriangleP(vec2& v1, vec2& v2, vec2& v3, t_colour co
 
 	for (int scanlineY = v1.y; scanlineY >= v2.y; scanlineY--)
 	{
-		vec2 v1_ = { curx1, scanlineY };
-		vec2 v2_ = { curx2, scanlineY };
+		Vec2 v1_ = { curx1, scanlineY };
+		Vec2 v2_ = { curx2, scanlineY };
 		drawLineP(v1_, v2_, colour);
 		curx1 -= invslope1;
 		curx2 -= invslope2;
@@ -289,10 +289,10 @@ void Graphics::fillBottomFlatTriangleP(vec2& v1, vec2& v2, vec2& v3, t_colour co
  * \param vf2 Top-right coords
  * \param colour Colour to fill rectangle with
  */
-void Graphics::drawRect(const vec2f& vf1, const vec2f& vf2, t_colour colour)
+void Graphics::drawRect(const Vec2f& vf1, const Vec2f& vf2, t_colour colour)
 {
-	vec2 v1 = screenToPx(vf1);
-	vec2 v2 = screenToPx(vf2);
+	Vec2 v1 = screenToPx(vf1);
+	Vec2 v2 = screenToPx(vf2);
 	drawRectP(v1, v2, colour);
 }
 
@@ -514,7 +514,7 @@ void Graphics::drawTexturedTriangle(
 void Graphics::rasterTexturedTriangles(
 	const Matrix4x4& projectionMatrix,
 	const Matrix4x4& matrixCamera,
-	const Vector& vCamera,
+	const Vec4f& vCamera,
 	const std::vector<Object*> meshes,
 	const t_colour* strokeColour)
 {
@@ -534,24 +534,24 @@ void Graphics::rasterTexturedTriangles(
 			triTransformed.t[2] = tri.t[2];
 			triTransformed.parent = tri.parent;
 
-			Vector normal, line1, line2;
+			Vec4f normal, line1, line2;
 
 			line1 = triTransformed.p[1] - triTransformed.p[0];
 			line2 = triTransformed.p[2] - triTransformed.p[0];
 
-			normal = Vector::CrossProduct(line1, line2);
+			normal = Vec4f::CrossProduct(line1, line2);
 
 			normal.Normalise();
 
-			Vector vCameraRay;
+			Vec4f vCameraRay;
 			vCameraRay = triTransformed.p[0] - vCamera;
 
-			if (Vector::DotProduct(normal, vCameraRay) < 0.0f)
+			if (Vec4f::DotProduct(normal, vCameraRay) < 0.0f)
 			{
 				// Shade triangle
-				Vector vLightDir = { 0.0f, 1.0f, -1.0f };
+				Vec4f vLightDir = { 0.0f, 1.0f, -1.0f };
 				vLightDir.Normalise();
-				float dp = std::max(0.1f, Vector::DotProduct(vLightDir, normal));
+				float dp = std::max(0.1f, Vec4f::DotProduct(vLightDir, normal));
 				float triColour = ((dp * 255.0f) * 3.0f) / 5.0f;
 
 				triCamera.p[0] = matrixCamera * triTransformed.p[0];
@@ -601,7 +601,7 @@ void Graphics::rasterTexturedTriangles(
 					triProjected.p[1].x *= -1;
 					triProjected.p[2].x *= -1;
 
-					Vector vOffsetView = { 1, 1, 0 };
+					Vec4f vOffsetView = { 1, 1, 0 };
 					triProjected.p[0] += vOffsetView;
 					triProjected.p[1] += vOffsetView;
 					triProjected.p[2] += vOffsetView;
@@ -647,16 +647,16 @@ void Graphics::rasterTexturedTriangles(
 				newTriangles--;
 
 				// Clipping planes (borders of the screen)
-				Vector pTop(0.0f, 0.0f, 0.0f);
-				Vector pBottom(0.0f, (float)height - 1.0f, 0.0f);
-				Vector pLeft(0.0f, 0.0f, 0.0f);
-				Vector pRight((float)width - 1.0f, 0.0f, 0.0f);
+				Vec4f pTop(0.0f, 0.0f, 0.0f);
+				Vec4f pBottom(0.0f, (float)height - 1.0f, 0.0f);
+				Vec4f pLeft(0.0f, 0.0f, 0.0f);
+				Vec4f pRight((float)width - 1.0f, 0.0f, 0.0f);
 
 				// Normals (facing into screen boundary)
-				Vector nDownwards(0.0f, 1.0f, 0.0f);
-				Vector nUpwards(0.0f, -1.0f, 0.0f);
-				Vector nRight(1.0f, 0.0f, 0.0f);
-				Vector nLeft(-1.0f, 0.0f, 0.0f);
+				Vec4f nDownwards(0.0f, 1.0f, 0.0f);
+				Vec4f nUpwards(0.0f, -1.0f, 0.0f);
+				Vec4f nRight(1.0f, 0.0f, 0.0f);
+				Vec4f nLeft(-1.0f, 0.0f, 0.0f);
 
 				switch (p)
 				{
@@ -699,9 +699,9 @@ void Graphics::rasterTexturedTriangles(
 
 			if (strokeColour != nullptr)
 			{
-				vec2 v1_ = { t.p[0].x, t.p[0].y };
-				vec2 v2_ = { t.p[1].x, t.p[1].y };
-				vec2 v3_ = { t.p[2].x, t.p[2].y };
+				Vec2 v1_ = { t.p[0].x, t.p[0].y };
+				Vec2 v2_ = { t.p[1].x, t.p[1].y };
+				Vec2 v3_ = { t.p[2].x, t.p[2].y };
 				drawTriangleP(v1_, v2_, v3_, *strokeColour);
 			}
 		}
@@ -712,10 +712,10 @@ void Graphics::rasterTexturedTriangles(
  * \brief Draws solid colour string to pBuffer using drawChar.
  * 
  * \param str String to be drawn
- * \param v vec2 where x, y corresspond to bottom-left of area to draw to
+ * \param v Vec2 where x, y corresspond to bottom-left of area to draw to
  * \param colour Colour of text
  */
-void Graphics::drawText(std::string str, vec2& v, const t_colour colour)
+void Graphics::drawText(std::string str, Vec2& v, const t_colour colour)
 {
 	// assert ...
 
@@ -740,8 +740,8 @@ void Graphics::drawText(std::string str, vec2& v, const t_colour colour)
 void Graphics::drawText(const GUIText guiText)
 {
 	// assert ...
-	vec2 vPos = screenToPx(guiText.vf1);
-	vec2 vMax = screenToPx(guiText.vf2);
+	Vec2 vPos = screenToPx(guiText.vf1);
+	Vec2 vMax = screenToPx(guiText.vf2);
 
 	std::string txt;
 	if (guiText.pText == nullptr && guiText.sText.empty())
@@ -793,11 +793,11 @@ void Graphics::drawText(const GUIText guiText)
  * Only accepts globally accepted characters defined at text2D->acceptedChars.
  * 
  * \param c Character to be drawn
- * \param v vec2 where x, y corresspond to bottom-left of area to draw to
+ * \param v Vec2 where x, y corresspond to bottom-left of area to draw to
  * \param colour Colour of character
  * \return Returns true if character was drawn, otherwise false
  */
-const bool Graphics::drawChar(const char c, vec2& v, const t_colour colour)
+const bool Graphics::drawChar(const char c, Vec2& v, const t_colour colour)
 {
 	// assert ...
 
@@ -888,8 +888,8 @@ void Graphics::drawGUIMenu(GUIMenu* guiMenu)
  */
 void Graphics::drawGUIMenuSprite(GUISprite* guiSprite)
 {
-	vec2 v1 = screenToPx(guiSprite->vf1);
-	vec2 v2 = screenToPx(guiSprite->vf2);
+	Vec2 v1 = screenToPx(guiSprite->vf1);
+	Vec2 v2 = screenToPx(guiSprite->vf2);
 	
 	for (int j = v1.y; j < v2.y; j++)
 	{

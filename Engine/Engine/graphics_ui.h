@@ -7,13 +7,14 @@
  *********************************************************************/
 
 #pragma once
+#include "types.h"
 #include "utils.h"
+#include "utils_vector.h"
 #include "types.h"
 #include "graphics.h"
 #include "graphics_texture.h"
 #include <string>
 #include <vector>
-#include "types.h"
 
 class Graphics;
 struct GUIText;
@@ -38,8 +39,8 @@ enum class GUIState : int
 struct GUIRect
 {
 	GUIText* pGUITextInput = nullptr;	///< Pointer to a text input GUI component
-	vec2f vf1;							///< Bottom-left coords
-	vec2f vf2;							///< Top-right coords
+	Vec2f vf1;							///< Bottom-left coords
+	Vec2f vf2;							///< Top-right coords
 	t_colour colourPallete[3];			///< Contains 3-element array of colours 
 										///< corresponding to GUIState values
 	GUIState state = GUIState::Inactive;///< Current GUIState which corresponds
@@ -50,8 +51,8 @@ struct GUIRect
 
 struct GUIText
 {
-	vec2f vf1;							///< Bottom-left coords
-	vec2f vf2;							///< Top-right coords
+	Vec2f vf1;							///< Bottom-left coords
+	Vec2f vf2;							///< Top-right coords
 	std::string sText;					///< Static text string
 	std::string* pText = nullptr;		///< Pointer to text string
 	t_colour colourPallete[3];			///< Contains 3-element array of colours 
@@ -121,8 +122,8 @@ public:
 class GUISprite
 {
 public:
-	vec2f vf1;								///< Bottom-left coords
-	vec2f vf2;								///< Top-right coords
+	Vec2f vf1;								///< Bottom-left coords
+	Vec2f vf2;								///< Top-right coords
 	GUIState state = GUIState::Inactive;	///< Current GUIState which corresponds
 											///< to index of sprite to draw
 	Texture* pTexture = nullptr;			///< Pointer to the texture of sprite
@@ -133,6 +134,6 @@ public:
 		const float x1, const float y1, const float x2, const float y2);
 	~GUISprite();
 	const int getState();
-	const bool isClickable(const vec2f& vf);
+	const bool isClickable(const Vec2f& vf);
 	Texture* Tex();
 };

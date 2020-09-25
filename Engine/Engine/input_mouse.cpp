@@ -1,4 +1,4 @@
-#include "Mouse.h"
+#include "input_mouse.h"
 
 bool Mouse::leftIsPressed() const noexcept
 {

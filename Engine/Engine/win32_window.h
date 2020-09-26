@@ -21,6 +21,12 @@ inline const std::wstring ToWString(const char* chr)
 }
 
 
+inline const std::string WStringToString(const std::wstring wstr)
+{
+	return std::string(wstr.begin(), wstr.end());
+}
+
+
 class Window
 {
 private:
@@ -37,6 +43,7 @@ private:
 		static constexpr const wchar_t* wClassName = L"WindowClass";
 		static WindowClass wClass;
 		HINSTANCE hInstance;
+
 	};
 public:
 	Window(const char* name, int width, int height);
@@ -54,7 +61,80 @@ private:
 	int wWidth;
 	int wHeight;
 	std::unique_ptr<Win32Graphics> pGraphics;
+
+	const bool setIcon(std::wstring file, UINT type, const int cx, const int cy)
+	{
+		std::wstring filepath;
+		if (!getCurrentDirectoryPathW(filepath))
+		{
+			std::cerr 
+				<< "Error setting icon: " << WStringToString(filepath) 
+				<< " -> Could not get current directory path\n";
+			return false;
+		}
+
+		filepath += file;
+
+		HICON hicon;
+		hicon = reinterpret_cast<HICON>(LoadImage(nullptr, (LPCWSTR)filepath.c_str(), IMAGE_ICON, cx, cy, LR_LOADFROMFILE));
+		if (hicon == NULL)
+		{
+			return false;
+		}
+		if (SendMessage(hwnd, WM_SETICON, type, (LPARAM)hicon) != WM_SETICON)
+		{
+			return false;
+		}
+		return true;
+	}
+
+	const bool getCurrentDirectoryPathW(std::wstring& wpath)
+	{
+		DWORD len;
+		TCHAR path[MAX_PATH + 1] = L"";
+		len = GetCurrentDirectory(MAX_PATH, path);
+
+		if (len == 0)
+		{
+			std::cerr << "Error getting directory path -> "\
+				"GetCurrentDirectory returned 0\n";
+			return false;
+		}
+		if (len > MAX_PATH)
+		{
+			std::cerr << "Error getting directory path -> "\
+				"path length exceeded MAX_PATH\n";
+			return false;
+		}
+
+		wpath = std::wstring(&path[0]) + L"\\";
+		return true;
+	}
+
 public:
+	const bool getCurrentDirectoryPath(std::string& path)
+	{
+		std::wstring wpath;
+		if (getCurrentDirectoryPathW(wpath))
+		{
+			path = WStringToString(wpath);
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+public:
+	const bool setBigIcon(const char* file)
+	{
+		return setIcon(ToWString(file), ICON_BIG, 32, 32);
+	}
+	const bool setSmallIcon(const char* file)
+	{
+		return setIcon(ToWString(file), ICON_SMALL, 16, 16);
+	}
+
 	void setExitCode(const int code);
 	void setTitle(const std::string text);
 	bool setSize(const int x, const int y);

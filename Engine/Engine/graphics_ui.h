@@ -119,16 +119,14 @@ public:
  * 
  * \note Meant for GUIMenu implementation
  */
-class GUISprite
+struct GUISprite
 {
-public:
 	Vec2f vf1;								///< Bottom-left coords
 	Vec2f vf2;								///< Top-right coords
 	GUIState state = GUIState::Inactive;	///< Current GUIState which corresponds
 											///< to index of sprite to draw
 	Texture* pTexture = nullptr;			///< Pointer to the texture of sprite
 
-public:
 	GUISprite(
 		const char* filename, TextureType textureType, const int sectionWidth, const int sectionHeight,
 		const float x1, const float y1, const float x2, const float y2);

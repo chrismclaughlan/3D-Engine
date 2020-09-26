@@ -25,10 +25,10 @@ private:
 	/* Game States */
 	std::stack<std::pair<void (Game::*)(int), int>> sGameStates;
 	const bool gsPush(void (Game::* func)(int), int flag);
-	const bool gsSafePop();
 	const bool gsPop();
 	const bool gsPopUntil(void (Game::* func)(int), const int flag);
 	const bool gsUpdateCurrentFlag(const int flag);
+	const bool gsDestroyCurrentThenPush(void (Game::* func)(int), const int flag);
 
 	/* Game State functions */
 	void gsCloseApplication	(int flag);
@@ -37,6 +37,7 @@ private:
 	void gsGameMenu			(const int flag);
 
 	/* Game Methods */
+	bool glInitialised = false;
 	void glInit();
 	void glDestroy();
 	void glInput();

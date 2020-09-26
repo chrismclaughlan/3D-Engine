@@ -37,10 +37,6 @@ const int Window::getExitCode() noexcept
 
 Window::WindowClass::WindowClass() noexcept : hInstance(GetModuleHandle(NULL))
 {
-	HICON hicon = static_cast<HICON>(LoadImage(
-		hInstance, MAKEINTRESOURCE(APPICON), IMAGE_ICON, 32, 32, NULL));
-	HICON hiconsm = static_cast<HICON>(LoadImage(
-		hInstance, MAKEINTRESOURCE(APPICON), IMAGE_ICON, 16, 16, NULL));
 	WNDCLASSEX wc = {};
 	wc.cbSize = sizeof(wc);
 	wc.style = CS_OWNDC;
@@ -48,12 +44,12 @@ Window::WindowClass::WindowClass() noexcept : hInstance(GetModuleHandle(NULL))
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = GetHInstance();
-	wc.hIcon = hicon;
+	wc.hIcon = NULL;
 	wc.hCursor = NULL;
 	wc.hbrBackground = NULL;
 	wc.lpszMenuName = NULL;
 	wc.lpszClassName = GetName();
-	wc.hIconSm = hiconsm;
+	wc.hIconSm = NULL;
 
 	// TODO error handling
 	if (!RegisterClassEx(&wc))

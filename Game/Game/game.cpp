@@ -14,10 +14,11 @@
 /**
  * \brief Flags to determine game state behaviour.
  */
-#define FLAG_ERROR		(-1)
-#define FLAG_RUN		(0)
-#define FLAG_INIT		(1)
-#define FLAG_DESTROY	(2)
+#define FLAG_ERROR			(-1)
+#define FLAG_RUN			(0)
+#define FLAG_INIT			(1)
+#define FLAG_DESTROY		(2)
+#define FLAG_RESET			(3)
 
 
 /* Game Methods */
@@ -69,16 +70,35 @@ Game::~Game()
  */
 const int Game::run()
 {
-	int status = FLAG_RUN;
+	bool run = true;			///< Decides if game will run or close on 
+								///< startup
+	int status = FLAG_RUN;		///< Decides gsCloseApplication flag 
+								///< (used to flag error happened)
+	
+	if (!win.setBigIcon("Image10000.ico"))
+	{
+		status = FLAG_ERROR;	///< Set flag to error but keep game running
+	}
+	if (!win.setSmallIcon("Image10000.ico"))
+	{
+		status = FLAG_ERROR;	///< Set flag to erorr but keep game running
+	}
 
 	win.Gfx().text2D = new Text2D();
 	if (!win.Gfx().text2D->LoadTextMapFromBMP("Text2D_Font_252x108_monochrome.bmp"))
 	{
 		status = FLAG_ERROR;
+		run = false;			///< Game cannot continue without text2D
 	}
 
-	gsPush(&Game::gsCloseApplication, status);  // should be first in stack
-	gsPush(&Game::gsMainMenu, FLAG_INIT);
+	/* Initialise Bottom of Game Stack */
+	gsPush(&Game::gsCloseApplication, status);  // always first
+
+	/* Initialise Running Game States */
+	if (run)
+	{
+		gsPush(&Game::gsMainMenu, FLAG_INIT);
+	}
 
 	while (Window::processMessages())
 	{
@@ -127,40 +147,32 @@ const bool Game::gsPush(void (Game::* func)(int), int flag)
 }
 
 /**
- * \brief Only pops function from sGameStates if it's not empty.
- * 
- * \return Returns true if function popped from stack.
+ * \brief Tries to pop function from sGameStates.
+ *
+ * If successfully popped, the keyboard and mouse inputs
+ * are flushed to ensure fresh input for the new function.
+ *
+ * \return Returns true if function popped from sGameStates
  */
-const bool Game::gsSafePop()
+const bool Game::gsPop()
 {
 	if (sGameStates.empty())
 	{
 		return false;
 	}
 
-	sGameStates.pop();
-	return true;
-}
+	// Cleanup of top stack function
+	std::pair<void (Game::*)(int), int> current = sGameStates.top();
+	(this->*current.first)(FLAG_DESTROY);  // execute method
 
-/**
- * \brief Tries to pop function from sGameStates.
- * 
- * If successfully popped, the keyboard and mouse inputs 
- * are flushed to ensure fresh input for the new function.
- * 
- * \return Returns true if function popped from sGameStates
- */
-const bool Game::gsPop()
-{
-	if (!gsSafePop())
-	{
-		return false;
-	}
+	sGameStates.pop();  // remove from stack
 
 	win.keyboard.flush();
 	win.mouse.flush();
+
 	return true;
 }
+
 
 /**
  * \brief Pops game functions from sGameStates until it encounters the given 
@@ -193,8 +205,6 @@ const bool Game::gsPopUntil(void (Game::* func)(int), const int flag = FLAG_INIT
 	while (true)
 	{
 		std::pair<void (Game::*)(int), int> current = sGameStates.top();
-		void (Game::* currentState)(int) = current.first;
-		int currentFlag = current.second;
 
 		// Check if hit intended function
 		if (current.first == func)
@@ -207,11 +217,11 @@ const bool Game::gsPopUntil(void (Game::* func)(int), const int flag = FLAG_INIT
 			break;
 		}
 
-		// Cleanup of top stack function
-		(this->*currentState)(FLAG_DESTROY);  // execute method
+		//// Cleanup of top stack function
+		//(this->*currentState)(FLAG_DESTROY);  // execute method
 
 		// Pop top stack function
-		if (!gsSafePop())
+		if (!gsPop())
 		{
 			std::cerr << "Error popping game states -> End of stack hit: "\
 				"cannot hit intended element\n";
@@ -235,6 +245,7 @@ const bool Game::gsUpdateCurrentFlag(const int flag)
 {
 	if (sGameStates.empty())
 	{
+		std::cerr << "Error updating current flag -> Stack empty\n";
 		return false;
 	}
 
@@ -246,6 +257,31 @@ const bool Game::gsUpdateCurrentFlag(const int flag)
 	sGameStates.push({currentState, flag});
 
 	return true;
+}
+
+/**
+ * \brief Cleans up current game state and pushes new one onto stack.
+ *
+ * \return True if successful.
+ */
+const bool Game::gsDestroyCurrentThenPush(void (Game::* func)(int), const int flag = FLAG_INIT)
+{
+	if (sGameStates.empty())
+	{
+		std::cerr << "Error pop-pushing -> Stack empty\n";
+		return false;
+	}
+
+	// Get current game state
+	std::pair<void (Game::*)(int), int> current = sGameStates.top();
+	void (Game:: * currentState)(int) = current.first;
+	(this->*currentState)(FLAG_DESTROY);  // execute method
+
+	if (!gsPush(func, flag))
+	{
+		std::cerr << "Error pushing to game stack -> Stack full\n";
+		return false;
+	}
 }
 
 
@@ -273,7 +309,6 @@ void Game::gsCloseApplication(int flag)
 	case FLAG_DESTROY:
 	{
 		// Close application successfully
-		gsPop();
 	} break;
 	case FLAG_ERROR:
 	{
@@ -289,6 +324,11 @@ void Game::gsCloseApplication(int flag)
 			<< "Error at gsCloseApplpication -> Unknown flag:" << flag << "\n";
 		win.setExitCode(-1);
 	} break;
+	}
+
+	while (!sGameStates.empty())
+	{
+		sGameStates.pop();
 	}
 }
 
@@ -363,6 +403,12 @@ void Game::gsMainMenu(const int flag)
 		delete mainMenu;
 		mainMenu = nullptr;
 		return;
+	} break;
+	case FLAG_RESET:
+	{
+		std::cout << "gsMainMenu() -> FLAG_RESET\n";
+		mainMenu->resetButtons();
+		gsUpdateCurrentFlag(FLAG_RUN);
 	} break;
 	default:
 	{
@@ -439,6 +485,16 @@ void Game::gsGameMenu(const int flag)
  */
 void Game::glInit()
 {
+	// TODO if error occurs initialising: return error
+	//      and let glInitialised = false;
+
+	if (glInitialised)
+	{
+		// error game already running
+		// TODO overwrite? or return error
+		return;
+	}
+
 	// Reset everything incase overwriting existing game
 
 	if (guiChat != nullptr)
@@ -497,6 +553,8 @@ void Game::glInit()
 		(float)win.Gfx().getHeight() / (float)win.Gfx().getWidth(),
 		0.1f,
 		1000.0f);
+
+	glInitialised = true;
 }
 
 /**
@@ -504,6 +562,7 @@ void Game::glInit()
  */
 void Game::glDestroy()
 {
+	glInitialised = false;
 	std::cout << "Destroying game...\n";
 }
 
@@ -840,9 +899,10 @@ void Game::mMain()
 			{
 			case MenuAction::Start:
 			{
-				delete mainMenu;
-				mainMenu = nullptr;
-				gsPush(&Game::gsGame, FLAG_INIT);
+				gsDestroyCurrentThenPush(&Game::gsGame);
+				//delete mainMenu;
+				//mainMenu = nullptr;
+				//gsPush(&Game::gsGame, FLAG_INIT);
 			} return;
 			case MenuAction::Quit:
 			{
@@ -850,9 +910,19 @@ void Game::mMain()
 			} return;
 			case MenuAction::Continue:
 			{
-				delete mainMenu;
-				mainMenu = nullptr;
-				gsPush(&Game::gsGame, FLAG_RUN);
+				if (!glInitialised)
+				{
+					std::cerr << "Error: cannot 'Continue' "\
+						"-> Game is not initialised\n";
+					gsUpdateCurrentFlag(FLAG_RESET);
+				}
+				else
+				{
+					gsDestroyCurrentThenPush(&Game::gsGame, FLAG_RUN);
+					//delete mainMenu;
+					//mainMenu = nullptr;
+					//gsPush(&Game::gsGame, FLAG_RUN);
+				}
 			} return;
 			default:
 			{
@@ -891,8 +961,8 @@ void Game::mGame()
 		{
 			if (event.isReleased())
 			{
-				delete guiGameMenu;
-				guiGameMenu = nullptr;
+				//delete guiGameMenu;
+				//guiGameMenu = nullptr;
 				gsPop();
 				return;
 			}
@@ -939,8 +1009,8 @@ void Game::mGame()
 			if (t->sText == "Continue")  // TODO enum?
 			{
 				//resetGUIForm(*guiGameMenu);
-				delete guiGameMenu;
-				guiGameMenu = nullptr;
+				//delete guiGameMenu;
+				//guiGameMenu = nullptr;
 				gsPop();
 				return;
 			}

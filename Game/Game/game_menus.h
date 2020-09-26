@@ -29,4 +29,11 @@ struct MainMenu
 
 	MainMenu();
 	~MainMenu();
+	void resetButtons(GUIState newState = GUIState::Inactive)
+	{
+		for (auto b : buttons)
+		{
+			b->sprite->state = newState;
+		}
+	}
 };

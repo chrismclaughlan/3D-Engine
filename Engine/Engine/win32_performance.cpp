@@ -1,5 +1,7 @@
 #include "win32_performance.h"
-#include "time.h"
+
+const unsigned int SECONDS_MULTIPLYER = 1000000;
+const unsigned int MILISECONDS_MULTIPLYER = 1000;
 
 void Performance::Update()
 {
@@ -8,7 +10,7 @@ void Performance::Update()
 	QueryPerformanceCounter(&endTime);
 	elapsedMicroseconds.QuadPart = endTime.QuadPart - startTime.QuadPart;
 
-	elapsedMicroseconds.QuadPart *= TIME::SECONDS_MULTIPLYER;
+	elapsedMicroseconds.QuadPart *= SECONDS_MULTIPLYER;
 	elapsedMicroseconds.QuadPart /= frequency.QuadPart;
 
 	QueryPerformanceFrequency(&frequency);
@@ -22,7 +24,7 @@ void Performance::LimitFps(int target)
 	{
 		std::this_thread::sleep_for(
 			std::chrono::milliseconds(
-			(int)TIME::MILISECONDS_MULTIPLYER / target
+			(int)MILISECONDS_MULTIPLYER / target
 				)
 			);
 		QueryPerformanceCounter(&elapsedMicroseconds);
@@ -33,7 +35,7 @@ const float Performance::getFps() const noexcept
 {
 	if (elapsedMicroseconds.QuadPart > 0)
 	{
-		return (float)(TIME::SECONDS_MULTIPLYER / elapsedMicroseconds.QuadPart);
+		return (float)(SECONDS_MULTIPLYER / elapsedMicroseconds.QuadPart);
 	}
 	else
 	{
@@ -46,7 +48,7 @@ const bool Performance::hasTimePassed(float seconds) noexcept
 	if (elapsedMicroseconds.QuadPart > 0)
 	{
 		// check if second has passed
-		if (elapsedMicrosecondsCarry.QuadPart > TIME::SECONDS_MULTIPLYER * seconds)
+		if (elapsedMicrosecondsCarry.QuadPart > SECONDS_MULTIPLYER * seconds)
 		{
 			elapsedMicrosecondsCarry.QuadPart = 0;
 			return true;

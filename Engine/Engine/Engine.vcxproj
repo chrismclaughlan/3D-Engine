@@ -29,7 +29,6 @@
     <ClCompile Include="graphics_objects.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="utils_vector.cpp" />
-    <ClCompile Include="win32_stopwatch.cpp" />
     <ClCompile Include="win32_performance.cpp" />
     <ClCompile Include="win32_nclient.cpp" />
     <ClCompile Include="win32_graphics.cpp" />
@@ -50,10 +49,8 @@
     <ClInclude Include="graphics_objects.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="graphics_text2d.h" />
-    <ClInclude Include="time.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="utils_vector.h" />
-    <ClInclude Include="win32_stopwatch.h" />
     <ClInclude Include="types.h" />
     <ClInclude Include="win32_graphics.h" />
     <ClInclude Include="win32_nclient.h" />

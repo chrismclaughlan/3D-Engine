@@ -20,8 +20,11 @@ private:
 	const Vec4f vUp;
 	Vec4f vCamera;
 	Vec4f vLookDir;
+	Vec4f vLookDirLeft;
 	Vec4f vForward;
+	Vec4f vLeft;
 	Vec4f vTarget;
+	const Vec4f vTargetLeft = { 1.0f, 0.0f, 0.0f };
 	Matrix4x4 mCameraRotation;
 	Matrix4x4 mCamera;
 
@@ -48,16 +51,16 @@ public:
 	void updatePosition(const float dt)
 	{
 		const float fSpeed = dt * baseMovementSpeed;
-		vTarget = { 0.0f, 0.0f, 1.0f };
-		vForward = vLookDir * fSpeed;
-
-		vCamera += moveDirZ * vForward;		    // forward / backward
-		//fYaw += moveDirX * baseTurningSpeed;	// left / right
-		vCamera.x += moveDirX * fSpeed;  // TODO broken (fixed on x-axis)
-		vCamera.y += moveDirY * fSpeed;			// up / down
+		vTarget		= { 0.0f, 0.0f, 1.0f };
+		vForward	= vLookDir * fSpeed;
+		vLeft		= vLookDirLeft * fSpeed;
+		vCamera		+= moveDirZ * vForward;		    // forward / backward
+		vCamera		+= moveDirX * vLeft;			// left / right
+		vCamera.y	+= moveDirY * fSpeed;			// up / down
 		mCameraRotation.MakeRotationX(fPitch);
 		mCameraRotation.MakeRotationY(fYaw);
 		vLookDir = mCameraRotation * vTarget;
+		vLookDirLeft = mCameraRotation * vTargetLeft;
 		vTarget = vCamera + vLookDir;
 		mCamera.MakePointAt(vCamera, vTarget, vUp);
 		mCamera.MakeQuickInverse();

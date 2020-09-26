@@ -9,19 +9,14 @@
 
 #include "exception.h"
 
-inline const std::wstring ToWString(const std::string str)
+
+inline const std::wstring stringToWString(const std::string str)
 {
 	return std::wstring(str.begin(), str.end());
 }
 
-inline const std::wstring ToWString(const char* chr)
-{
-	const std::string str = std::string(chr);
-	return std::wstring(str.begin(), str.end());
-}
 
-
-inline const std::string WStringToString(const std::wstring wstr)
+inline const std::string wStringToString(const std::wstring wstr)
 {
 	return std::string(wstr.begin(), wstr.end());
 }
@@ -68,7 +63,7 @@ private:
 		if (!getCurrentDirectoryPathW(filepath))
 		{
 			std::cerr 
-				<< "Error setting icon: " << WStringToString(filepath) 
+				<< "Error setting icon: " << wStringToString(filepath) 
 				<< " -> Could not get current directory path\n";
 			return false;
 		}
@@ -117,7 +112,7 @@ public:
 		std::wstring wpath;
 		if (getCurrentDirectoryPathW(wpath))
 		{
-			path = WStringToString(wpath);
+			path = wStringToString(wpath);
 		}
 		else
 		{
@@ -125,14 +120,13 @@ public:
 		}
 	}
 
-public:
 	const bool setBigIcon(const char* file)
 	{
-		return setIcon(ToWString(file), ICON_BIG, 32, 32);
+		return setIcon(stringToWString(file), ICON_BIG, 32, 32);
 	}
 	const bool setSmallIcon(const char* file)
 	{
-		return setIcon(ToWString(file), ICON_SMALL, 16, 16);
+		return setIcon(stringToWString(file), ICON_SMALL, 16, 16);
 	}
 
 	void setExitCode(const int code);
@@ -170,4 +164,22 @@ public:
 	}
 private:
 	FILE* fConsole;
+
+	void initFrameTime()
+	{
+		QueryPerformanceCounter(&lastCounter);
+		QueryPerformanceFrequency(&frequencyCounter);
+	}
+	LARGE_INTEGER lastCounter;
+	LARGE_INTEGER currentCounter;
+	LARGE_INTEGER frequencyCounter;
+public:
+	/* ---------- Performance ---------- */
+	float lastDT =  0.016667f;
+	void updateFrameTime()
+	{
+		QueryPerformanceCounter(&currentCounter);
+		lastDT = (float)(currentCounter.QuadPart - lastCounter.QuadPart) / (float)frequencyCounter.QuadPart;
+		lastCounter = currentCounter;
+	}
 };

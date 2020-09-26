@@ -4,6 +4,7 @@
 #include "Engine/utils_vector.h"
 #include "game.h"
 #include <list>
+#include <cmath>  // round() fps
 
 /**
  * \brief Defines the maximum number of game states allowed in the game state
@@ -97,6 +98,7 @@ const int Game::run()
 	/* Initialise Running Game States */
 	if (run)
 	{
+		//win.initFrameTime();
 		gsPush(&Game::gsMainMenu, FLAG_INIT);
 	}
 
@@ -116,6 +118,9 @@ const int Game::run()
 
 		/* ---------- Draw to window ---------- */
 		win.Gfx().Render();  // last
+
+		/* --------- Update Frame time -------- */
+		win.updateFrameTime();
 	}
 
 	return Window::getExitCode();
@@ -282,6 +287,8 @@ const bool Game::gsDestroyCurrentThenPush(void (Game::* func)(int), const int fl
 		std::cerr << "Error pushing to game stack -> Stack full\n";
 		return false;
 	}
+
+	return true;
 }
 
 
@@ -773,7 +780,7 @@ void Game::glInput()
 void Game::glSimulate()
 {
 	// Camera
-	player.updatePosition();
+	player.updatePosition(win.lastDT);
 
 	// Update world objects
 	//fTheta += 0.001f;  // rotate world
@@ -802,7 +809,7 @@ void Game::glRender()
 		player.getMCamera(), player.getVCamera(),
 		objects);
 
-	//win.Gfx().DrawText(*userTextBuffer, 100, 100, 0xffffff);  // test
+	win.Gfx().drawFPS(1.0f / win.lastDT, 0x0fffff);
 
 	win.Gfx().drawGUIForm(guiChat);
 

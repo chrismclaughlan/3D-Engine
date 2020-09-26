@@ -19,9 +19,6 @@
     <ClCompile Include="win32_nclient.cpp">
       <Filter>Win32\Network\NClient</Filter>
     </ClCompile>
-    <ClCompile Include="win32_performance.cpp">
-      <Filter>Win32\Performance</Filter>
-    </ClCompile>
     <ClCompile Include="win32_nserver.cpp">
       <Filter>Win32\Network\NServer</Filter>
     </ClCompile>
@@ -59,9 +56,6 @@
     <ClInclude Include="hwindows.h">
       <Filter>Win32</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
     <ClInclude Include="exception.h">
       <Filter>Exception</Filter>
     </ClInclude>
@@ -70,9 +64,6 @@
     </ClInclude>
     <ClInclude Include="win32_graphics.h">
       <Filter>Win32\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="win32_performance.h">
-      <Filter>Win32\Performance</Filter>
     </ClInclude>
     <ClInclude Include="win32_network.h">
       <Filter>Win32\Network</Filter>
@@ -118,9 +109,6 @@
     <Filter Include="Win32">
       <UniqueIdentifier>{79ed8b0a-bc77-4318-87d2-460bd399e13d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resources">
-      <UniqueIdentifier>{e8597dbe-44fa-4c65-851b-0c6f7f97c091}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Input">
       <UniqueIdentifier>{b3bea71c-8ab5-4fa0-a23c-12ec67442db7}</UniqueIdentifier>
     </Filter>
@@ -132,9 +120,6 @@
     </Filter>
     <Filter Include="Win32\Graphics">
       <UniqueIdentifier>{a85f8a33-258d-4cbf-838c-aa74fddb2bca}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Win32\Performance">
-      <UniqueIdentifier>{a646f4ee-0bcd-4349-be3a-803dabc1b58c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Win32\Network">
       <UniqueIdentifier>{a326ce3c-264f-432e-975b-3d115684717c}</UniqueIdentifier>
@@ -151,15 +136,5 @@
     <Filter Include="Utils">
       <UniqueIdentifier>{f667dcce-877d-4a44-9fcf-db750714bd3b}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="AppIcon.ico">
-      <Filter>Resources</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="resource.rc">
-      <Filter>Resources</Filter>
-    </ResourceCompile>
   </ItemGroup>
 </Project>

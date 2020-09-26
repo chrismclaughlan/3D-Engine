@@ -1,5 +1,4 @@
 #include "win32_window.h"  // first
-#include "resource.h"
 #include "input_keyboard.h"
 #include <windowsX.h>  // mouse movement
 #include <assert.h>
@@ -136,6 +135,8 @@ Window::Window(const char* name, int width, int height)
 	pGraphics = std::make_unique<Win32Graphics>(hwnd, hdc);
 
 	ShowWindow(hwnd, SW_SHOWDEFAULT);
+
+	initFrameTime();
 }
 
 Window::~Window()
@@ -150,7 +151,7 @@ void Window::setExitCode(const int code)
 
 void Window::setTitle(const std::string text)
 {
-	const std::wstring title = wName + ToWString(": " + text);
+	const std::wstring title = wName + stringToWString(": " + text);
 	SetWindowTextW(hwnd, title.c_str());
 }
 

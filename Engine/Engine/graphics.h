@@ -28,7 +28,7 @@ class Text2D;
 struct GUIText;
 class GUIForm;
 class GUIMenu;
-class GUISprite;
+struct GUISprite;
 
 /**
  * \brief Graphics class to handle drawing to screen buffers.
@@ -65,6 +65,8 @@ public:
 	void fillBottomFlatTriangleP(Vec2& v1, Vec2& v2, Vec2& v3, colour_t colour);
 
 public:
+	void drawFPS(const float fFPS, const colour_t colour);
+
 	void clearScreen(colour_t colour);
 	void drawPointP(uint x, uint y, colour_t colour);
 	void drawPointPAlpha(const int x, const int y, const colour_t colour);

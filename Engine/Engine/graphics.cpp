@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <list>
 #include <assert.h>
+#include <sstream>  // round() fps
+#include <iomanip>  // round() fps
 
 
 Graphics::~Graphics()
@@ -24,8 +26,8 @@ Graphics::~Graphics()
  */
 Vec2f Graphics::pxToScreen(const Vec2& v)
 {
-	assert((v.x >= 0) && (v.x <= width));
-	assert((v.y >= 0) && (v.y <= height));
+	//assert((v.x >= 0) && (v.x <= width));
+	//assert((v.y >= 0) && (v.y <= height));
 	assert((width != 0) && height != 0);
 	Vec2f vf;
 	vf.x = (float)v.x / (float)width;
@@ -41,8 +43,8 @@ Vec2f Graphics::pxToScreen(const Vec2& v)
  */
 Vec2 Graphics::screenToPx(const Vec2f& vf)
 {
-	assert((vf.x >= 0.0f) && (vf.x <= 1.0f));
-	assert((vf.y >= 0.0f) && (vf.y <= 1.0f));
+	//assert((vf.x >= 0.0f) && (vf.x <= 1.0f));
+	//assert((vf.y >= 0.0f) && (vf.y <= 1.0f));
 	Vec2 v;
 	v.x = (int)(vf.x * (float)width);
 	v.y = (int)(vf.y * (float)height);
@@ -91,6 +93,21 @@ void Graphics::drawLineP(Vec2& v1, Vec2& v2, colour_t colour)
 		}
 	}
 }
+
+
+void Graphics::drawFPS(const float fFPS, const colour_t colour)
+{
+	Vec2 v;
+	const int textHeight = 20;  // TODO
+
+	v.x = 0; v.y = height - textHeight;
+
+	std::stringstream streamFPS;
+	streamFPS << std::fixed << std::setprecision(2) << fFPS;
+
+	drawText("FPS: " + streamFPS.str(), v, colour);
+}
+
 
 /**
  * \brief Iterates through pBuffer and sets pixels to a common colour.

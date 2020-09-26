@@ -14,8 +14,8 @@ public:  // temp
 
 private:
 	// Camera control
-	float turningSpeed = 0.005f;
-	float movementSpeed = 0.005f;
+	float baseTurningSpeed = 0.005f;
+	float baseMovementSpeed = 5.0f;
 
 	const Vec4f vUp;
 	Vec4f vCamera;
@@ -45,14 +45,16 @@ public:
 		vLookDir.setZero();
 	}
 
-	void updatePosition()
+	void updatePosition(const float dt)
 	{
+		const float fSpeed = dt * baseMovementSpeed;
 		vTarget = { 0.0f, 0.0f, 1.0f };
-		vForward = vLookDir * movementSpeed;
+		vForward = vLookDir * fSpeed;
+
 		vCamera += moveDirZ * vForward;		    // forward / backward
-		//fYaw += moveDirX * turningSpeed;        // left / right
-		vCamera.x += moveDirX * movementSpeed;
-		vCamera.y += moveDirY * movementSpeed;  // up / down
+		//fYaw += moveDirX * baseTurningSpeed;	// left / right
+		vCamera.x += moveDirX * fSpeed;  // TODO broken (fixed on x-axis)
+		vCamera.y += moveDirY * fSpeed;			// up / down
 		mCameraRotation.MakeRotationX(fPitch);
 		mCameraRotation.MakeRotationY(fYaw);
 		vLookDir = mCameraRotation * vTarget;
@@ -62,23 +64,23 @@ public:
 	}
 
 	// Movement
-	void moveForward(const bool b = true) { b ? moveDirZ += 1.0f : moveDirZ = 0.0f; };
-	void moveBackward(const bool b = true) { b ? moveDirZ -= 1.0f : moveDirZ = 0.0f; };
-	void moveLeft(const bool b = true) { b ? moveDirX += 1.0f : moveDirX = 0.0f; };
-	void moveRight(const bool b = true) { b ? moveDirX -= 1.0f : moveDirX = 0.0f; };
-	void moveUpward(const bool b = true) { b ? moveDirY += 1.0f : moveDirY = 0.0f; };
-	void moveDownward(const bool b = true) { b ? moveDirY -= 1.0f : moveDirY = 0.0f; };
+	void moveForward	(const bool b = true) { b ? moveDirZ += 1.0f : moveDirZ = 0.0f; };
+	void moveBackward	(const bool b = true) { b ? moveDirZ -= 1.0f : moveDirZ = 0.0f; };
+	void moveLeft		(const bool b = true) { b ? moveDirX += 1.0f : moveDirX = 0.0f; };
+	void moveRight		(const bool b = true) { b ? moveDirX -= 1.0f : moveDirX = 0.0f; };
+	void moveUpward		(const bool b = true) { b ? moveDirY += 1.0f : moveDirY = 0.0f; };
+	void moveDownward	(const bool b = true) { b ? moveDirY -= 1.0f : moveDirY = 0.0f; };
 
 	void lookX(const float d)
 	{
-		fYaw += d * turningSpeed;
+		fYaw += d * baseTurningSpeed;
 	}
 	
 	void lookY(const float d)
 	{
 		float maxPitch = 1.5f;
 
-		fPitch -= d * turningSpeed;
+		fPitch -= d * baseTurningSpeed;
 
 		if (fPitch > maxPitch)
 		{

@@ -913,7 +913,20 @@ void Graphics::drawGUIMenuSprite(GUISprite* guiSprite)
 		{
 			const float x_ = normalise((float)i, (float)v1.x, (float)v2.x);
 			const float y_ = normalise((float)j, (float)v1.y, (float)v2.y);
-			drawPointPAlpha(i, j, ((Texture*)guiSprite->Tex())->lookUp(x_, y_, guiSprite->getState()));
+
+			Texture* tex = (Texture*)guiSprite->Tex();
+			switch (tex->textureType)
+			{
+			case TextureType::RGB:
+				drawPointP(i, j, (tex->lookUp(x_, y_, guiSprite->getState())));
+				break;
+			case TextureType::RGBA:
+				drawPointPAlpha(i, j, (tex->lookUp(x_, y_, guiSprite->getState())));
+				break;
+			default:
+				//std::cerr << "Error at drawGUIMenuSprite() -> Unknown texture type\n";
+				return;
+			}
 		}
 	}
 }

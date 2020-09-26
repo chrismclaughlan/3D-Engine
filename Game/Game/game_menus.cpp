@@ -38,6 +38,8 @@ MainMenu::MainMenu()
 	buttons.push_back(b1);
 	buttons.push_back(b2);
 	buttons.push_back(b3);
+
+	background = new GUISprite("ExampleTitleSprite.bmp", TextureType::RGB, 640, 360, 0.0f, 0.0f, 1.0f, 1.0f);
 }
 
 MainMenu::~MainMenu()
@@ -51,4 +53,10 @@ MainMenu::~MainMenu()
 		}
 	}
 	buttons.clear();
+
+	if (background != nullptr)
+	{
+		delete background;
+		background = nullptr;
+	}
 }

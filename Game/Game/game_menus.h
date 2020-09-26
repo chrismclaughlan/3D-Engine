@@ -25,6 +25,7 @@ struct MenuButton
 
 struct MainMenu
 {
+	GUISprite* background = nullptr;
 	std::vector<MenuButton*> buttons;
 
 	MainMenu();

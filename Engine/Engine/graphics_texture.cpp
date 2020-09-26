@@ -167,9 +167,9 @@ colour_t Texture::lookUp(float x, float y, int cycleX, int cycleY) const
 		xInd = (int)(x * (float)width / scale);
 		yInd = (int)(y * (float)height * scale);
 
-		xInd += 1;
+		//xInd += 1;
 
-		xInd = height - xInd;  // flip
+		//xInd = height - xInd;  // flip
 
 		uint8* d = (uint8*)data;
 

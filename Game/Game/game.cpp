@@ -76,11 +76,11 @@ const int Game::run()
 	int status = FLAG_RUN;		///< Decides gsCloseApplication flag 
 								///< (used to flag error happened)
 	
-	if (!win.setBigIcon("Image10000.ico"))
+	if (!win.setBigIcon("AppIcon.ico"))
 	{
 		status = FLAG_ERROR;	///< Set flag to error but keep game running
 	}
-	if (!win.setSmallIcon("Image10000.ico"))
+	if (!win.setSmallIcon("AppIcon.ico"))
 	{
 		status = FLAG_ERROR;	///< Set flag to erorr but keep game running
 	}
@@ -941,12 +941,16 @@ void Game::mMain()
 
 	/* ---------- Render ---------- */
 
-	win.Gfx().clearScreen(0xCDCDCD);
+	win.Gfx().clearScreen(0xff0000);
+
+	win.Gfx().drawGUIMenuSprite(mainMenu->background);
 
 	for (auto b : mainMenu->buttons)
 	{
 		win.Gfx().drawGUIMenuSprite(b->sprite);
 	}
+
+	win.Gfx().drawFPS(1.0f / win.lastDT, 0x0fffff);
 }
 
 /**

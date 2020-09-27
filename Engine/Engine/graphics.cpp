@@ -21,6 +21,36 @@ Graphics::~Graphics()
 	destroySprites();
 }
 
+void Graphics::destroySprites()
+{
+	for (auto s : sprites)
+	{
+		delete s;
+		s = nullptr;
+	}
+	sprites.clear();
+}
+
+void Graphics::drawSprites()
+{
+	for (auto s : sprites)
+	{
+		s->draw();
+	}
+}
+
+inline int Graphics::screenToPx(const float a, const float b)
+{
+	assert(a >= 0.0f && a <= 1.0f);
+	return (int)(a * b);
+}
+
+inline float Graphics::pxToScreen(const int a, const int b)
+{
+	assert(b != 0);
+	return (float)a / (float)b;
+}
+
 /**
  * \brief Converts pixel space vector to a screen space vector.
  * 
@@ -953,6 +983,28 @@ void Graphics::drawGUIMenuSprite(GUISprite* guiSprite)
 
 /* Sprites */
 
+Graphics::Sprite::Sprite(Graphics& parent, const char* filename, TextureType textureType, const int sectionWidth, const int sectionHeight,
+	const Vec2f vf1, const Vec2f vf2) : parent(parent), vf1(vf1), vf2(vf2)
+{
+	pTexture = new Texture(textureType, filename, sectionWidth, sectionHeight);
+	updateSize();
+}
+
+
+Graphics::Sprite::~Sprite()
+{
+	if (pTexture != nullptr)
+	{
+		delete pTexture;
+		pTexture = nullptr;
+	}
+	if (pData != nullptr)
+	{
+		delete pData;
+		pData = nullptr;
+	}
+}
+
 void Graphics::Sprite::updateSize()
 {
 	if (pTexture == nullptr)
@@ -982,5 +1034,37 @@ void Graphics::Sprite::updateSize()
 			const float y_ = normalise((float)y, 0.0f, (float)h);
 			reinterpret_cast<colour_t*>(pData)[x + (y * w)] = (colour_t)pTexture->lookUp(x_, y_);
 		}
+	}
+}
+
+
+void Graphics::Sprite::draw()
+{
+	Vec2 v1 = parent.screenToPx(vf1);
+	Vec2 v2 = parent.screenToPx(vf2);
+	clamp(&v1.x, 0, parent.width);
+	clamp(&v2.x, 0, parent.width);
+	clamp(&v1.y, 0, parent.height);
+	clamp(&v2.y, 0, parent.height);
+	const uint bufferWidth = v2.x - v1.x;
+
+	colour_t* pixel = (colour_t*)parent.pBuffer;
+	switch (pTexture->textureType)
+	{
+	case TextureType::RGB:
+	{
+		for (int y = v1.y; y < v2.y; y++)
+			for (int x = v1.x; x < v2.x; x++)
+				parent.drawPointP(x, y, reinterpret_cast<colour_t*>(pData)[(x - v1.x) + ((y - v1.y) * bufferWidth)]);
+	} break;
+	case TextureType::RGBA:
+	{
+		for (int y = v1.y; y < v2.y; y++)
+			for (int x = v1.x; x < v2.x; x++)
+				parent.drawPointPAlpha(x, y, reinterpret_cast<colour_t*>(pData)[(x - v1.x) + ((y - v1.y) * bufferWidth)]);
+	} break;
+	default:
+		//error
+		return;
 	}
 }

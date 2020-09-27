@@ -13,9 +13,9 @@ int WINAPI wWinMain
 	catch (const Exception& e)
 	{
 #ifdef _DEBUG
-		e.logError();
+		e.printError();  // broken fix
 #else
-		e.printError();
+		e.logError();
 #endif
 		Sleep(5000);
 	}

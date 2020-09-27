@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <assert.h>
+#include "exception.h"  // test
 
 #define HEADER_SIZE_24_BIT_BMP (54)
 #define HEADER_SIZE_32_BIT_BMP (66)
@@ -84,6 +85,7 @@ bool Texture::loadTextureFromBMP(const char* filename, const int sectionWidth, c
 		std::cerr << "Error reading " << filename << "\n";
 		delete[] info;
 		info = nullptr;
+		//THROW_EXCEPTION("Texture", "Wrong TextureType");
 		return false;
 	}
 

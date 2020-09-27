@@ -2,7 +2,7 @@
 
 void Exception::printError() const
 {
-	fprintf(stdout, what());
+	fprintf(stderr, what());
 	//if (getLine() > 0 && getFile() != nullptr)
 	//{
 	//	fprintf(stdout, "[%s] %s\n[LINE] %d\n[FILE] %s\n", getType(), getErrorString(), getLine(), getFile());
@@ -15,11 +15,11 @@ void Exception::printError() const
 
 void Exception::logError() const
 {
-	errno_t err = freopen_s((FILE**)&fErrorLog, nErrorLogFile, "w", stderr);
+	errno_t err = freopen_s((FILE**)&fErrorLog, nErrorLogFile, "w", stdout);
 
 	if (NULL != err || fErrorLog == NULL)
 	{
-		fprintf(stdout, "Could not log error in %s\n", nErrorLogFile);
+		fprintf(stderr, "Could not log error in %s\n", nErrorLogFile);
 		return;
 	}
 
@@ -30,5 +30,5 @@ void Exception::logError() const
 	std::string s = "type " + std::string(nErrorLogFile);
 	system(s.c_str());
 
-	fprintf(stdout, "Successfully logged error in %s\n", nErrorLogFile);
+	fprintf(stderr, "Successfully logged error in %s\n", nErrorLogFile);
 }

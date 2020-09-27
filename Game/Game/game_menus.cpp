@@ -18,28 +18,35 @@ MenuButton::~MenuButton()
 
 /* Main Menu */
 
-MainMenu::MainMenu()
+MainMenu::MainMenu(Graphics& gfx)
 {
 	MenuButton* b1 = new MenuButton(
 		new GUISprite("MainMenu_NewGame.bmp", 
-			TextureType::RGBA, 256, 128, 0.4f, 0.560f, 0.6f, 0.640f),
+			TextureType::RGBA, 256, 128, 
+			0.43f, 0.560f, 
+			0.57f, 0.640f),
 		MenuAction::Start);
 
 	MenuButton* b2 = new MenuButton(
 		new GUISprite("MainMenu_Continue.bmp", 
-			TextureType::RGBA, 256, 128, 0.4f, 0.460f, 0.6f, 0.540f),
+			TextureType::RGBA, 256, 128, 
+			0.43f, 0.460f, 
+			0.57f, 0.540f),
 		MenuAction::Continue);
 
 	MenuButton* b3 = new MenuButton(
 		new GUISprite("MainMenu_Quit.bmp", 
-			TextureType::RGBA, 256, 128, 0.4f, 0.360f, 0.6f, 0.440f), 
+			TextureType::RGBA, 256, 128, 
+			0.43f, 0.360f,
+			0.57f, 0.440f), 
 		MenuAction::Quit);
 
 	buttons.push_back(b1);
 	buttons.push_back(b2);
 	buttons.push_back(b3);
 
-	background = new GUISprite("ExampleTitleSprite.bmp", TextureType::RGB, 640, 360, 0.0f, 0.0f, 1.0f, 1.0f);
+	background = gfx.createSprite("ExampleTitleSprite.bmp", TextureType::RGB, 640, 360, { 0.0f, 0.0f }, { 1.0f, 1.0f });
+	//background = gfx.createSprite("HUD.bmp", TextureType::RGBA, 640, 360, { 0.0f, 0.0f }, { 1.0f, 1.0f });
 }
 
 MainMenu::~MainMenu()
@@ -54,9 +61,15 @@ MainMenu::~MainMenu()
 	}
 	buttons.clear();
 
+	//if (background != nullptr)
+	//{
+	//	delete background;
+	//	background = nullptr;
+	//}
+
 	if (background != nullptr)
 	{
-		delete background;
+		background->parent.destroySprites();
 		background = nullptr;
 	}
 }

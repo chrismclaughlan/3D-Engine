@@ -84,7 +84,7 @@ Window::Window(const char* name, int width, int height)
 #ifdef DISPLAY_DEBUG_CONSOLE
 	AllocConsole();
 	AttachConsole(GetCurrentProcessId());
-	freopen_s(&fConsole, "CON", "w", stdout);
+	freopen_s(&fConsole, "CON", "w", stderr);
 #endif
 
 	std::string str = std::string(name);

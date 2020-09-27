@@ -7,6 +7,7 @@
  *********************************************************************/
 
 #pragma once
+#include "Engine\graphics.h"
 #include "Engine\graphics_ui.h"
 
 enum class MenuAction
@@ -25,10 +26,10 @@ struct MenuButton
 
 struct MainMenu
 {
-	GUISprite* background = nullptr;
+	Graphics::Sprite* background = nullptr;
 	std::vector<MenuButton*> buttons;
 
-	MainMenu();
+	MainMenu(Graphics& gfx);
 	~MainMenu();
 	void resetButtons(GUIState newState = GUIState::Inactive)
 	{

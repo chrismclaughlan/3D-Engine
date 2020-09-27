@@ -85,8 +85,6 @@ const int Game::run()
 		status = FLAG_ERROR;	///< Set flag to erorr but keep game running
 	}
 
-	win.Gfx().createSprite("ExampleTitleSprite.bmp", TextureType::RGB, 640, 360, { 0.1f, 0.1f }, { 0.9f, 0.9f });
-
 	win.Gfx().text2D = new Text2D();
 	if (!win.Gfx().text2D->LoadTextMapFromBMP("Text2D_Font_252x108_monochrome.bmp"))
 	{
@@ -393,7 +391,7 @@ void Game::gsMainMenu(const int flag)
 		std::cout << "gsMainMenu() -> FLAG_INIT\n";
 		if (mainMenu == nullptr)
 		{
-			mainMenu = new MainMenu();
+			mainMenu = new MainMenu(win.Gfx());
 			gsUpdateCurrentFlag(FLAG_RUN);
 		}
 		else
@@ -563,6 +561,8 @@ void Game::glInit()
 		0.1f,
 		1000.0f);
 
+	win.Gfx().createSprite("HUD.bmp", TextureType::RGBA, 640, 360, { 0.0f, 0.0f }, { 1.0f, 1.0f });  // test
+
 	glInitialised = true;
 }
 
@@ -572,6 +572,7 @@ void Game::glInit()
 void Game::glDestroy()
 {
 	glInitialised = false;
+	win.Gfx().destroySprites();
 	std::cout << "Destroying game...\n";
 }
 
@@ -815,6 +816,8 @@ void Game::glRender()
 
 	win.Gfx().drawGUIForm(guiChat);
 
+	win.Gfx().drawSprites();
+
 	//win.Gfx().DrawPointP(win.Gfx().getWidth() / 2, win.Gfx().getHeight() / 2, 0xff0000);
 }
 
@@ -943,7 +946,7 @@ void Game::mMain()
 
 	/* ---------- Render ---------- */
 
-	win.Gfx().clearScreen(0xff0000);
+	win.Gfx().clearScreen(0xff0000);  // test
 
 	//win.Gfx().drawGUIMenuSprite(mainMenu->background);
 

@@ -26,12 +26,10 @@ Graphics::~Graphics()
  */
 Vec2f Graphics::pxToScreen(const Vec2& v)
 {
-	//assert((v.x >= 0) && (v.x <= width));
-	//assert((v.y >= 0) && (v.y <= height));
 	assert((width != 0) && height != 0);
 	Vec2f vf;
-	vf.x = (float)v.x / (float)width;
-	vf.y = (float)v.y / (float)height;
+	vf.x = pxToScreen(v.x, width);
+	vf.y = pxToScreen(v.y, height);
 	return vf;
 }
 
@@ -43,11 +41,9 @@ Vec2f Graphics::pxToScreen(const Vec2& v)
  */
 Vec2 Graphics::screenToPx(const Vec2f& vf)
 {
-	//assert((vf.x >= 0.0f) && (vf.x <= 1.0f));
-	//assert((vf.y >= 0.0f) && (vf.y <= 1.0f));
 	Vec2 v;
-	v.x = (int)(vf.x * (float)width);
-	v.y = (int)(vf.y * (float)height);
+	v.x = screenToPx(vf.x, width);
+	v.y = screenToPx(vf.y, height);
 	return v;
 }
 
@@ -108,6 +104,26 @@ void Graphics::drawFPS(const float fFPS, const colour_t colour)
 	drawText("FPS: " + streamFPS.str(), v, colour);
 }
 
+void Graphics::drawColourBuffer(void* buffer, Vec2f vf1, Vec2f vf2)
+{
+	Vec2 v1 = screenToPx(vf1);
+	Vec2 v2 = screenToPx(vf2);
+	clamp(&v1.x, 0, width);
+	clamp(&v2.x, 0, width);
+	clamp(&v1.y, 0, height);
+	clamp(&v2.y, 0, height);
+	const uint bufferWidth = v2.x - v1.x;
+
+	colour_t* pixel = (colour_t*)pBuffer;
+	for (int y = v1.y; y < v2.y; y++)
+	{
+		for (int x = v1.x; x < v2.x; x++)
+		{
+			pixel[x + (y * width)] = reinterpret_cast<colour_t*>(buffer)[(x - v1.x) + ((y - v1.y) * bufferWidth)];
+		}
+	}
+}
+
 
 /**
  * \brief Iterates through pBuffer and sets pixels to a common colour.
@@ -116,7 +132,7 @@ void Graphics::drawFPS(const float fFPS, const colour_t colour)
  */
 void Graphics::clearScreen(colour_t colour)
 {
-	uint* pixel = (uint*)pBuffer;
+	colour_t* pixel = (colour_t*)pBuffer;
 	for (int i = 0; i < width * height; i++)
 	{
 		*pixel++ = colour;
@@ -134,7 +150,7 @@ void Graphics::drawPointP(uint x, uint y, colour_t colour)
 {
 	clampu(&x, 0, width - 1);
 	clampu(&y, 0, height - 1);
-	uint* pixel = (uint*)pBuffer;
+	colour_t* pixel = (colour_t*)pBuffer;
 	pixel[x + (y * width)] = colour;
 }
 
@@ -177,7 +193,7 @@ void Graphics::drawRectP(Vec2 v1, Vec2 v2, colour_t colour)
 
 	for (int y = v1.y; y < v2.y; y++)
 	{
-		uint* pixel = (uint*)pBuffer + v1.x + (uint)(y * width);
+		colour_t* pixel = (colour_t*)pBuffer + v1.x + (uint)(y * width);
 		for (int x = v1.x; x < v2.x; x++)
 		{
 			*pixel++ = colour;
@@ -914,7 +930,7 @@ void Graphics::drawGUIMenuSprite(GUISprite* guiSprite)
 			const float x_ = normalise((float)i, (float)v1.x, (float)v2.x);
 			const float y_ = normalise((float)j, (float)v1.y, (float)v2.y);
 
-			Texture* tex = (Texture*)guiSprite->Tex();
+			Texture* tex = guiSprite->Tex();
 			switch (tex->textureType)
 			{
 			case TextureType::RGB:

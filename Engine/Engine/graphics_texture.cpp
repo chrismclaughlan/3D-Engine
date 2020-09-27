@@ -159,6 +159,9 @@ bool Texture::loadTextureFromBMP(const char* filename, const int sectionWidth, c
  */
 colour_t Texture::lookUp(float x, float y, int cycleX, int cycleY) const
 {
+	clampf(&x, 0.0f, 1.0f);
+	clampf(&y, 0.0f, 1.0f);
+
 	if (textureType == TextureType::RGB)
 	{
 		std::swap(x, y);  // flip

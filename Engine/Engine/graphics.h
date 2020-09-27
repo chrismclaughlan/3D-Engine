@@ -54,6 +54,16 @@ public:
 	int getWidth() { return width; }
 	int getHeight() { return height; }
 
+	static inline float screenToPx(const float a, const float b)
+	{
+		assert(a >= 0.0f && a <= 1.0f);
+		return a * b;
+	}
+	static inline float pxToScreen(const int a, const int b)
+	{
+		assert(b != 0);
+		return a / b;
+	}
 	Vec2f pxToScreen(const Vec2& v);
 	Vec2 screenToPx(const Vec2f& v);
 
@@ -66,6 +76,7 @@ public:
 
 public:
 	void drawFPS(const float fFPS, const colour_t colour);
+	void drawColourBuffer(void* buffer, const Vec2f vf1, const Vec2f vf2);
 
 	void clearScreen(colour_t colour);
 	void drawPointP(uint x, uint y, colour_t colour);

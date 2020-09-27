@@ -18,6 +18,22 @@ Vec2f::Vec2f(const float x, const float y)
 	: x(x), y(y)
 {};
 
+Vec2f operator+(const Vec2f& a, const Vec2f& b)
+{
+	Vec2f v;
+	v.x = a.x + b.x;
+	v.y = a.y + b.y;
+	return v;
+}
+
+Vec2f operator-(const Vec2f& a, const Vec2f& b)
+{
+	Vec2f v;
+	v.x = a.x - b.x;
+	v.y = a.y - b.y;
+	return v;
+}
+
 
 /* Vec3f */
 

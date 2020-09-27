@@ -51,18 +51,93 @@ protected:
 						///< for 3D applications.
 
 public:
+	class Sprite
+	{
+	public:
+		Graphics& parent;
+		Vec2f vf1;								///< Bottom-left coords
+		Vec2f vf2;								///< Top-right coords
+		Texture* pTexture = nullptr;			///< Pointer to the texture of sprite
+		void* pData = nullptr;					///< Pointer to pixel buffer relative to screen
+
+		Sprite(Graphics& parent, const char* filename, TextureType textureType, const int sectionWidth, const int sectionHeight,
+			const Vec2f vf1, const Vec2f vf2) : parent(parent), vf1(vf1), vf2(vf2)
+		{
+			pTexture = new Texture(textureType, filename, sectionWidth, sectionHeight);
+			updateSize();
+		}
+
+		~Sprite()
+		{
+			if (pTexture != nullptr)
+			{
+				delete pTexture;
+				pTexture = nullptr;
+			}
+			if (pData != nullptr)
+			{
+				delete pData;
+				pData = nullptr;
+			}
+		}
+
+		void updateSize();
+
+		void draw()
+		{
+			Vec2 v1 = parent.screenToPx(vf1);
+			Vec2 v2 = parent.screenToPx(vf2);
+			clamp(&v1.x, 0, parent.width);
+			clamp(&v2.x, 0, parent.width);
+			clamp(&v1.y, 0, parent.height);
+			clamp(&v2.y, 0, parent.height);
+			const uint bufferWidth = v2.x - v1.x;
+
+			colour_t* pixel = (colour_t*)parent.pBuffer;
+			for (int y = v1.y; y < v2.y; y++)
+			{
+				for (int x = v1.x; x < v2.x; x++)
+				{
+					pixel[x + (y * parent.width)] = reinterpret_cast<colour_t*>(pData)[(x - v1.x) + ((y - v1.y) * bufferWidth)];
+				}
+			}
+		}
+	};
+	std::vector<Graphics::Sprite*> sprites;
+	void createSprite(const char* filename, TextureType textureType, const int sectionWidth,
+		const int sectionHeight, const Vec2f vf1, const Vec2f vf2)
+	{
+		sprites.push_back(new Sprite(*this, filename, textureType, sectionWidth, sectionHeight, vf1, vf2));
+	}
+	void destroySprites()
+	{
+		for (auto s : sprites)
+		{
+			delete s;
+			s = nullptr;
+		}
+		sprites.clear();
+	}
+	void drawSprites()
+	{
+		for (auto s : sprites)
+		{
+			s->draw();
+		}
+	}
+
 	int getWidth() { return width; }
 	int getHeight() { return height; }
 
-	static inline float screenToPx(const float a, const float b)
+	static inline int screenToPx(const float a, const float b)
 	{
 		assert(a >= 0.0f && a <= 1.0f);
-		return a * b;
+		return (int)(a * b);
 	}
 	static inline float pxToScreen(const int a, const int b)
 	{
 		assert(b != 0);
-		return a / b;
+		return (float)a / (float)b;
 	}
 	Vec2f pxToScreen(const Vec2& v);
 	Vec2 screenToPx(const Vec2f& v);

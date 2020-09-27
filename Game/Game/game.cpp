@@ -32,11 +32,6 @@ Game::Game(const char* name, int width, int height)
 
 Game::~Game()
 {
-	if (sprite != nullptr)
-	{
-		delete sprite;
-		sprite = nullptr;
-	}
 	if (mainMenu != nullptr)
 	{
 		delete mainMenu;
@@ -90,11 +85,7 @@ const int Game::run()
 		status = FLAG_ERROR;	///< Set flag to erorr but keep game running
 	}
 
-	Vec2f vf1 = { 0.1f, 0.1f };
-	Vec2f vf2 = { 0.9f, 0.9f };
-	sprite = new Sprite("ExampleTitleSprite.bmp", TextureType::RGB, 640, 360, vf1, vf2);
-	// manually update
-	sprite->updateData(win.Gfx().getWidth(), win.Gfx().getHeight());
+	win.Gfx().createSprite("ExampleTitleSprite.bmp", TextureType::RGB, 640, 360, { 0.1f, 0.1f }, { 0.9f, 0.9f });
 
 	win.Gfx().text2D = new Text2D();
 	if (!win.Gfx().text2D->LoadTextMapFromBMP("Text2D_Font_252x108_monochrome.bmp"))
@@ -958,7 +949,9 @@ void Game::mMain()
 
 	//win.Gfx().drawColourBuffer(colour)
 
-	win.Gfx().drawColourBuffer(sprite->pData, sprite->vf1, sprite->vf2);
+	//win.Gfx().drawColourBuffer(sprite->pData, sprite->vf1, sprite->vf2);
+
+	win.Gfx().drawSprites();
 
 	for (auto b : mainMenu->buttons)
 	{

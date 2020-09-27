@@ -179,39 +179,3 @@ Texture* GUISprite::Tex()
 {
 	return pTexture;
 }
-
-void Sprite::updateData(const int gfxWidth, const int gfxHeight)
-{
-	if (pTexture == nullptr)
-	{
-		return;
-	}
-	if (pData != nullptr)
-	{
-		delete pData;
-		pData = nullptr;
-	}
-
-	Vec2 v1;
-	v1.x = Graphics::screenToPx(vf1.x, gfxWidth);
-	v1.y = Graphics::screenToPx(vf1.y, gfxHeight);
-	Vec2 v2;
-	v2.x = Graphics::screenToPx(vf2.x, gfxWidth);
-	v2.y = Graphics::screenToPx(vf2.y, gfxHeight);
-
-	uint width = v2.x - v1.x;
-	uint height = v2.y - v1.y;
-	uint size = width * height;
-
-	pData = new colour_t[size];
-
-	for (uint y = 0; y < height; y++)
-	{
-		for (uint x = 0; x < width; x++)
-		{
-			const float x_ = normalise((float)x, 0.0f, (float)width);
-			const float y_ = normalise((float)y, 0.0f, (float)height);
-			reinterpret_cast<colour_t*>(pData)[x + (y * width)] = (colour_t)pTexture->lookUp(x_, y_);
-		}
-	}
-}

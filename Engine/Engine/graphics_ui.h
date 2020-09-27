@@ -135,33 +135,3 @@ struct GUISprite
 	const bool isClickable(const Vec2f& vf);
 	Texture* Tex();
 };
-
-struct Sprite
-{
-	Vec2f vf1;								///< Bottom-left coords
-	Vec2f vf2;								///< Top-right coords
-	Texture* pTexture = nullptr;			///< Pointer to the texture of sprite
-	void* pData = nullptr;					///< Pointer to pixel buffer relative to screen
-
-	Sprite(const char* filename, TextureType textureType, const int sectionWidth, const int sectionHeight,
-		const Vec2f vf1, const Vec2f vf2) : vf1(vf1), vf2(vf2)
-	{
-		pTexture = new Texture(textureType, filename, sectionWidth, sectionHeight);
-	}
-
-	~Sprite()
-	{
-		if (pTexture != nullptr)
-		{
-			delete pTexture;
-			pTexture = nullptr;
-		}
-		if (pData != nullptr)
-		{
-			delete pData;
-			pData = nullptr;
-		}
-	}
-
-	void updateData(const int gfxWidth, const int gfxHeight);
-};

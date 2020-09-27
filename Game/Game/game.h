@@ -85,8 +85,6 @@ private:
 	GUIMenu* guiGameMenu = nullptr;
 	MainMenu* mainMenu = nullptr;
 
-	Sprite* sprite = nullptr;
-
 private:
 	/* Old GUI Collision Checks */
 	bool CheckReturnRect(GUIRect* r, std::string*& s);

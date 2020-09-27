@@ -16,6 +16,9 @@ Graphics::~Graphics()
 		delete text2D;
 		text2D = nullptr;
 	}
+
+
+	destroySprites();
 }
 
 /**
@@ -943,6 +946,41 @@ void Graphics::drawGUIMenuSprite(GUISprite* guiSprite)
 				//std::cerr << "Error at drawGUIMenuSprite() -> Unknown texture type\n";
 				return;
 			}
+		}
+	}
+}
+
+
+/* Sprites */
+
+void Graphics::Sprite::updateSize()
+{
+	if (pTexture == nullptr)
+	{
+		return;
+	}
+	if (pData != nullptr)
+	{
+		delete pData;
+		pData = nullptr;
+	}
+
+	Vec2 v1 = parent.screenToPx(vf1);
+	Vec2 v2 = parent.screenToPx(vf2);
+
+	int w = v2.x - v1.x;
+	int h = v2.y - v1.y;
+	uint size = w * h;
+
+	pData = new colour_t[size];
+
+	for (uint y = 0; y < h; y++)
+	{
+		for (uint x = 0; x < w; x++)
+		{
+			const float x_ = normalise((float)x, 0.0f, (float)w);
+			const float y_ = normalise((float)y, 0.0f, (float)h);
+			reinterpret_cast<colour_t*>(pData)[x + (y * w)] = (colour_t)pTexture->lookUp(x_, y_);
 		}
 	}
 }

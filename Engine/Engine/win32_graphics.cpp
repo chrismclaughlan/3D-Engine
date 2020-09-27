@@ -36,7 +36,6 @@ Win32Graphics::Win32Graphics(HWND hwnd, HDC hdc) : hdc(hdc)
 		VirtualFree(pDepthBuffer, 0, MEM_RELEASE);
 	}
 	pDepthBuffer = VirtualAlloc(0, bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-
 }
 
 void Win32Graphics::Render()
@@ -75,4 +74,9 @@ void Win32Graphics::ChangeSize(int newWidth, int newHeight)
 		VirtualFree(pDepthBuffer, 0, MEM_RELEASE);
 	}
 	pDepthBuffer = VirtualAlloc(0, bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+
+	for (auto s : sprites)
+	{
+		s->updateSize();
+	}
 }

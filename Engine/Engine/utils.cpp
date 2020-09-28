@@ -10,7 +10,7 @@
  */
 void clamp(int* val, const int min, const int max)
 {
-	assert(min < max);
+	assert(min <= max);
 	if (*val < min)
 		*val = min;
 	else if (*val > max)
@@ -26,7 +26,7 @@ void clamp(int* val, const int min, const int max)
  */
 void clampu(uint* val, const uint min, const uint max)
 {
-	assert(min < max);
+	assert(min <= max);
 	if (*val < min)
 		* val = min;
 	else if (*val > max)
@@ -42,7 +42,7 @@ void clampu(uint* val, const uint min, const uint max)
  */
 void clampf(float* val, const float min, const float max)
 {
-	assert(min < max);
+	assert(min <= max);
 	if (*val < min)
 		* val = min;
 	else if (*val > max)
@@ -58,7 +58,7 @@ void clampf(float* val, const float min, const float max)
  */
 void clampd(double* val, const double min, const double max)
 {
-	assert(min < max);
+	assert(min <= max);
 	if (*val < min)
 		* val = min;
 	else if (*val > max)

@@ -125,20 +125,20 @@ bool Texture::loadTextureFromBMP(const char* filename, const int sectionWidth, c
 		<< "\n";
 
 	int size;
-	if (textureType == TextureType::RGB)
+
+	switch (textureType)
 	{
+	case TextureType::RGB:
 		size = 3 * width * height;
 		data = new uint8[size];
 		fread(data, sizeof(uint8), size, file);
-	}
-	else if (textureType == TextureType::RGBA)
-	{
+		break;
+	case TextureType::RGBA:
 		size = width * height;
 		data = new uint[size];
 		fread(data, sizeof(uint), size, file);
-	}
-	else
-	{
+		break;
+	default:
 		return false;
 	}
 
@@ -176,30 +176,26 @@ colour_t Texture::lookUp(float x, float y, int cycleX, int cycleY) const
 
 		//xInd = height - xInd;  // flip
 
-		uint8* d = (uint8*)data;
-
 		return rgbToHex(
-			d[3 * (xInd * width + yInd) + 2],
-			d[3 * (xInd * width + yInd) + 1],
-			d[3 * (xInd * width + yInd) + 0]);
+			reinterpret_cast<uint8*>(data)[3 * (xInd * width + yInd) + 2],
+			reinterpret_cast<uint8*>(data)[3 * (xInd * width + yInd) + 1],
+			reinterpret_cast<uint8*>(data)[3 * (xInd * width + yInd) + 0]);
 	}
 	else if (textureType == TextureType::RGBA)
 	{
-		clamp(&cycleX, 0, maxCylcesX);
-		clamp(&cycleY, 0, maxCylcesY);
+		clamp(&cycleX, 1, maxCylcesX);
+		clamp(&cycleY, 1, maxCylcesY);
 
 		// Get texture slice
-		x = (x * stepX) + (stepX * cycleX);
-		y = (y * stepY) + (stepY * cycleY);
+		x = (x * stepX) + (stepX * (cycleX - 1));
+		y = (y * stepY) + (stepY * (cycleY - 1));
 
 		// Get texture coordinates
 		int xInd, yInd;
 		xInd = (int)(x * (float)width);
 		yInd = (int)(y * (float)height);
 
-		colour_t* d = (uint*)data;
-
-		return d[xInd + (yInd * width)];
+		return reinterpret_cast<uint*>(data)[xInd + (yInd * width)];
 	}
 
 	return 0;  // error

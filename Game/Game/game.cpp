@@ -806,17 +806,20 @@ void Game::glRender()
 	objects.push_back(object1);
 	objects.push_back(object2);
 
+	win.Gfx().clearScreen(0xcdcdcd);
+
 	//const uint strokeColour = 0xffffff;
 	win.Gfx().rasterTexturedTriangles(
 		projectionMatrix, 
 		player.getMCamera(), player.getVCamera(),
 		objects);
 
-	win.Gfx().drawFPS(1.0f / win.lastDT, 0x0fffff);
-
-	win.Gfx().drawGUIForm(guiChat);
+	win.Gfx().drawGUIForm(guiChat);  // todo
 
 	win.Gfx().drawSprites();
+
+	win.Gfx().drawFPS(1.0f / win.lastDT, 0x000000);
+	win.Gfx().drawPos(player.getVCamera(), player.getVelocity(), player.getAcceleration(), player.getYaw(), player.getPitch(), 0x000000);
 
 	//win.Gfx().DrawPointP(win.Gfx().getWidth() / 2, win.Gfx().getHeight() / 2, 0xff0000);
 }
@@ -946,7 +949,7 @@ void Game::mMain()
 
 	/* ---------- Render ---------- */
 
-	win.Gfx().clearScreen(0xff0000);  // test
+	//win.Gfx().clearScreen(0xff0000);  // test
 
 	//win.Gfx().drawGUIMenuSprite(mainMenu->background);
 

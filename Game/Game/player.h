@@ -1,6 +1,17 @@
 #pragma once
 #include "Engine/utils_vector.h"
 
+#define MOV_FORWARD		(0b000001)
+#define MOV_BACKWARD	(0b000010)
+#define MOV_FB			(0b000011)
+#define MOV_LEFT		(0b000100)
+#define MOV_RIGHT		(0b001000)
+#define MOV_LR			(0b001100)
+#define MOV_UP			(0b010000)
+#define MOV_DOWN		(0b100000)
+#define MOV_UD			(0b110000)
+
+
 class Player
 {
 private:
@@ -15,7 +26,7 @@ public:  // temp
 private:
 	// Camera control
 	float baseTurningSpeed = 0.005f;
-	float baseMovementSpeed = 5.0f;
+	float fMaxVelocity = 1.0f;
 
 	const Vec4f vUp;
 	Vec4f vCamera;
@@ -23,10 +34,13 @@ private:
 	Vec4f vLookDirLeft;
 	Vec4f vForward;
 	Vec4f vLeft;
-	Vec4f vTarget;
 	const Vec4f vTargetLeft = { 1.0f, 0.0f, 0.0f };
 	Matrix4x4 mCameraRotation;
 	Matrix4x4 mCamera;
+
+	Vec4f vVelocity = { 0.0f, 0.0f, 0.0f };
+	Vec4f vAcceleration = { 0.0f, 0.0f, 0.0f };
+	uint8 accelerationFlags = 0b000000;
 
 public:
 	Player()
@@ -50,13 +64,120 @@ public:
 
 	void updatePosition(const float dt)
 	{
-		const float fSpeed = dt * baseMovementSpeed;
-		vTarget		= { 0.0f, 0.0f, 1.0f };
-		vForward	= vLookDir * fSpeed;
-		vLeft		= vLookDirLeft * fSpeed;
-		vCamera		+= moveDirZ * vForward;		    // forward / backward
-		vCamera		+= moveDirX * vLeft;			// left / right
-		vCamera.y	+= moveDirY * fSpeed;			// up / down
+		/* Physics */
+
+		//switch (accelerationFlags)
+		//{
+		//// z-axis
+		//case MOV_FB:
+		//	vVelocity.x = 0.0f;
+		//	break;
+		//case MOV_FORWARD:
+		//	vVelocity.z += vVelocity.z * dt;
+		//	break;
+		//case MOV_BACKWARD:
+		//	vVelocity.z += vVelocity.z * dt;
+		//	break;
+		//// y-axis
+		//case MOV_UD:
+		//	vVelocity.y = 0;
+		//	break;
+		//case MOV_UP:
+		//	vVelocity.y += vVelocity.y * dt;
+		//	break;
+		//case MOV_DOWN:
+		//	vVelocity.y -= vVelocity.y * dt;
+		//	break;
+		//// x-axis
+		//case MOV_LR:
+		//	vVelocity.x = 0.0f;
+		//	break;
+		//case MOV_LEFT:
+		//	vVelocity.x += vVelocity.x * dt;
+		//	break;
+		//case MOV_RIGHT:
+		//	vVelocity.x -= vVelocity.x * dt;
+		//	break;
+		//default:
+		//	vAcceleration.setZero(); break;
+		//}
+
+		vAcceleration.setZero();
+
+		if (accelerationFlags)
+		{
+			// z-axis
+			if ((accelerationFlags & MOV_FORWARD) && !(accelerationFlags & MOV_BACKWARD))
+			{
+				//vVelocity.z += vVelocity.z * dt;
+				vAcceleration.z = 1.0f;
+			}
+			else if ((accelerationFlags & MOV_BACKWARD) && !(accelerationFlags & MOV_FORWARD))
+			{
+				//vVelocity.z -= vVelocity.z * dt;
+				vAcceleration.z = -1.0f;
+			}
+			else if ((accelerationFlags & MOV_BACKWARD) && (accelerationFlags & MOV_FORWARD))
+			{
+				vVelocity.z = 0.0f;
+			}
+
+			// y-axis
+			if ((accelerationFlags & MOV_UP) && !(accelerationFlags & MOV_DOWN))
+			{
+				vAcceleration.y = 1.0f;
+			}
+			else if ((accelerationFlags & MOV_DOWN) && !(accelerationFlags & MOV_UP))
+			{
+				vAcceleration.y = -1.0f;
+			}
+			else if ((accelerationFlags & MOV_UP) && (accelerationFlags & MOV_DOWN))
+			{
+				vVelocity.y = 0.0f;
+			}
+			
+			// x-axis
+			if ((accelerationFlags & MOV_LEFT) && !(accelerationFlags & MOV_RIGHT))
+			{
+				vAcceleration.x = 1.0f;
+			}
+			else if ((accelerationFlags & MOV_RIGHT) && !(accelerationFlags & MOV_LEFT))
+			{
+				vAcceleration.x = -1.0f;
+			}
+			else if ((accelerationFlags & MOV_LEFT) && (accelerationFlags & MOV_RIGHT))
+			{
+				vVelocity.x = 0.0f;
+			}
+		}
+		{
+			vVelocity.setZero();
+		}
+
+		vVelocity += (vAcceleration * dt * 10.0f);
+
+		//vVelocity.x *= abs(vAcceleration.x);
+		//vVelocity.y *= abs(vAcceleration.y);
+		//vVelocity.z *= abs(vAcceleration.z);
+
+		//todo
+		//vVelocity.x = (vAcceleration.x * dt) + (vVelocity.x * vAcceleration.x);
+		//vVelocity.y = (vAcceleration.y * dt) + (vVelocity.y * vAcceleration.y);
+		//vVelocity.z = (vAcceleration.z * dt) + (vVelocity.z * vAcceleration.z);
+
+		clampf(&vVelocity.x, -fMaxVelocity, fMaxVelocity);
+		clampf(&vVelocity.y, -fMaxVelocity, fMaxVelocity);
+		clampf(&vVelocity.z, -fMaxVelocity, fMaxVelocity);
+
+
+		//float g = 9.8;
+		//Vec3f vForce = {0.0f, -1.0f, 0.0f};
+		//vCamera.y += ;
+
+		Vec4f vTarget	= { 0.0f, 0.0f, 1.0f };
+		vCamera			+= vVelocity.z * vLookDir;		// forward / backward
+		vCamera			+= vVelocity.x * vLookDirLeft;	// left / right
+		vCamera.y		+= vVelocity.y;					// up / down
 		mCameraRotation.MakeRotationX(fPitch);
 		mCameraRotation.MakeRotationY(fYaw);
 		vLookDir = mCameraRotation * vTarget;
@@ -67,12 +188,12 @@ public:
 	}
 
 	// Movement
-	void moveForward	(const bool b = true) { b ? moveDirZ += 1.0f : moveDirZ = 0.0f; };
-	void moveBackward	(const bool b = true) { b ? moveDirZ -= 1.0f : moveDirZ = 0.0f; };
-	void moveLeft		(const bool b = true) { b ? moveDirX += 1.0f : moveDirX = 0.0f; };
-	void moveRight		(const bool b = true) { b ? moveDirX -= 1.0f : moveDirX = 0.0f; };
-	void moveUpward		(const bool b = true) { b ? moveDirY += 1.0f : moveDirY = 0.0f; };
-	void moveDownward	(const bool b = true) { b ? moveDirY -= 1.0f : moveDirY = 0.0f; };
+	void moveForward(const bool b = true)	{ b ? accelerationFlags |= MOV_FORWARD	: accelerationFlags &= ~MOV_FORWARD; };
+	void moveBackward(const bool b = true)	{ b ? accelerationFlags |= MOV_BACKWARD	: accelerationFlags &= ~MOV_BACKWARD; };
+	void moveLeft(const bool b = true)		{ b ? accelerationFlags |= MOV_LEFT		: accelerationFlags &= ~MOV_LEFT; };
+	void moveRight(const bool b = true)		{ b ? accelerationFlags |= MOV_RIGHT	: accelerationFlags &= ~MOV_RIGHT; };
+	void moveUpward(const bool b = true)	{ b ? accelerationFlags |= MOV_UP		: accelerationFlags &= ~MOV_UP; };
+	void moveDownward(const bool b = true)	{ b ? accelerationFlags |= MOV_DOWN		: accelerationFlags &= ~MOV_DOWN; };
 
 	void lookX(const float d)
 	{
@@ -95,13 +216,17 @@ public:
 		}
 	}
 
-	const bool isMovingForward() { return moveDirZ > 0.0f; };
-	const bool isMovingBackward() { return moveDirZ < 0.0f; };
-	const bool isMovingUpward() { return moveDirY > 0.0f; };
-	const bool isMovingDownward() { return moveDirY < 0.0f; };
-	const bool isMovingLeft() { return moveDirX > 0.0f; };
-	const bool isMovingRight() { return moveDirX < 0.0f; };
+	const bool isMovingForward()	{ return accelerationFlags & MOV_FORWARD; };
+	const bool isMovingBackward()	{ return accelerationFlags & MOV_BACKWARD; };
+	const bool isMovingUpward()		{ return accelerationFlags & MOV_UP; };
+	const bool isMovingDownward()	{ return accelerationFlags & MOV_DOWN; };
+	const bool isMovingLeft()		{ return accelerationFlags & MOV_LEFT; };
+	const bool isMovingRight()		{ return accelerationFlags & MOV_RIGHT; };
 
+	const float getYaw() { return fYaw; }
+	const float getPitch() { return fPitch; }
+	const Vec4f getVelocity() { return vVelocity; };
+	const uint8 getAcceleration() { return accelerationFlags; };
 	const Vec4f getVCamera() { return vCamera; };
 	const Matrix4x4 getMCamera() { return mCamera; };
 };

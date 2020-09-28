@@ -8,6 +8,7 @@
  */
 #define SHOW_CLIPPING false
 
+
 /* Vec2f */
 
 Vec2f::Vec2f()

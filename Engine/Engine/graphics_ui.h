@@ -24,11 +24,10 @@ struct GUIText;
  */
 enum class GUIState : int
 {
-	Pressed		= -1,	///< Special value representing the final/pressed state
-
-	Inactive	= 0,
-	Hover		= 1, 
-	Active		= 2,
+	Pressed		= 0,	///< Special value representing the final/pressed state
+	Inactive	= 1,
+	Hover		= 2, 
+	Active		= 3,
 
 	//NUM_STATES	= 3,	///< Last: holds number of GUIStates
 };

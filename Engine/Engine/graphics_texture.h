@@ -30,8 +30,8 @@ struct Texture
 	void* data = nullptr;		///< Data buffer containing pixel information
 
 	// Texture slices
-	int maxCylcesX = 0;			///< Number of slices in x-axis
-	int maxCylcesY = 0;			///< Number of slices in y-axis
+	int maxCylcesX;				///< Number of slices in x-axis
+	int maxCylcesY;				///< Number of slices in y-axis
 	float stepX;				///< Multiplyer to slice texture in x-axis
 	float stepY;				///< Multiplyer to slice texture in y-axis
 		

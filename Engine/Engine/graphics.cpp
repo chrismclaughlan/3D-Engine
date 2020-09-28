@@ -132,9 +132,43 @@ void Graphics::drawFPS(const float fFPS, const colour_t colour)
 	v.x = 0; v.y = height - textHeight;
 
 	std::stringstream streamFPS;
-	streamFPS << std::fixed << std::setprecision(2) << fFPS;
+	streamFPS << std::fixed << std::setprecision(2) 
+		<< "FPS: " << fFPS;
 
-	drawText("FPS: " + streamFPS.str(), v, colour);
+	drawText(streamFPS.str(), v, colour);
+}
+
+void Graphics::drawPos(const Vec4f vCamera, const Vec4f vVelocity, const uint accelerationFlags, const float fYaw, const float fPitch, const colour_t colour)
+{
+	const int textHeight = 20;  // TODO
+	Vec2 v = { 0, height - textHeight };
+
+	std::stringstream streamPos, streamVel, streamYaw, streamPitch;
+	streamPos << std::fixed << std::setprecision(2) 
+		<< "Pos:"
+		<< " x: " << vCamera.x
+		<< " y: " << vCamera.y
+		<< " z: " << vCamera.z;
+	streamVel << std::fixed << std::setprecision(2) 
+		<< "Vel:"
+		<< " x: " << vVelocity.x
+		<< " y: " << vVelocity.y
+		<< " z: " << vVelocity.z;
+	streamYaw << std::fixed << std::setprecision(2) 
+		<< "Yaw: " << fYaw;
+	streamPitch << std::fixed << std::setprecision(2) 
+		<< "Pitch: " << fPitch;
+
+	v.y = v.y - textHeight;
+	drawText(streamPos.str(), v, colour);
+	v.y = v.y - textHeight;
+	drawText(streamVel.str(), v, colour);
+	v.y = v.y - textHeight;
+	drawText(std::to_string(accelerationFlags), v, colour);
+	v.y = v.y - textHeight;
+	drawText(streamYaw.str(), v, colour);
+	v.y = v.y - textHeight;
+	drawText(streamPitch.str(), v, colour);
 }
 
 void Graphics::drawColourBuffer(void* buffer, Vec2f vf1, Vec2f vf2)
@@ -780,7 +814,7 @@ void Graphics::rasterTexturedTriangles(
  * \param v Vec2 where x, y corresspond to bottom-left of area to draw to
  * \param colour Colour of text
  */
-void Graphics::drawText(std::string str, Vec2& v, const colour_t colour)
+void Graphics::drawText(std::string str, Vec2 v, const colour_t colour)
 {
 	// assert ...
 
@@ -1022,17 +1056,23 @@ void Graphics::Sprite::updateSize()
 
 	int w = v2.x - v1.x;
 	int h = v2.y - v1.y;
-	uint size = w * h;
+	int size = w * h * pTexture->maxCylcesX * pTexture->maxCylcesY;
 
 	pData = new colour_t[size];
 
-	for (uint y = 0; y < h; y++)
+	for (uint ny = 1; ny <= pTexture->maxCylcesY; ny++)
 	{
-		for (uint x = 0; x < w; x++)
+		for (uint nx = 1; nx <= pTexture->maxCylcesX; nx++)
 		{
-			const float x_ = normalise((float)x, 0.0f, (float)w);
-			const float y_ = normalise((float)y, 0.0f, (float)h);
-			reinterpret_cast<colour_t*>(pData)[x + (y * w)] = (colour_t)pTexture->lookUp(x_, y_);
+			for (uint y = 0; y < h; y++)
+			{
+				for (uint x = 0; x < w; x++)
+				{
+					const float x_ = normalise((float)x, 0.0f, (float)w);
+					const float y_ = normalise((float)y, 0.0f, (float)h);
+					reinterpret_cast<colour_t*>(pData)[((x * nx) + ((y * ny) * w))] = (colour_t)pTexture->lookUp(x_, y_, nx, ny);
+				}
+			}
 		}
 	}
 }

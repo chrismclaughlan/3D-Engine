@@ -67,6 +67,11 @@ public:
 		void draw();
 	};
 
+	class StaticSprite : Sprite
+	{
+
+	};
+
 	std::vector<Graphics::Sprite*> sprites;
 	Graphics::Sprite* createSprite(const char* filename, TextureType textureType, const int sectionWidth,
 		const int sectionHeight, const Vec2f vf1, const Vec2f vf2)
@@ -96,6 +101,7 @@ public:
 
 public:
 	void drawFPS(const float fFPS, const colour_t colour);
+	void drawPos(const Vec4f vCamera, const Vec4f vVelocity, const uint accelerationFlags, const float fYaw, const float fPitch, const colour_t colour);
 	void drawColourBuffer(void* buffer, const Vec2f vf1, const Vec2f vf2);
 
 	void clearScreen(colour_t colour);
@@ -121,7 +127,7 @@ public:
 public:
 	// GUI
 	Text2D* text2D;
-	void drawText(std::string str, Vec2& v, const colour_t colour);
+	void drawText(std::string str, Vec2 v, const colour_t colour);
 	void drawText(const GUIText guiText);
 	const bool drawChar(const char c, Vec2& v, const colour_t colour);
 

@@ -16,6 +16,7 @@
 #include <stack>
 #include <utility>
 
+
 class Player;
 
 
@@ -64,8 +65,14 @@ private:
 	Matrix4x4 projectionMatrix;
 	float fTheta = 0.0f;
 
-	Object* object1 = nullptr;
-	Object* object2 = nullptr;
+	//std::vector<Object*> worldObjects;
+
+	const int NUM_WORLD_OBJECTS_X = 4;
+	const int NUM_WORLD_OBJECTS_Y = 4;
+	const int NUM_WORLD_OBJECTS_Z = 4;
+
+	Object** worldCoords = nullptr;
+
 	Texture* pObjectTexture1 = nullptr;
 	Texture* pObjectTexture2 = nullptr;
 
@@ -78,6 +85,7 @@ private:
 private:
 	// 2D Text
 	bool disableMovement = false;
+	bool lockMouse = true;
 	std::string* userTextBuffer;
 	//std::vector<std::string*> textHistory;
 

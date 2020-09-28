@@ -62,11 +62,8 @@ const bool GUIText::isAt(const float x, const float y, Graphics* gfx)
 
 GUI::~GUI()
 {
-	if (pGUIRect != nullptr)
-	{
-		delete pGUIRect;
-		pGUIRect = nullptr;
-	}
+	delete pGUIRect;
+	pGUIRect = nullptr;
 }
 
 GUIRect* GUI::getRect() const
@@ -76,11 +73,8 @@ GUIRect* GUI::getRect() const
 
 void GUI::setRect(GUIRect* r)
 {
-	if (pGUIRect != nullptr)
-	{
-		delete pGUIRect;
-		pGUIRect = nullptr;
-	}
+	delete pGUIRect;
+	pGUIRect = nullptr;
 
 	pGUIRect = r;
 }
@@ -90,20 +84,14 @@ void GUI::setRect(GUIRect* r)
 
 GUIForm::~GUIForm()
 {
-	if (pGUITextInput != nullptr)
-	{
-		delete pGUITextInput;
-		pGUITextInput = nullptr;
-	}
+	delete pGUITextInput;
+	pGUITextInput = nullptr;
 }
 
 void GUIForm::setTextInput(GUIText* t)
 {
-	if (pGUITextInput != nullptr)
-	{
-		delete pGUITextInput;
-		pGUITextInput = nullptr;
-	}
+	delete pGUITextInput;
+	pGUITextInput = nullptr;
 
 	pGUITextInput = t;
 }
@@ -115,11 +103,8 @@ GUIMenu::~GUIMenu()
 {
 	for (auto t : vGuiText)
 	{
-		if (t != nullptr)
-		{
-			delete t;
-			t = nullptr;
-		}
+		delete t;
+		t = nullptr;
 	}
 	vGuiText.clear();
 }
@@ -148,11 +133,8 @@ GUISprite::GUISprite(
 
 GUISprite::~GUISprite()
 {
-	if (pTexture != nullptr)
-	{
-		delete pTexture;
-		pTexture = nullptr;
-	}
+	delete pTexture;
+	pTexture = nullptr;
 }
 
 const int GUISprite::getState()

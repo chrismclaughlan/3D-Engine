@@ -106,8 +106,10 @@ bool Object::LoadObjectFile(std::string filename, bool hasTexture)
 /**
  * \brief Fills vTris with triangles manually.
  */
-void Object::LoadTestCube()
+void Object::LoadTestCube(std::string objectName)
 {
+	name = objectName;
+
 	// South
 	vTris.clear();
 	vTris.push_back({ this, Vec4f(0.0f, 0.0f, 0.0f, 1.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec4f(1.0f, 1.0f, 0.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(0.0f, 0.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f) });

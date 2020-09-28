@@ -8,11 +8,8 @@ MenuButton::MenuButton(GUISprite* sprite, MenuAction action)
 
 MenuButton::~MenuButton()
 {
-	if (sprite != nullptr)
-	{
-		delete sprite;
-		sprite = nullptr;
-	}
+	delete sprite;
+	sprite = nullptr;
 }
 
 
@@ -53,19 +50,10 @@ MainMenu::~MainMenu()
 {
 	for (auto b : buttons)
 	{
-		if (b != nullptr)
-		{
-			delete b;
-			b = nullptr;
-		}
+		delete b;
+		b = nullptr;
 	}
 	buttons.clear();
-
-	//if (background != nullptr)
-	//{
-	//	delete background;
-	//	background = nullptr;
-	//}
 
 	if (background != nullptr)
 	{

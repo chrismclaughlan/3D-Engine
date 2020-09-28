@@ -13,6 +13,7 @@
 #include "utils_vector.h"
 #include "graphics_texture.h"
 #include <vector>
+#include <ostream>
 
 class Object;
 
@@ -42,6 +43,7 @@ extern int TriangleClipAgainstPlane(Vec4f plane_p, Vec4f plane_n, Triangle& in_t
 class Object
 {
 public:
+	std::string name;
 	Matrix4x4 matrixWorldPos;		///< Contains info on object in world
 	std::vector<Triangle> vTris;	///< Contains vector of triangles that
 									///< compose the object.
@@ -54,11 +56,17 @@ public:
 public:
 	/* Loading */
 	bool LoadObjectFile(std::string filename, bool hasTexture);
-	void LoadTestCube();
+	void LoadTestCube(std::string objectName);
 
 	/* Updating */
 	void updatePosition(const float fTheta);
 	void setPos(float x, float y, float z);
+
+	friend std::ostream& operator<<(std::ostream& os, const Object& o)
+	{
+		os << o.name;
+		return os;
+	}
 };
 
 
@@ -68,8 +76,5 @@ struct ObjectHit
 	Object* objectHit = nullptr;
 	float fFistanceFromCamera;
 	Vec4f vPoint;
-
-	ObjectHit()
-	{
-	}
+	Vec4f vNormal;
 };

@@ -155,7 +155,10 @@ public:
 
 	void hideCursor()
 	{
-		ShowCursor(false);
+		while (ShowCursor(false) > 0)
+		{
+			ShowCursor(false);
+		}
 	}
 
 	void showCursor()

@@ -5,6 +5,7 @@
 #include "game.h"
 #include <list>
 #include <cmath>  // round() fps
+#include <sstream>  // inventory
 
 /**
  * \brief Defines the maximum number of game states allowed in the game state
@@ -32,31 +33,6 @@ Game::Game(const char* name, int width, int height)
 
 Game::~Game()
 {
-	if (mainMenu != nullptr)
-	{
-		delete mainMenu;
-		mainMenu = nullptr;
-	}
-	if (guiChat != nullptr)
-	{
-		delete guiChat;
-		guiChat = nullptr;
-	}
-	if (guiGameMenu != nullptr)
-	{
-		delete guiGameMenu;
-		guiGameMenu = nullptr;
-	}
-
-	delete userTextBuffer;
-	delete object1;
-	delete object2;
-	delete pObjectTexture1;
-	delete pObjectTexture2;
-	object1 = nullptr;
-	object2 = nullptr;
-	pObjectTexture1 = nullptr;
-	pObjectTexture2 = nullptr;
 }
 
 /**
@@ -352,7 +328,7 @@ void Game::gsGame(const int flag)
 	{
 	case FLAG_INIT:
 	{
-		std::cout << "gsGame() -> FLAG_INIT\n";
+		std::cerr << "gsGame() -> FLAG_INIT\n";
 		glInit();
 		gsUpdateCurrentFlag(FLAG_RUN);
 	} break;
@@ -364,7 +340,7 @@ void Game::gsGame(const int flag)
 	} break;
 	case FLAG_DESTROY:
 	{
-		std::cout << "gsGame() -> FLAG_DESTROY\n";
+		std::cerr << "gsGame() -> FLAG_DESTROY\n";
 		glDestroy();
 	} break;
 	default:
@@ -388,7 +364,7 @@ void Game::gsMainMenu(const int flag)
 	{
 	case FLAG_INIT:
 	{
-		std::cout << "gsMainMenu() -> FLAG_INIT\n";
+		std::cerr << "gsMainMenu() -> FLAG_INIT\n";
 		if (mainMenu == nullptr)
 		{
 			mainMenu = new MainMenu(win.Gfx());
@@ -406,14 +382,14 @@ void Game::gsMainMenu(const int flag)
 	} break;
 	case FLAG_DESTROY:
 	{
-		std::cout << "gsMainMenu() -> FLAG_DESTROY\n";
+		std::cerr << "gsMainMenu() -> FLAG_DESTROY\n";
 		delete mainMenu;
 		mainMenu = nullptr;
 		return;
 	} break;
 	case FLAG_RESET:
 	{
-		std::cout << "gsMainMenu() -> FLAG_RESET\n";
+		std::cerr << "gsMainMenu() -> FLAG_RESET\n";
 		mainMenu->resetButtons();
 		gsUpdateCurrentFlag(FLAG_RUN);
 	} break;
@@ -440,7 +416,7 @@ void Game::gsGameMenu(const int flag)
 	{
 	case FLAG_INIT:
 	{
-		std::cout << "gsGameMenu() -> FLAG_INIT\n";
+		std::cerr << "gsGameMenu() -> FLAG_INIT\n";
 		if (guiGameMenu == nullptr)
 		{
 			guiGameMenu = new GUIMenu();
@@ -454,6 +430,9 @@ void Game::gsGameMenu(const int flag)
 			GUIText* item2 = new GUIText("Quit", tColours, 0.45f, 0.45f);
 			guiGameMenu->addText(item1);
 			guiGameMenu->addText(item2);
+
+			lockMouse = false;
+			win.showCursor();
 
 			gsUpdateCurrentFlag(FLAG_RUN);
 		}
@@ -469,7 +448,11 @@ void Game::gsGameMenu(const int flag)
 	} break;
 	case FLAG_DESTROY:
 	{
-		std::cout << "gsGameMenu() -> FLAG_DESTROY\n";
+		std::cerr << "gsGameMenu() -> FLAG_DESTROY\n";
+
+		lockMouse = true;
+		win.hideCursor();
+
 		delete guiGameMenu;
 		guiGameMenu = nullptr;
 		return;
@@ -504,32 +487,7 @@ void Game::glInit()
 
 	// Reset everything incase overwriting existing game
 
-	if (guiChat != nullptr)
-	{
-		delete guiChat;
-		guiChat = nullptr;
-	}
-	delete guiChat;
-	guiChat = nullptr;
-
-	if (object1 != nullptr)
-	{
-		delete object1;
-		object1 = nullptr;
-	}
-	delete object1;
-	object1 = nullptr;
-
-	if (object2 != nullptr)
-	{
-		delete object2;
-		object2 = nullptr;
-	}
-	delete object2;
-	object2 = nullptr;
-
-	player.resetCamera();
-	player.resetPosition();
+	player.reset();
 
 	// Load GUI
 	guiChat = new GUIForm();
@@ -542,18 +500,45 @@ void Game::glInit()
 	guiChat->setRect(guiRect);
 
 	// Load textures
-	pObjectTexture1 = new Texture(TextureType::RGB, "CubeMap_Test.bmp", 2, 2);
-	pObjectTexture2 = new Texture(TextureType::RGB, "Object_Texture_16x32_24bit.bmp", 2, 2);
+	pObjectTexture1 = new Texture(TextureType::RGB, "CubeMap_Test.bmp", 256, 192);
+	pObjectTexture2 = new Texture(TextureType::RGB, "Object_Texture_16x32_24bit.bmp", 16, 32);
+
+
+	// Populate world with objects
+	worldCoords = new Object*[NUM_WORLD_OBJECTS_X * NUM_WORLD_OBJECTS_Y * NUM_WORLD_OBJECTS_Z];
+
+	for (int z = 0; z < NUM_WORLD_OBJECTS_X; z++)
+	{
+		for (int y = 0; y < NUM_WORLD_OBJECTS_Y; y++)
+		{
+			for (int x = 0; x < NUM_WORLD_OBJECTS_X; x++)
+			{
+				// TODO cube / block classs
+				Object* o = new Object();
+				o->LoadTestCube("TODOreplaceme");
+				o->pTexture = pObjectTexture2;
+				o->setPos((float)x, (float)y, (float)z);
+				worldCoords[x + NUM_WORLD_OBJECTS_X * (y + NUM_WORLD_OBJECTS_Z * z)] = o;
+
+				//int index = x + NUM_WORLD_OBJECTS_X * (y + NUM_WORLD_OBJECTS_Z * z);
+				//worldCoords[index].LoadTestCube("TODOreplaceme");
+				//worldCoords[index].pTexture = pObjectTexture2;
+				//worldCoords[index].setPos((float)x - 0.5f, (float)y - 0.5f, (float)z - 0.5f);
+				//worldCoords[index].setPos((float)x - 0.5f, (float)y - 0.5f, (float)z - 0.5f);
+			}
+		}
+	}
+
 	
 	// Load wavefront files
-	object1 = new Object();
-	object1->LoadTestCube();
-	object1->pTexture = pObjectTexture1;
-	object1->setPos(-2.0f, 2.0f, 5.0f);
-	object2 = new Object();
-	object2->LoadTestCube();
-	object2->pTexture = pObjectTexture2;
-	object2->setPos(2.0f, 2.0f, 5.0f);
+	//object1 = new Object();
+	//object1->LoadTestCube("Cube1");
+	//object1->pTexture = pObjectTexture1;
+	//object1->setPos(-2.0f, 2.0f, 5.0f);
+	//object2 = new Object();
+	//object2->LoadTestCube("Cube2");
+	//object2->pTexture = pObjectTexture2;
+	//object2->setPos(2.0f, 2.0f, 5.0f);
 
 	projectionMatrix.MakeProjection(
 		90.0f,
@@ -562,6 +547,8 @@ void Game::glInit()
 		1000.0f);
 
 	win.Gfx().createSprite("HUD.bmp", TextureType::RGBA, 640, 360, { 0.0f, 0.0f }, { 1.0f, 1.0f });  // test
+
+	win.hideCursor();
 
 	glInitialised = true;
 }
@@ -572,8 +559,25 @@ void Game::glInit()
 void Game::glDestroy()
 {
 	glInitialised = false;
+
+	for (int i = 0; i < NUM_WORLD_OBJECTS_X * NUM_WORLD_OBJECTS_Y * NUM_WORLD_OBJECTS_Z; i++)
+	{
+		delete worldCoords[i];
+		worldCoords[i] = nullptr;
+	}
+	delete[] worldCoords;
+	worldCoords = nullptr;
+
+	delete pObjectTexture1;
+	pObjectTexture1 = nullptr;
+	delete pObjectTexture2;
+	pObjectTexture2 = nullptr;
+	delete guiChat;
+	guiChat = nullptr;
+
 	win.Gfx().destroySprites();
-	std::cout << "Destroying game...\n";
+	win.showCursor();
+	std::cerr << "Destroying game...\n";
 }
 
 /**
@@ -582,6 +586,8 @@ void Game::glDestroy()
  */
 void Game::glInput()
 {
+	player.action = PlayerActions::Invalid;  // Reset
+
 	while (!win.keyboard.keyIsEmpty())
 	{
 		const auto event = win.keyboard.readKey();
@@ -662,19 +668,23 @@ void Game::glInput()
 		} break;
 		case VK_UP:
 		{
-			object1->vPos.y += 0.1f;
+			//object1->vPos.y += 0.1f;
 		} break;
 		case VK_DOWN:
 		{
-			object1->vPos.y -= 0.1f;
+			//object1->vPos.y -= 0.1f;
 		} break;
 		case VK_LEFT:
 		{
-			object1->vPos.x += 0.1f;
+			//object1->vPos.x += 0.1f;
 		} break;
 		case VK_RIGHT:
 		{
-			object1->vPos.x -= 0.1f;
+			//object1->vPos.x -= 0.1f;
+		} break;
+		case 0x49:
+		{
+			std::cerr << player.inventory << "\n";
 		} break;
 		}
 	}
@@ -689,16 +699,19 @@ void Game::glInput()
 			Vec2 v = { event.getX(), event.getY() };
 			Vec2f vf = win.Gfx().pxToScreen(v);
 
+			player.action = PlayerActions::Remove;
+
 			// Hover chat box
 			CheckLMousePressedRect(vf, guiChat->getRect());
 		} break;
 		case Mouse::Event::Type::RPressed:
 		{
-			win.hideCursor();
+			player.action = PlayerActions::Place;
+			//win.hideCursor();
 		} break;
 		case Mouse::Event::Type::RReleased:
 		{
-			win.showCursor();
+			//win.showCursor();
 
 			Vec2 v = { event.getX(), event.getY() };
 			Vec2f vf = win.Gfx().pxToScreen(v);
@@ -709,7 +722,8 @@ void Game::glInput()
 		} break;
 		case Mouse::Event::Type::MoveRelative:
 		{
-			if (event.isRightPressed())
+			//if (event.isRightPressed())
+			if (lockMouse)
 			{
 				int iCenterX = win.Gfx().getWidth() / 2;
 				int iCenterY = win.Gfx().getHeight() / 2;
@@ -727,6 +741,12 @@ void Game::glInput()
 			// Hover chat box
 			CheckMouseMoveRect(vf, guiChat->getRect());
 		} break;
+		case Mouse::Event::Type::WheelDown:
+			player.inventory.indexDecr();
+			break;
+		case Mouse::Event::Type::WheelUp:
+			player.inventory.indexIncr();
+			break;
 		}
 	}
 
@@ -741,7 +761,7 @@ void Game::glInput()
 			std::string* s = nullptr;
 			if (CheckReturnRect(guiChat->getRect(), s))
 			{
-				std::cout << "s : " << *s << "\n";
+				std::cerr << "s : " << *s << "\n";
 				delete s;     // temp : do something with string
 				s = nullptr;
 			}
@@ -754,7 +774,7 @@ void Game::glInput()
 			{
 				userTextBuffer->pop_back();
 #ifdef DISPLAY_DEBUG_CONSOLE
-				//std::cout << *userTextBuffer << "\n";
+				//std::cerr << *userTextBuffer << "\n";
 #endif
 			}
 		} break;// continue to default ...
@@ -768,7 +788,7 @@ void Game::glInput()
 				*userTextBuffer += std::string(1, e);
 #ifdef DISPLAY_DEBUG_CONSOLE
 
-				//std::cout << *userTextBuffer << "\n";
+				//std::cerr << *userTextBuffer << "\n";
 #endif
 			}
 		} break;
@@ -787,8 +807,68 @@ void Game::glSimulate()
 
 	// Update world objects
 	//fTheta += 0.001f;  // rotate world
-	object1->updatePosition(fTheta);
-	object2->updatePosition(fTheta);
+	for (int z = 0; z < NUM_WORLD_OBJECTS_X; z++)
+	{
+		for (int y = 0; y < NUM_WORLD_OBJECTS_Y; y++)
+		{
+			for (int x = 0; x < NUM_WORLD_OBJECTS_X; x++)
+			{
+				Object* o = worldCoords[x + NUM_WORLD_OBJECTS_X * (y + NUM_WORLD_OBJECTS_Z * z)];
+				if (o == nullptr) continue;
+				o->updatePosition(fTheta);
+			}
+		}
+	}
+	//for (auto o : worldObjects)
+	//{
+	//	o->updatePosition(fTheta);
+	//}
+
+	switch (player.action)
+	{
+	case PlayerActions::Place:
+		if (player.isLookingAtObject)
+		{
+			std::cerr << "PlayerAction -> Place\n";
+			//Object* o = player.inventory.pop(player.inventory.currentSlot);
+			Object* oHit = player.objectVisable.objectHit;
+			Vec3f vHit = oHit->vPos;
+			if (oHit != nullptr)
+			{
+				Vec4f vTranslated;
+				vTranslated.x = vHit.x + (float)player.objectVisable.vNormal.x;
+				vTranslated.y = vHit.y + (float)player.objectVisable.vNormal.y;
+				vTranslated.z = vHit.z + (float)player.objectVisable.vNormal.z;
+				std::cerr << "ObjectVisable: " 
+					<< "vPos=" << vHit 
+					<< " vPoint=" << player.objectVisable.vPoint 
+					<< " normal=" << player.objectVisable.vNormal 
+					<< " vTranslated=" << vTranslated
+					<< "\n";
+				//Vec3f v = o->vPos;
+				Object* oTranslated = worldCoords[(int)vTranslated.x + NUM_WORLD_OBJECTS_X * ((int)vTranslated.y + NUM_WORLD_OBJECTS_Z * (int)vTranslated.z)];
+				if (oTranslated == nullptr)
+				{
+					Object* oInventory = player.inventory.pop(player.inventory.currentSlot);
+					if (oInventory != nullptr)
+					{
+						worldCoords[(int)vTranslated.x + NUM_WORLD_OBJECTS_X * ((int)vTranslated.y + NUM_WORLD_OBJECTS_Z * (int)vTranslated.z)] = oInventory;
+					}
+				}
+			}
+		}
+		break;
+	case PlayerActions::Remove:
+		if (player.isLookingAtObject)
+		{
+			std::cerr << "PlayerAction -> Remove\n";
+			Object* o = player.objectVisable.objectHit;
+			Vec3f v = o->vPos;
+			player.inventory.push(o);
+			worldCoords[(int)v.x + NUM_WORLD_OBJECTS_X * ((int)v.y + NUM_WORLD_OBJECTS_Z * (int)v.z)] = nullptr;
+		}
+		break;
+	}
 }
 
 /**
@@ -798,26 +878,52 @@ void Game::glSimulate()
 void Game::glRender()
 {
 	// Clear screen and depth buffer
-	win.Gfx().clearScreen(0x000000);
+	win.Gfx().clearScreen(0xcdcdcd);
 	win.Gfx().clearDepthBuffer();
 
 	// Draw objects in scene
-	std::vector<Object*> objects;
-	objects.push_back(object1);
-	objects.push_back(object2);
+	//std::vector<Object*> objects;
+	//objects.push_back(object1);
+	//objects.push_back(object2);
 
-	win.Gfx().clearScreen(0xcdcdcd);
+	// Calculate visable objects
+	std::vector<Object*> objectsToRender;
+	for (int z = 0; z < NUM_WORLD_OBJECTS_X; z++)
+	{
+		for (int y = 0; y < NUM_WORLD_OBJECTS_Y; y++)
+		{
+			for (int x = 0; x < NUM_WORLD_OBJECTS_X; x++)
+			{
+				Object* o = worldCoords[x + NUM_WORLD_OBJECTS_X * (y + NUM_WORLD_OBJECTS_Z * z)];
+				if (o == nullptr) continue;
+				objectsToRender.push_back(o);
+			}
+		}
+	}
 
-	ObjectHit objectHit;
+	// Raster textured triangles and get current looking at object
+	player.isLookingAtObject = false;
+	colour_t colour = 0xff0000;
 	if (win.Gfx().rasterTexturedTriangles(projectionMatrix, player.getMCamera(), player.getVCamera(), 
-		player.getVLookDir(), objectHit, objects))
+		player.getVLookDir(), player.objectVisable, objectsToRender, nullptr))
 	{
 		// Object hit do something with info
+		player.isLookingAtObject = true;
+		std::stringstream strstream_;
+		strstream_ << "Looking at: " << player.objectVisable.objectHit->vPos;
+		win.Gfx().drawText(strstream_.str(), { 100, 100 }, 0x0fffff);
 	}
 
 	win.Gfx().drawGUIForm(guiChat);  // todo
 
 	win.Gfx().drawSprites();
+
+	/* Draw player inventory */
+
+	std::stringstream strstream;
+	strstream << player.inventory;
+	win.Gfx().drawText("Inventory slot: " + std::to_string(player.inventory.currentSlot) + "/" + std::to_string(player.inventory.maxSlots), {0, 20}, 0x000000);
+	win.Gfx().drawText(strstream.str(), {0, 0}, 0x000000);
 
 	win.Gfx().drawFPS(1.0f / win.lastDT, 0x000000);
 	win.Gfx().drawPos(player.getVCamera(), player.getVelocity(), player.getAcceleration(), player.getYaw(), player.getPitch(), 0x000000);
@@ -892,7 +998,7 @@ void Game::mMain()
 					if (b->sprite->state == GUIState::Active)
 					{
 						b->sprite->state = GUIState::Pressed;
-						std::cout << "Pressed\n";
+						std::cerr << "Pressed\n";
 					}
 				}
 				else
@@ -916,9 +1022,6 @@ void Game::mMain()
 			case MenuAction::Start:
 			{
 				gsDestroyCurrentThenPush(&Game::gsGame);
-				//delete mainMenu;
-				//mainMenu = nullptr;
-				//gsPush(&Game::gsGame, FLAG_INIT);
 			} return;
 			case MenuAction::Quit:
 			{
@@ -935,9 +1038,6 @@ void Game::mMain()
 				else
 				{
 					gsDestroyCurrentThenPush(&Game::gsGame, FLAG_RUN);
-					//delete mainMenu;
-					//mainMenu = nullptr;
-					//gsPush(&Game::gsGame, FLAG_RUN);
 				}
 			} return;
 			default:
@@ -987,8 +1087,6 @@ void Game::mGame()
 		{
 			if (event.isReleased())
 			{
-				//delete guiGameMenu;
-				//guiGameMenu = nullptr;
 				gsPop();
 				return;
 			}
@@ -1010,7 +1108,7 @@ void Game::mGame()
 				CheckMouseMoveText(vf, t);
 			}
 			//#if DISPLAY_DEBUG_CONSOLE && DISPLAY_MOUSE_COORDS
-			//			std::cout << event.getX() << " " << event.getY() << "\n";
+			//			std::cerr << event.getX() << " " << event.getY() << "\n";
 			//#endif
 		} break;
 		case Mouse::Event::Type::LReleased:
@@ -1034,15 +1132,11 @@ void Game::mGame()
 		{
 			if (t->sText == "Continue")  // TODO enum?
 			{
-				//resetGUIForm(*guiGameMenu);
-				//delete guiGameMenu;
-				//guiGameMenu = nullptr;
 				gsPop();
 				return;
 			}
 			else if (t->sText == "Quit")  // TODO enum?
 			{
-				//resetGUIForm(*guiGameMenu);
 				gsPopUntil(&Game::gsMainMenu);
 				return;
 			}

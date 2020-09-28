@@ -1,5 +1,8 @@
 #pragma once
 #include "Engine/utils_vector.h"
+#include <ostream>
+#include <stack>
+#include <typeinfo>
 
 #define MOV_FORWARD		(0b000001)
 #define MOV_BACKWARD	(0b000010)
@@ -12,12 +15,233 @@
 #define MOV_UD			(0b110000)
 
 
-class Player
+enum class PlayerActions : uint8
+{
+	Invalid, Place, Remove,
+};
+
+class InventorySlot
 {
 private:
-	float moveDirX = 0.0f;
-	float moveDirY = 0.0f;
-	float moveDirZ = 0.0f;
+	static const int maxSize = 64;
+	std::stack<Object*> sObjects;
+
+public:
+	InventorySlot(Object* o)
+	{
+		sObjects.push(o);
+	}
+	~InventorySlot()
+	{
+		while (sObjects.size() > 0)
+		{
+			delete sObjects.top();
+			sObjects.pop();
+		}
+	}
+
+	bool push(Object* o)
+	{
+		if (sObjects.size() == maxSize)
+		{
+			return false;
+		}
+
+		sObjects.push(o);
+	}
+	/**
+	 * \brief Returns top of objects stack or nullptr if empty.
+	 * 
+	 * \return 
+	 */
+	Object* pop()
+	{
+		if (sObjects.empty())
+		{
+			return nullptr;
+		}
+
+		Object* o;
+		o = sObjects.top();
+		sObjects.pop();
+
+		return o;
+	}
+
+	int getSize() { return sObjects.size(); }
+
+	Object* top()
+	{
+		if (sObjects.empty())
+		{
+			return nullptr;
+		}
+
+		return sObjects.top();
+	}
+
+	friend std::ostream& operator<<(std::ostream& os, const InventorySlot& slot)
+	{
+		if (slot.sObjects.empty())
+		{
+			os << "Empty";
+		}
+		else
+		{
+			os << slot.sObjects.top()->name << "<" << slot.sObjects.size() << "/" << maxSize << ">";
+		}
+
+		return os;
+	}
+};
+
+
+class Inventory
+{
+private:
+	std::vector<InventorySlot*> slots;
+
+	/**
+	 * \brief Translate slot number to vector index.
+	 */
+	inline InventorySlot* getFromSlot(const int slot) const
+	{
+		assert((slot >= 1) && (slot <= maxSlots));
+		return slots[slot - 1];
+	}
+
+public:
+	static const int maxSlots = 10;
+	int currentSlot = 1;  ///< Controls which item gets popped when placing
+
+	Inventory()
+	{
+		slots.reserve(maxSlots);
+	}
+
+	~Inventory()
+	{
+		for (auto s : slots)
+		{
+			delete s;
+			s = nullptr;
+		}
+		slots.clear();
+	}
+
+	void reset()
+	{
+		for (auto s : slots)
+		{
+			delete s;
+			s = nullptr;
+		}
+		slots.clear();
+
+		currentSlot = 1;
+	}
+
+	bool push(Object* o)
+	{
+		if (slots.size() == maxSlots)
+		{
+			return false;
+		}
+
+		// Check for same type in slots and try to push there
+		for (auto s : slots)
+		{
+			// Check object type
+			//if (typeid(o) == typeid(s->top()))
+
+			// Check if slot occupied
+			if (s->top() != nullptr)
+			{
+				if (o->name == s->top()->name)
+				{
+					if (s->push(o))
+					{
+						return true;
+					}
+				}
+			}
+		}
+
+		// If no valid slot with same type try fill in any existing slots
+		for (auto s : slots)
+		{
+			if (s->top() == nullptr)
+			{
+				if (s->push(o))
+				{
+					return true;
+				}
+			}
+		}
+
+		// Valid slot not found, try create new slot
+		if (slots.size() < maxSlots)
+		{
+			slots.push_back(new InventorySlot(o));
+			return true;
+		}
+
+		// Could not find or create a valid slot (inventory should be full)
+		return false;
+	}
+
+	/**
+	 * \brief Returns object in inventory index if occupied, else returns nullptr.
+	 * 
+	 * \param index
+	 * \return 
+	 */
+	Object* pop(int slotN)
+	{
+		if (slotN > slots.size() || slots.empty())
+		{
+			return nullptr;
+		}
+
+		return getFromSlot(slotN)->pop();
+	}
+
+	friend std::ostream& operator<<(std::ostream& os, const Inventory& inv)
+	{
+		os << "Inventory:\n";
+		for (std::size_t i = 1; i <= inv.slots.size(); ++i)
+		{
+			os << "Slot[" << i << "]: " << *inv.getFromSlot(i) << ", ";
+		}
+
+		return os;
+	}
+
+	void indexIncr()
+	{
+		if (++currentSlot > maxSlots)
+		{
+			currentSlot = maxSlots;
+		}
+	}
+
+	void indexDecr()
+	{
+		if (--currentSlot < 1)
+		{
+			currentSlot = 1;
+		}
+	}
+};
+
+
+class Player
+{
+public:
+	PlayerActions action = PlayerActions::Invalid;
+	Inventory inventory;
+	ObjectHit objectVisable;
+	bool isLookingAtObject = false;
 
 public:  // temp
 	float fYaw = 0.0f;
@@ -42,29 +266,8 @@ private:
 	Vec4f vAcceleration = { 0.0f, 0.0f, 0.0f };
 	uint8 accelerationFlags = 0b000000;
 
-public:
-	Player()
-		: vUp(0.0f, 1.0f, 0.0f)
+	void updateMovement(const float dt)
 	{
-	}
-
-	void resetPosition()
-	{
-		moveDirX = 0.0f;
-		moveDirY = 0.0f;
-		moveDirZ = 0.0f;
-	}
-
-	void resetCamera()
-	{
-		fYaw = 0.0f;
-		vCamera.setZero();
-		vLookDir.setZero();
-	}
-
-	void updatePosition(const float dt)
-	{
-		/* Physics */
 		vAcceleration.setZero();
 
 		if (accelerationFlags)
@@ -98,7 +301,7 @@ public:
 			{
 				vVelocity.y = 0.0f;
 			}
-			
+
 			// x-axis
 			if ((accelerationFlags & MOV_LEFT) && !(accelerationFlags & MOV_RIGHT))
 			{
@@ -117,11 +320,54 @@ public:
 			vVelocity.setZero();
 		}
 
-		vVelocity += (vAcceleration * dt * 10.0f);
+		updateVelocity(vAcceleration * dt * 10.0f);
 
 		clampf(&vVelocity.x, -fMaxVelocity, fMaxVelocity);
 		clampf(&vVelocity.y, -fMaxVelocity, fMaxVelocity);
 		clampf(&vVelocity.z, -fMaxVelocity, fMaxVelocity);
+	}
+
+	void updateVelocity(Vec4f v)
+	{
+		vVelocity += v;
+	}
+
+	void updatePhysics(const float dt)
+	{
+		Vec4f vGravity = { 0.0f, -1.0f, 0.0f };
+		updateVelocity(vGravity * dt * 9.8f);
+	}
+
+public:
+	Player()
+		: vUp(0.0f, 1.0f, 0.0f)
+	{
+	}
+
+	void resetPosition()
+	{
+		vCamera.setZero();
+		vLookDir.setZero();
+		vLookDirLeft.setZero();
+		vForward.setZero();
+		vLeft.setZero();
+		mCameraRotation.setZero();
+		mCamera.setZero();
+		vVelocity.setZero();
+		vAcceleration.setZero();
+		accelerationFlags = 0b0;
+	}
+
+	void reset()
+	{
+		resetPosition();
+		inventory.reset();
+	}
+
+	void updatePosition(const float dt)
+	{
+		updateMovement(dt);
+		//updatePhysics(dt);
 
 		Vec4f vTarget	= { 0.0f, 0.0f, 1.0f };
 		vCamera			+= vVelocity.z * vLookDir;		// forward / backward

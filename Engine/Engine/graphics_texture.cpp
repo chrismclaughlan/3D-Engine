@@ -32,11 +32,8 @@ Texture::Texture(TextureType textureType, const char* filename, const int sectio
  */
 Texture::~Texture()
 {
-	if (data != nullptr)
-	{
-		delete[] data;
-		data = nullptr;
-	}
+	delete[] data;
+	data = nullptr;
 }
 
 /**
@@ -78,7 +75,7 @@ bool Texture::loadTextureFromBMP(const char* filename, const int sectionWidth, c
 
 	// Check valid
 	const int bitOffset = info[10];
-	std::cout << "bitOffset: " << bitOffset << std::endl;
+	std::cerr << "bitOffset: " << bitOffset << std::endl;
 
 	if (bitOffset != headerSize)
 	{
@@ -118,7 +115,7 @@ bool Texture::loadTextureFromBMP(const char* filename, const int sectionWidth, c
 	stepX = 1.0f / maxCylcesX;
 	stepY = 1.0f / maxCylcesY;
 
-	std::cout
+	std::cerr
 		<< "width=" << width << " height=" << height
 		<< " scale=" << scale
 		<< " stepX=" << stepX << " stepY=" << stepY

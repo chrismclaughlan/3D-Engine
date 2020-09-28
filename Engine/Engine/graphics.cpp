@@ -32,11 +32,8 @@ intersectTriangle(
 
 Graphics::~Graphics()
 {
-	if (text2D != nullptr)
-	{
-		delete text2D;
-		text2D = nullptr;
-	}
+	delete text2D;
+	text2D = nullptr;
 
 
 	destroySprites();
@@ -650,6 +647,8 @@ bool Graphics::rasterTexturedTriangles(
 	std::vector<Triangle> trianglesToRaster;
 	for (auto objectMesh : meshes)
 	{
+		assert(objectMesh != nullptr);
+
 		for (auto tri : objectMesh->vTris)
 		{
 			Triangle triProjected, triTransformed, triCamera;
@@ -692,6 +691,7 @@ bool Graphics::rasterTexturedTriangles(
 					objectHit.objectHit = objectMesh;
 					objectHit.triangleHit = &tri;
 					objectHit.vPoint = vHit;
+					objectHit.vNormal = normal;
 
 					//triTransformed.colour = 0xff0000;
 					triTransformed.hit = true;

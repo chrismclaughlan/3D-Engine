@@ -61,6 +61,12 @@ struct Vec3f
 	Vec3f();
 	Vec3f(const float u, const float v);
 	Vec3f(const float u, const float v, const float w);
+
+	friend std::ostream& operator<<(std::ostream& os, const Vec3f& v)
+	{
+		os << "(" << v.x << "," << v.y << "," << v.z << ")";
+		return os;
+	}
 };
 
 /**
@@ -129,4 +135,8 @@ struct Matrix4x4
 	void MakeProjection(float fFov, float fAspectRatio, float fNear, float fFar);
 	void MakePointAt(const Vec4f& pos, const Vec4f& target, const Vec4f& up);
 	void MakeQuickInverse();
+	void setZero()
+	{
+		memset(&m, 0, sizeof(float) * 4 * 4);
+	}
 };

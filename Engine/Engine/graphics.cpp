@@ -9,6 +9,27 @@
 #include <iomanip>  // round() fps
 
 
+// https://stackoverflow.com/questions/42740765/intersection-between-line-and-triangle-in-3d
+static bool
+intersectTriangle(
+	Vec4f vRayPos, Vec4f vRayDir, Vec4f A, Vec4f B, Vec4f C, float& t,
+	float& u, float& v, Vec4f& N
+) {
+	Vec4f E1 = B - A;
+	Vec4f E2 = C - A;
+	N = Vec4f::CrossProduct(E1, E2);
+	float det = -Vec4f::DotProduct(vRayDir, N);
+	float invdet = 1.0 / det;
+	Vec4f AO = vRayPos - A;
+	Vec4f DAO = Vec4f::CrossProduct(AO, vRayDir);
+	u = Vec4f::DotProduct(E2, DAO) * invdet;
+	v = -Vec4f::DotProduct(E1, DAO) * invdet;
+	t = Vec4f::DotProduct(AO, N) * invdet;
+	return (det >= 1e-6 && t >= 0.0 && u >= 0.0 && v >= 0.0 && (u + v) <= 1.0);
+}
+
+
+
 Graphics::~Graphics()
 {
 	if (text2D != nullptr)
@@ -429,12 +450,15 @@ float* Graphics::readDepthBuffer(const uint x, const uint y)
  * 
  * \see texture->lookUp
  */
-void Graphics::drawTexturedTriangle(
-	int x1, int y1, float u1, float v1, float w1,
-	int x2, int y2, float u2, float v2, float w2,
-	int x3, int y3, float u3, float v3, float w3,
-	const Texture* texture)
+void Graphics::drawTexturedTriangle(Triangle& triangle)
 {
+	int x1 = (int)triangle.p[0].x, y1 = (int)triangle.p[0].y; 
+	int x2 = (int)triangle.p[1].x, y2 = (int)triangle.p[1].y; 
+	int x3 = (int)triangle.p[2].x, y3 = (int)triangle.p[2].y;
+	float u1 = triangle.t[0].u, v1 = triangle.t[0].v, w1 = triangle.t[0].w;
+	float u2 = triangle.t[1].u, v2 = triangle.t[1].v, w2 = triangle.t[1].w;
+	float u3 = triangle.t[2].u, v3 = triangle.t[2].v, w3 = triangle.t[2].w;
+	const Texture* texture = triangle.parent->pTexture;
 
 	if (y2 < y1)
 	{
@@ -611,13 +635,17 @@ void Graphics::drawTexturedTriangle(
  *
  * Once Triangle data found and sorted, the triangles are drawn to the pBuffer using drawTexturedTriangle
  */
-void Graphics::rasterTexturedTriangles(
+bool Graphics::rasterTexturedTriangles(
 	const Matrix4x4& projectionMatrix,
 	const Matrix4x4& matrixCamera,
 	const Vec4f& vCamera,
+	const Vec4f& vLookDir,
+	ObjectHit& objectHit,
 	const std::vector<Object*> meshes,
 	const colour_t* strokeColour)
 {
+	float distToObjectHit = MAX_OBJECT_DISTANCE;
+
 	// Triangles
 	std::vector<Triangle> trianglesToRaster;
 	for (auto objectMesh : meshes)
@@ -646,14 +674,40 @@ void Graphics::rasterTexturedTriangles(
 			Vec4f vCameraRay;
 			vCameraRay = triTransformed.p[0] - vCamera;
 
+
+			/* Test collision with camera */
+
+			triTransformed.hit = false;
+			float t_, u, v;
+			Vec4f N;
+			
+			if (intersectTriangle(vCamera, vLookDir, triTransformed.p[0], triTransformed.p[1], triTransformed.p[2], t_, u, v, N))
+			{
+				Vec4f vHit = vCamera + (vLookDir * t_);
+				float dist = Vec4f::Distance(vCamera, vHit);
+				if (dist < distToObjectHit)
+				{
+					distToObjectHit = dist;
+					objectHit.fFistanceFromCamera = dist;
+					objectHit.objectHit = objectMesh;
+					objectHit.triangleHit = &tri;
+					objectHit.vPoint = vHit;
+
+					//triTransformed.colour = 0xff0000;
+					triTransformed.hit = true;
+				}
+			}
+
 			if (Vec4f::DotProduct(normal, vCameraRay) < 0.0f)
 			{
 				// Shade triangle
-				Vec4f vLightDir = { 0.0f, 1.0f, -1.0f };
-				vLightDir.Normalise();
-				float dp = std::max(0.1f, Vec4f::DotProduct(vLightDir, normal));
+				//Vec4f vLightDir = { 0.0f, 1.0f, -1.0f };
+				//vLightDir.Normalise();
+				//float dp = std::max(0.1f, Vec4f::DotProduct(vLightDir, normal));
 
-				triCamera.colour = (colour_t)(((dp * 255.0f) * 3.0f) / 5.0f);
+				//triCamera.colour = (colour_t)(((dp * 255.0f) * 3.0f) / 5.0f);
+				//triCamera.colour = triTransformed.colour;
+				triCamera.hit = triTransformed.hit;
 				triCamera.p[0] = matrixCamera * triTransformed.p[0];
 				triCamera.p[1] = matrixCamera * triTransformed.p[1];
 				triCamera.p[2] = matrixCamera * triTransformed.p[2];
@@ -671,7 +725,8 @@ void Graphics::rasterTexturedTriangles(
 					triProjected.p[0] = projectionMatrix * clipped[n].p[0];
 					triProjected.p[1] = projectionMatrix * clipped[n].p[1];
 					triProjected.p[2] = projectionMatrix * clipped[n].p[2];
-					triProjected.colour = clipped[n].colour;
+					//triProjected.colour = clipped[n].colour;
+					triProjected.hit = clipped[n].hit;
 					triProjected.t[0] = clipped[n].t[0];
 					triProjected.t[1] = clipped[n].t[1];
 					triProjected.t[2] = clipped[n].t[2];
@@ -790,21 +845,20 @@ void Graphics::rasterTexturedTriangles(
 				// error
 			}
 
-			drawTexturedTriangle(
-				(int)t.p[0].x, (int)t.p[0].y, t.t[0].u, t.t[0].v, t.t[0].w,
-				(int)t.p[1].x, (int)t.p[1].y, t.t[1].u, t.t[1].v, t.t[1].w,
-				(int)t.p[2].x, (int)t.p[2].y, t.t[2].u, t.t[2].v, t.t[2].w,
-				t.parent->pTexture);
+			drawTexturedTriangle(t);
 
-			if (strokeColour != nullptr)
+			if ((strokeColour != nullptr) || t.hit)
 			{
 				Vec2 v1_ = { (int)t.p[0].x, (int)t.p[0].y };
 				Vec2 v2_ = { (int)t.p[1].x, (int)t.p[1].y };
 				Vec2 v3_ = { (int)t.p[2].x, (int)t.p[2].y };
-				drawTriangleP(v1_, v2_, v3_, *strokeColour);
+				//drawTriangleP(v1_, v2_, v3_, *strokeColour);
+				drawTriangleP(v1_, v2_, v3_, 0xff0000);
 			}
 		}
 	}
+
+	return (distToObjectHit < MAX_OBJECT_DISTANCE);
 }
 
 /**

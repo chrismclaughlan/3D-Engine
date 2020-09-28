@@ -94,6 +94,7 @@ struct Vec4f
 
 	static float DotProduct(const Vec4f& a, const Vec4f& b);
 	static float Length(const Vec4f& a);
+	static float Distance(const Vec4f& a, const Vec4f& b);
 	void Normalise();
 	static Vec4f Normalise(const Vec4f& a);
 	static Vec4f CrossProduct(const Vec4f& a, const Vec4f& b);

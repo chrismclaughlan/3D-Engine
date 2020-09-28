@@ -27,6 +27,7 @@ struct Triangle
 	Vec3f t[3];						///< Texture coords as 3D vector
 	colour_t colour;				///< Triangle colour.
 									///< Used for solid/untextured triangles
+	bool hit = false;  // test
 };
 
 // TODO move?
@@ -58,4 +59,17 @@ public:
 	/* Updating */
 	void updatePosition(const float fTheta);
 	void setPos(float x, float y, float z);
+};
+
+
+struct ObjectHit
+{
+	Triangle* triangleHit = nullptr;
+	Object* objectHit = nullptr;
+	float fFistanceFromCamera;
+	Vec4f vPoint;
+
+	ObjectHit()
+	{
+	}
 };

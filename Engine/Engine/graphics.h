@@ -24,11 +24,14 @@
 #define ALPHA_THRESHOLD      ((colour_t)0x0)		///< Maximum alpha value 
 													///< for 100% transparency 
 
+#define MAX_OBJECT_DISTANCE (float)(9999.0f)
+
 class Text2D;
 struct GUIText;
 class GUIForm;
 class GUIMenu;
 struct GUISprite;
+
 
 /**
  * \brief Graphics class to handle drawing to screen buffers.
@@ -113,14 +116,13 @@ public:
 	// 3D
 	void clearDepthBuffer();
 	float* readDepthBuffer(const uint x, const uint y);
-	void drawTexturedTriangle(int x1, int y1, float u1, float v1, float w1,
-		int x2, int y2, float u2, float v2, float w2,
-		int x3, int y3, float u3, float v3, float w3,
-		const Texture* texture);
-	void rasterTexturedTriangles(
+	void drawTexturedTriangle(Triangle& triangle);
+	bool rasterTexturedTriangles(
 		const Matrix4x4& projectionMatrix,
 		const Matrix4x4& matrixCamera,
 		const Vec4f& vCamera,
+		const Vec4f& vLookDir,  // new
+		ObjectHit& objectHit,
 		const std::vector<Object*> meshes,
 		const colour_t* strokeColour = nullptr);
 

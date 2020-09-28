@@ -65,43 +65,6 @@ public:
 	void updatePosition(const float dt)
 	{
 		/* Physics */
-
-		//switch (accelerationFlags)
-		//{
-		//// z-axis
-		//case MOV_FB:
-		//	vVelocity.x = 0.0f;
-		//	break;
-		//case MOV_FORWARD:
-		//	vVelocity.z += vVelocity.z * dt;
-		//	break;
-		//case MOV_BACKWARD:
-		//	vVelocity.z += vVelocity.z * dt;
-		//	break;
-		//// y-axis
-		//case MOV_UD:
-		//	vVelocity.y = 0;
-		//	break;
-		//case MOV_UP:
-		//	vVelocity.y += vVelocity.y * dt;
-		//	break;
-		//case MOV_DOWN:
-		//	vVelocity.y -= vVelocity.y * dt;
-		//	break;
-		//// x-axis
-		//case MOV_LR:
-		//	vVelocity.x = 0.0f;
-		//	break;
-		//case MOV_LEFT:
-		//	vVelocity.x += vVelocity.x * dt;
-		//	break;
-		//case MOV_RIGHT:
-		//	vVelocity.x -= vVelocity.x * dt;
-		//	break;
-		//default:
-		//	vAcceleration.setZero(); break;
-		//}
-
 		vAcceleration.setZero();
 
 		if (accelerationFlags)
@@ -156,23 +119,9 @@ public:
 
 		vVelocity += (vAcceleration * dt * 10.0f);
 
-		//vVelocity.x *= abs(vAcceleration.x);
-		//vVelocity.y *= abs(vAcceleration.y);
-		//vVelocity.z *= abs(vAcceleration.z);
-
-		//todo
-		//vVelocity.x = (vAcceleration.x * dt) + (vVelocity.x * vAcceleration.x);
-		//vVelocity.y = (vAcceleration.y * dt) + (vVelocity.y * vAcceleration.y);
-		//vVelocity.z = (vAcceleration.z * dt) + (vVelocity.z * vAcceleration.z);
-
 		clampf(&vVelocity.x, -fMaxVelocity, fMaxVelocity);
 		clampf(&vVelocity.y, -fMaxVelocity, fMaxVelocity);
 		clampf(&vVelocity.z, -fMaxVelocity, fMaxVelocity);
-
-
-		//float g = 9.8;
-		//Vec3f vForce = {0.0f, -1.0f, 0.0f};
-		//vCamera.y += ;
 
 		Vec4f vTarget	= { 0.0f, 0.0f, 1.0f };
 		vCamera			+= vVelocity.z * vLookDir;		// forward / backward
@@ -229,4 +178,5 @@ public:
 	const uint8 getAcceleration() { return accelerationFlags; };
 	const Vec4f getVCamera() { return vCamera; };
 	const Matrix4x4 getMCamera() { return mCamera; };
+	const Vec4f getVLookDir() { return vLookDir; }
 };

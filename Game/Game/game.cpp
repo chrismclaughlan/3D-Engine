@@ -808,11 +808,12 @@ void Game::glRender()
 
 	win.Gfx().clearScreen(0xcdcdcd);
 
-	//const uint strokeColour = 0xffffff;
-	win.Gfx().rasterTexturedTriangles(
-		projectionMatrix, 
-		player.getMCamera(), player.getVCamera(),
-		objects);
+	ObjectHit objectHit;
+	if (win.Gfx().rasterTexturedTriangles(projectionMatrix, player.getMCamera(), player.getVCamera(), 
+		player.getVLookDir(), objectHit, objects))
+	{
+		// Object hit do something with info
+	}
 
 	win.Gfx().drawGUIForm(guiChat);  // todo
 

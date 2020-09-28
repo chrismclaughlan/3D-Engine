@@ -1,5 +1,6 @@
 #include "utils_vector.h"
 #include <assert.h>
+#include <tgmath.h>
 
 /**
  * \brief Boolean deciding whether triangle clipping is drawn.
@@ -162,6 +163,11 @@ float Vec4f::DotProduct(const Vec4f& a, const Vec4f& b)
 float Vec4f::Length(const Vec4f& a)
 {
 	return sqrtf(DotProduct(a, a));
+}
+
+float Vec4f::Distance(const Vec4f& a, const Vec4f& b)
+{
+	return sqrtf(pow(b.x - a.x, 2.0f) + pow(b.y - a.y, 2.0f) + pow(b.z - a.z, 2.0f));
 }
 
 void Vec4f::Normalise()

@@ -518,7 +518,8 @@ void Game::glInit()
 				o->LoadTestCube("TODOreplaceme");
 				o->pTexture = pObjectTexture2;
 				o->setPos((float)x, (float)y, (float)z);
-				worldCoords[x + NUM_WORLD_OBJECTS_X * (y + NUM_WORLD_OBJECTS_Z * z)] = o;
+				//worldCoords[x + NUM_WORLD_OBJECTS_X * (y + NUM_WORLD_OBJECTS_Z * z)] = o;
+				setWorldObject(o, x, y, z);
 
 				//int index = x + NUM_WORLD_OBJECTS_X * (y + NUM_WORLD_OBJECTS_Z * z);
 				//worldCoords[index].LoadTestCube("TODOreplaceme");
@@ -813,7 +814,7 @@ void Game::glSimulate()
 		{
 			for (int x = 0; x < NUM_WORLD_OBJECTS_X; x++)
 			{
-				Object* o = worldCoords[x + NUM_WORLD_OBJECTS_X * (y + NUM_WORLD_OBJECTS_Z * z)];
+				Object* o = getWorldObject(x, y, z);
 				if (o == nullptr) continue;
 				o->updatePosition(fTheta);
 			}
@@ -846,13 +847,15 @@ void Game::glSimulate()
 					<< " vTranslated=" << vTranslated
 					<< "\n";
 				//Vec3f v = o->vPos;
-				Object* oTranslated = worldCoords[(int)vTranslated.x + NUM_WORLD_OBJECTS_X * ((int)vTranslated.y + NUM_WORLD_OBJECTS_Z * (int)vTranslated.z)];
+				Object* oTranslated = getWorldObject((int)vTranslated.x, (int)vTranslated.y, (int)vTranslated.z);
 				if (oTranslated == nullptr)
 				{
 					Object* oInventory = player.inventory.pop(player.inventory.currentSlot);
 					if (oInventory != nullptr)
 					{
-						worldCoords[(int)vTranslated.x + NUM_WORLD_OBJECTS_X * ((int)vTranslated.y + NUM_WORLD_OBJECTS_Z * (int)vTranslated.z)] = oInventory;
+						oInventory->setPos(vTranslated.x, vTranslated.y, vTranslated.z);
+						setWorldObject(oInventory, (int)vTranslated.x, (int)vTranslated.y, (int)vTranslated.z);
+						//worldCoords[(int)vTranslated.x + NUM_WORLD_OBJECTS_X * ((int)vTranslated.y + NUM_WORLD_OBJECTS_Z * (int)vTranslated.z)] = oInventory;
 					}
 				}
 			}
@@ -865,7 +868,8 @@ void Game::glSimulate()
 			Object* o = player.objectVisable.objectHit;
 			Vec3f v = o->vPos;
 			player.inventory.push(o);
-			worldCoords[(int)v.x + NUM_WORLD_OBJECTS_X * ((int)v.y + NUM_WORLD_OBJECTS_Z * (int)v.z)] = nullptr;
+			setWorldObject(nullptr, (int)v.x, (int)v.y, (int)v.z);
+			//worldCoords[(int)v.x + NUM_WORLD_OBJECTS_X * ((int)v.y + NUM_WORLD_OBJECTS_Z * (int)v.z)] = nullptr;
 		}
 		break;
 	}
@@ -894,9 +898,31 @@ void Game::glRender()
 		{
 			for (int x = 0; x < NUM_WORLD_OBJECTS_X; x++)
 			{
-				Object* o = worldCoords[x + NUM_WORLD_OBJECTS_X * (y + NUM_WORLD_OBJECTS_Z * z)];
+				Object* o = getWorldObject(x, y, z);
 				if (o == nullptr) continue;
-				objectsToRender.push_back(o);
+
+				Object* oNeighbours[6];
+				oNeighbours[0] = getWorldObject(x - 1, y	 , z);
+				oNeighbours[1] = getWorldObject(x + 1, y	 , z);
+				oNeighbours[2] = getWorldObject(x	 , y - 1 , z);
+				oNeighbours[3] = getWorldObject(x	 , y + 1 , z);
+				oNeighbours[4] = getWorldObject(x	 , y	 , z - 1);
+				oNeighbours[5] = getWorldObject(x	 , y	 , z + 1);
+
+				// Check to see if box is surrounded
+				bool surrounded = true;
+				for (auto n : oNeighbours)
+				{
+					if (n == nullptr)
+					{
+						surrounded = false;
+					}
+				}
+
+				if (!surrounded)
+				{
+					objectsToRender.push_back(o);
+				}
 			}
 		}
 	}

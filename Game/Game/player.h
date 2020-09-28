@@ -35,7 +35,12 @@ public:
 	{
 		while (sObjects.size() > 0)
 		{
-			delete sObjects.top();
+			Object* o = sObjects.top();
+			if (o != nullptr)
+			{
+				delete o;
+				o = nullptr;
+			}
 			sObjects.pop();
 		}
 	}

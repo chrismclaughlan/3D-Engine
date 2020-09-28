@@ -67,11 +67,38 @@ private:
 
 	//std::vector<Object*> worldObjects;
 
-	const int NUM_WORLD_OBJECTS_X = 4;
-	const int NUM_WORLD_OBJECTS_Y = 4;
-	const int NUM_WORLD_OBJECTS_Z = 4;
+	const int NUM_WORLD_OBJECTS_X	= 16;
+	const int NUM_WORLD_OBJECTS_Y	= 16;
+	const int NUM_WORLD_OBJECTS_Z	= 16;
+	const int NUM_WORLD_CHUNKS_X	= 5;
+	const int NUM_WORLD_CHUNKS_Y	= 5;
+	const int NUM_WORLD_CHUNKS_Z	= 5;
 
 	Object** worldCoords = nullptr;
+	inline Object* getWorldObject(const int x, const int y, const int z) const
+	{
+		if ((x >= 0 && x < NUM_WORLD_OBJECTS_X) && (y >= 0 && y < NUM_WORLD_OBJECTS_Y) && (z >= 0 && z < NUM_WORLD_OBJECTS_Z))
+		{
+			return worldCoords[x + NUM_WORLD_OBJECTS_X * (y + NUM_WORLD_OBJECTS_Z * z)];
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	inline bool setWorldObject(Object* o, const int x, const int y, const int z)
+	{
+		if ((x >= 0 && x < NUM_WORLD_OBJECTS_X) && (y >= 0 && y < NUM_WORLD_OBJECTS_Y) && (z >= 0 && z < NUM_WORLD_OBJECTS_Z))
+		{
+			worldCoords[x + NUM_WORLD_OBJECTS_X * (y + NUM_WORLD_OBJECTS_Z * z)] = o;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 
 	Texture* pObjectTexture1 = nullptr;
 	Texture* pObjectTexture2 = nullptr;

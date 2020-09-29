@@ -93,6 +93,11 @@ public:
 		os << o.name;
 		return os;
 	}
+
+	void replaceTexture(Texture* t)
+	{
+		pTexture = t;
+	}
 };
 
 

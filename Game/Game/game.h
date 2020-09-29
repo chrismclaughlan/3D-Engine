@@ -100,8 +100,9 @@ private:
 		}
 	}
 
-	Texture* pObjectTexture1 = nullptr;
-	Texture* pObjectTexture2 = nullptr;
+	Texture* pTextureGrass = nullptr;
+	Texture* pTextureDirt = nullptr;
+	Texture* pTextureStone = nullptr;
 
 private:
 	/* Player */

@@ -500,8 +500,9 @@ void Game::glInit()
 	guiChat->setRect(guiRect);
 
 	// Load textures
-	pObjectTexture1 = new Texture(TextureType::RGB, "CubeMap_Test.bmp", 256, 192);
-	pObjectTexture2 = new Texture(TextureType::RGB, "cubemap_grass.bmp", 16, 16);
+	pTextureDirt = new Texture(TextureType::RGB, "cubemap_dirt.bmp", 16, 16);
+	pTextureGrass = new Texture(TextureType::RGB, "cubemap_grass.bmp", 16, 16);
+	pTextureStone = new Texture(TextureType::RGB, "cubemap_stone.bmp", 16, 16);
 
 
 	// Populate world with objects
@@ -516,7 +517,10 @@ void Game::glInit()
 				// TODO cube / block classs
 				Object* o = new Object();
 				o->LoadTestCube("TODOreplaceme");
-				o->pTexture = pObjectTexture2;
+				if (y < NUM_WORLD_OBJECTS_Y / 2)
+					o->pTexture = pTextureStone;
+				else
+					o->pTexture = pTextureDirt;
 				o->setPos((float)x, (float)y, (float)z);
 				//worldCoords[x + NUM_WORLD_OBJECTS_X * (y + NUM_WORLD_OBJECTS_Z * z)] = o;
 				setWorldObject(o, x, y, z);
@@ -569,10 +573,10 @@ void Game::glDestroy()
 	delete[] worldCoords;
 	worldCoords = nullptr;
 
-	delete pObjectTexture1;
-	pObjectTexture1 = nullptr;
-	delete pObjectTexture2;
-	pObjectTexture2 = nullptr;
+	delete pTextureDirt;
+	pTextureDirt = nullptr;
+	delete pTextureGrass;
+	pTextureGrass = nullptr;
 	delete guiChat;
 	guiChat = nullptr;
 
@@ -918,6 +922,17 @@ void Game::glRender()
 				if (oTop == nullptr)	o->faces[4].draw = true;
 				if (oBottom == nullptr) o->faces[5].draw = true;
 
+				if (oTop == nullptr && o->pTexture == pTextureDirt)
+				{
+					// Convert dirt into grass if nothing ontop
+					o->replaceTexture(pTextureGrass);
+				}
+				else if (oTop != nullptr && o->pTexture == pTextureGrass)
+				{
+					// Convert grass into dirt if something ontop
+					o->replaceTexture(pTextureDirt);
+				}
+
 				objectsToRender.push_back(o);
 			}
 		}
@@ -927,7 +942,7 @@ void Game::glRender()
 	player.isLookingAtObject = false;
 	colour_t colour = 0xff0000;
 	if (win.Gfx().rasterTexturedTriangles(projectionMatrix, player.getMCamera(), player.getVCamera(), 
-		player.getVLookDir(), player.objectVisable, objectsToRender, &colour))
+		player.getVLookDir(), player.objectVisable, objectsToRender, nullptr))
 	{
 		// Object hit do something with info
 		player.isLookingAtObject = true;

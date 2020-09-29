@@ -53,6 +53,7 @@ public:
 		}
 
 		sObjects.push(o);
+		return true;
 	}
 	/**
 	 * \brief Returns top of objects stack or nullptr if empty.

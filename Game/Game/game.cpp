@@ -501,7 +501,7 @@ void Game::glInit()
 
 	// Load textures
 	pObjectTexture1 = new Texture(TextureType::RGB, "CubeMap_Test.bmp", 256, 192);
-	pObjectTexture2 = new Texture(TextureType::RGB, "Object_Texture_16x32_24bit.bmp", 16, 32);
+	pObjectTexture2 = new Texture(TextureType::RGB, "cubemap_grass.bmp", 16, 16);
 
 
 	// Populate world with objects
@@ -808,22 +808,6 @@ void Game::glSimulate()
 
 	// Update world objects
 	//fTheta += 0.001f;  // rotate world
-	for (int z = 0; z < NUM_WORLD_OBJECTS_X; z++)
-	{
-		for (int y = 0; y < NUM_WORLD_OBJECTS_Y; y++)
-		{
-			for (int x = 0; x < NUM_WORLD_OBJECTS_X; x++)
-			{
-				Object* o = getWorldObject(x, y, z);
-				if (o == nullptr) continue;
-				o->updatePosition(fTheta);
-			}
-		}
-	}
-	//for (auto o : worldObjects)
-	//{
-	//	o->updatePosition(fTheta);
-	//}
 
 	switch (player.action)
 	{
@@ -854,7 +838,11 @@ void Game::glSimulate()
 					if (oInventory != nullptr)
 					{
 						oInventory->setPos(vTranslated.x, vTranslated.y, vTranslated.z);
-						setWorldObject(oInventory, (int)vTranslated.x, (int)vTranslated.y, (int)vTranslated.z);
+						if (!setWorldObject(oInventory, (int)vTranslated.x, (int)vTranslated.y, (int)vTranslated.z))
+						{
+							// If cannot place object in world put it back where it came from
+							player.inventory.push(oInventory);
+						}
 						//worldCoords[(int)vTranslated.x + NUM_WORLD_OBJECTS_X * ((int)vTranslated.y + NUM_WORLD_OBJECTS_Z * (int)vTranslated.z)] = oInventory;
 					}
 				}
@@ -873,6 +861,20 @@ void Game::glSimulate()
 		}
 		break;
 	}
+
+	for (int z = 0; z < NUM_WORLD_OBJECTS_X; z++)
+	{
+		for (int y = 0; y < NUM_WORLD_OBJECTS_Y; y++)
+		{
+			for (int x = 0; x < NUM_WORLD_OBJECTS_X; x++)
+			{
+				Object* o = getWorldObject(x, y, z);
+				if (o == nullptr) continue;
+				o->updatePosition(fTheta);
+			}
+		}
+	}
+
 }
 
 /**
@@ -900,29 +902,23 @@ void Game::glRender()
 			{
 				Object* o = getWorldObject(x, y, z);
 				if (o == nullptr) continue;
+				o->resetFacesDrawable();
+				
+				Object* oRight		= getWorldObject(x - 1, y	 , z);
+				Object* oLeft		= getWorldObject(x + 1, y	 , z);
+				Object* oBottom		= getWorldObject(x	 , y - 1 , z);
+				Object* oTop		= getWorldObject(x	 , y + 1 , z);
+				Object* oFront		= getWorldObject(x	 , y	 , z - 1);
+				Object* oBehind		= getWorldObject(x	 , y	 , z + 1);
 
-				Object* oNeighbours[6];
-				oNeighbours[0] = getWorldObject(x - 1, y	 , z);
-				oNeighbours[1] = getWorldObject(x + 1, y	 , z);
-				oNeighbours[2] = getWorldObject(x	 , y - 1 , z);
-				oNeighbours[3] = getWorldObject(x	 , y + 1 , z);
-				oNeighbours[4] = getWorldObject(x	 , y	 , z - 1);
-				oNeighbours[5] = getWorldObject(x	 , y	 , z + 1);
+				if (oFront == nullptr)	o->faces[0].draw = true;
+				if (oBehind == nullptr) o->faces[1].draw = true;
+				if (oLeft == nullptr)	o->faces[2].draw = true;
+				if (oRight == nullptr)	o->faces[3].draw = true;
+				if (oTop == nullptr)	o->faces[4].draw = true;
+				if (oBottom == nullptr) o->faces[5].draw = true;
 
-				// Check to see if box is surrounded
-				bool surrounded = true;
-				for (auto n : oNeighbours)
-				{
-					if (n == nullptr)
-					{
-						surrounded = false;
-					}
-				}
-
-				if (!surrounded)
-				{
-					objectsToRender.push_back(o);
-				}
+				objectsToRender.push_back(o);
 			}
 		}
 	}
@@ -931,7 +927,7 @@ void Game::glRender()
 	player.isLookingAtObject = false;
 	colour_t colour = 0xff0000;
 	if (win.Gfx().rasterTexturedTriangles(projectionMatrix, player.getMCamera(), player.getVCamera(), 
-		player.getVLookDir(), player.objectVisable, objectsToRender, nullptr))
+		player.getVLookDir(), player.objectVisable, objectsToRender, &colour))
 	{
 		// Object hit do something with info
 		player.isLookingAtObject = true;

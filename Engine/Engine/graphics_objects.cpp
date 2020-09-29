@@ -112,23 +112,39 @@ void Object::LoadTestCube(std::string objectName)
 
 	// South
 	vTris.clear();
-	vTris.push_back({ this, Vec4f(0.0f, 0.0f, 0.0f, 1.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec4f(1.0f, 1.0f, 0.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(0.0f, 0.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f) });
-	vTris.push_back({ this, Vec4f(0.0f, 0.0f, 0.0f, 1.0f), Vec4f(1.0f, 1.0f, 0.0f, 1.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f), Vec3f(1.0f, 1.0f, 1.0f) });
+	for (auto f : faces)
+	{
+		f.vTris.clear();
+	}
+	faces.reserve(6);
+	Face front, back, left, right, top, bottom;
 
-	vTris.push_back({ this, Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec4f(1.0f, 1.0f, 0.0f, 1.0f), Vec4f(1.0f, 1.0f, 1.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(0.0f, 0.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f) });
-	vTris.push_back({ this, Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec4f(1.0f, 1.0f, 1.0f, 1.0f), Vec4f(1.0f, 0.0f, 1.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f), Vec3f(1.0f, 1.0f, 1.0f) });
+	front.vTris.push_back(	{ this, Vec4f(0.0f, 0.0f, 0.0f), Vec4f(0.0f, 1.0f, 0.0f), Vec4f(1.0f, 1.0f, 0.0f), Vec3f(0.0f, 1.0f), Vec3f(0.0f, 0.0f), Vec3f(1.0f, 0.0f) });
+	front.vTris.push_back(	{ this, Vec4f(0.0f, 0.0f, 0.0f), Vec4f(1.0f, 1.0f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f), Vec3f(0.0f, 1.0f), Vec3f(1.0f, 0.0f), Vec3f(1.0f, 1.0f) });
 
-	vTris.push_back({ this, Vec4f(1.0f, 0.0f, 1.0f, 1.0f), Vec4f(1.0f, 1.0f, 1.0f, 1.0f), Vec4f(0.0f, 1.0f, 1.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(0.0f, 0.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f) });
-	vTris.push_back({ this, Vec4f(1.0f, 0.0f, 1.0f, 1.0f), Vec4f(0.0f, 1.0f, 1.0f, 1.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f), Vec3f(1.0f, 1.0f, 1.0f) });
+	back.vTris.push_back(	{ this, Vec4f(1.0f, 0.0f, 1.0f), Vec4f(1.0f, 1.0f, 1.0f), Vec4f(0.0f, 1.0f, 1.0f), Vec3f(0.0f, 1.0f), Vec3f(0.0f, 0.0f), Vec3f(1.0f, 0.0f) });
+	back.vTris.push_back(	{ this, Vec4f(1.0f, 0.0f, 1.0f), Vec4f(0.0f, 1.0f, 1.0f), Vec4f(0.0f, 0.0f, 1.0f), Vec3f(0.0f, 1.0f), Vec3f(1.0f, 0.0f), Vec3f(1.0f, 1.0f) });
 
-	vTris.push_back({ this, Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec4f(0.0f, 1.0f, 1.0f, 1.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(0.0f, 0.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f) });
-	vTris.push_back({ this, Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec4f(0.0f, 0.0f, 0.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f), Vec3f(1.0f, 1.0f, 1.0f) });
+	left.vTris.push_back(	{ this, Vec4f(1.0f, 0.0f, 0.0f), Vec4f(1.0f, 1.0f, 0.0f), Vec4f(1.0f, 1.0f, 1.0f), Vec3f(0.0f, 1.0f), Vec3f(0.0f, 0.0f), Vec3f(1.0f, 0.0f) });
+	left.vTris.push_back(	{ this, Vec4f(1.0f, 0.0f, 0.0f), Vec4f(1.0f, 1.0f, 1.0f), Vec4f(1.0f, 0.0f, 1.0f), Vec3f(0.0f, 1.0f), Vec3f(1.0f, 0.0f), Vec3f(1.0f, 1.0f) });
 
-	vTris.push_back({ this, Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec4f(0.0f, 1.0f, 1.0f, 1.0f), Vec4f(1.0f, 1.0f, 1.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(0.0f, 0.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f) });
-	vTris.push_back({ this, Vec4f(0.0f, 1.0f, 0.0f, 1.0f), Vec4f(1.0f, 1.0f, 1.0f, 1.0f), Vec4f(1.0f, 1.0f, 0.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f), Vec3f(1.0f, 1.0f, 1.0f) });
+	right.vTris.push_back(	{ this, Vec4f(0.0f, 0.0f, 1.0f), Vec4f(0.0f, 1.0f, 1.0f), Vec4f(0.0f, 1.0f, 0.0f), Vec3f(0.0f, 1.0f), Vec3f(0.0f, 0.0f), Vec3f(1.0f, 0.0f) });
+	right.vTris.push_back(	{ this, Vec4f(0.0f, 0.0f, 1.0f), Vec4f(0.0f, 1.0f, 0.0f), Vec4f(0.0f, 0.0f, 0.0f), Vec3f(0.0f, 1.0f), Vec3f(1.0f, 0.0f), Vec3f(1.0f, 1.0f) });
 
-	vTris.push_back({ this, Vec4f(1.0f, 0.0f, 1.0f, 1.0f), Vec4f(0.0f, 0.0f, 1.0f, 1.0f), Vec4f(0.0f, 0.0f, 0.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(0.0f, 0.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f) });
-	vTris.push_back({ this, Vec4f(1.0f, 0.0f, 1.0f, 1.0f), Vec4f(0.0f, 0.0f, 0.0f, 1.0f), Vec4f(1.0f, 0.0f, 0.0f, 1.0f), Vec3f(0.0f, 1.0f, 1.0f), Vec3f(1.0f, 0.0f, 1.0f), Vec3f(1.0f, 1.0f, 1.0f) });
+	top.vTris.push_back(	{ this, Vec4f(0.0f, 1.0f, 0.0f), Vec4f(0.0f, 1.0f, 1.0f), Vec4f(1.0f, 1.0f, 1.0f), Vec3f(0.0f, 1.0f), Vec3f(0.0f, 0.0f), Vec3f(1.0f, 0.0f) });
+	top.vTris.push_back(	{ this, Vec4f(0.0f, 1.0f, 0.0f), Vec4f(1.0f, 1.0f, 1.0f), Vec4f(1.0f, 1.0f, 0.0f), Vec3f(0.0f, 1.0f), Vec3f(1.0f, 0.0f), Vec3f(1.0f, 1.0f) });
+
+	bottom.vTris.push_back(	{ this, Vec4f(1.0f, 0.0f, 1.0f), Vec4f(0.0f, 0.0f, 1.0f), Vec4f(0.0f, 0.0f, 0.0f), Vec3f(0.0f, 1.0f), Vec3f(0.0f, 0.0f), Vec3f(1.0f, 0.0f) });
+	bottom.vTris.push_back(	{ this, Vec4f(1.0f, 0.0f, 1.0f), Vec4f(0.0f, 0.0f, 0.0f), Vec4f(1.0f, 0.0f, 0.0f), Vec3f(0.0f, 1.0f), Vec3f(1.0f, 0.0f), Vec3f(1.0f, 1.0f) });
+
+	/* Important! In order! */
+	faces.push_back(front);
+	faces.push_back(back);
+	faces.push_back(left);
+	faces.push_back(right);
+	faces.push_back(top);
+	faces.push_back(bottom);
+
 }
 
 /**

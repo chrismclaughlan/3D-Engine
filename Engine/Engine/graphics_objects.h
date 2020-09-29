@@ -35,6 +35,24 @@ struct Triangle
 extern int TriangleClipAgainstPlane(Vec4f plane_p, Vec4f plane_n, Triangle& in_tri, Triangle& out_tri1, Triangle& out_tri2);
 
 
+enum class ObjectFace : uint8
+{
+	Front	= 1 << 0, 
+	Back	= 1 << 1,
+	Left	= 1 << 2,
+	Right	= 1 << 3,
+	Top		= 1 << 4,
+	Bottom	= 1 << 5,
+};
+
+
+struct Face
+{
+	std::vector<Triangle> vTris;
+	bool draw = false;
+};
+
+
 /**
  * \brief Class representing an object in the application world.
  * 
@@ -52,6 +70,14 @@ public:
 									///< x: + left		/ - right
 									///< y: + upwards	/ - downwards
 									///< z: + forwards	/ - backwards
+	std::vector<Face> faces;
+	void resetFacesDrawable()
+	{
+		for (auto f : faces)
+		{
+			f.draw = false;
+		}
+	}
 
 public:
 	/* Loading */

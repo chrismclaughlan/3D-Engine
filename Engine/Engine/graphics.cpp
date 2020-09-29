@@ -649,124 +649,132 @@ bool Graphics::rasterTexturedTriangles(
 	{
 		assert(objectMesh != nullptr);
 
-		for (auto tri : objectMesh->vTris)
+		//for (auto tri : objectMesh->vTris)
+		for (auto face : objectMesh->faces)  // draw cube
 		{
-			Triangle triProjected, triTransformed, triCamera;
-
-			triTransformed.p[0] = objectMesh->matrixWorldPos * tri.p[0];
-			triTransformed.p[1] = objectMesh->matrixWorldPos * tri.p[1];
-			triTransformed.p[2] = objectMesh->matrixWorldPos * tri.p[2];
-			triTransformed.t[0] = tri.t[0];
-			triTransformed.t[1] = tri.t[1];
-			triTransformed.t[2] = tri.t[2];
-			triTransformed.parent = tri.parent;
-
-			Vec4f normal, line1, line2;
-
-			line1 = triTransformed.p[1] - triTransformed.p[0];
-			line2 = triTransformed.p[2] - triTransformed.p[0];
-
-			normal = Vec4f::CrossProduct(line1, line2);
-
-			normal.Normalise();
-
-			Vec4f vCameraRay;
-			vCameraRay = triTransformed.p[0] - vCamera;
-
-
-			/* Test collision with camera */
-
-			triTransformed.hit = false;
-			float t_, u, v;
-			Vec4f N;
-			
-			if (intersectTriangle(vCamera, vLookDir, triTransformed.p[0], triTransformed.p[1], triTransformed.p[2], t_, u, v, N))
+			if (!face.draw)
 			{
-				Vec4f vHit = vCamera + (vLookDir * t_);
-				float dist = Vec4f::Distance(vCamera, vHit);
-				if (dist < distToObjectHit)
-				{
-					distToObjectHit = dist;
-					objectHit.fFistanceFromCamera = dist;
-					objectHit.objectHit = objectMesh;
-					objectHit.triangleHit = &tri;
-					objectHit.vPoint = vHit;
-					objectHit.vNormal = normal;
-
-					//triTransformed.colour = 0xff0000;
-					triTransformed.hit = true;
-				}
+				continue;
 			}
-
-			if (Vec4f::DotProduct(normal, vCameraRay) < 0.0f)
+			for (auto tri : face.vTris)
 			{
-				// Shade triangle
-				//Vec4f vLightDir = { 0.0f, 1.0f, -1.0f };
-				//vLightDir.Normalise();
-				//float dp = std::max(0.1f, Vec4f::DotProduct(vLightDir, normal));
+				Triangle triProjected, triTransformed, triCamera;
 
-				//triCamera.colour = (colour_t)(((dp * 255.0f) * 3.0f) / 5.0f);
-				//triCamera.colour = triTransformed.colour;
-				triCamera.hit = triTransformed.hit;
-				triCamera.p[0] = matrixCamera * triTransformed.p[0];
-				triCamera.p[1] = matrixCamera * triTransformed.p[1];
-				triCamera.p[2] = matrixCamera * triTransformed.p[2];
-				triCamera.t[0] = triTransformed.t[0];
-				triCamera.t[1] = triTransformed.t[1];
-				triCamera.t[2] = triTransformed.t[2];
-				triCamera.parent = triTransformed.parent;
+				triTransformed.p[0] = objectMesh->matrixWorldPos * tri.p[0];
+				triTransformed.p[1] = objectMesh->matrixWorldPos * tri.p[1];
+				triTransformed.p[2] = objectMesh->matrixWorldPos * tri.p[2];
+				triTransformed.t[0] = tri.t[0];
+				triTransformed.t[1] = tri.t[1];
+				triTransformed.t[2] = tri.t[2];
+				triTransformed.parent = tri.parent;
 
-				int nClippedTriangles = 0;
-				Triangle clipped[2];
-				nClippedTriangles = TriangleClipAgainstPlane({ 0.0f, 0.0f, 0.1f }, { 0.0f, 0.0f, 1.0f }, triCamera, clipped[0], clipped[1]);
+				Vec4f normal, line1, line2;
 
-				for (int n = 0; n < nClippedTriangles; n++)
+				line1 = triTransformed.p[1] - triTransformed.p[0];
+				line2 = triTransformed.p[2] - triTransformed.p[0];
+
+				normal = Vec4f::CrossProduct(line1, line2);
+
+				normal.Normalise();
+
+				Vec4f vCameraRay;
+				vCameraRay = triTransformed.p[0] - vCamera;
+
+
+				/* Test collision with camera */
+
+				triTransformed.hit = false;
+				float t_, u, v;
+				Vec4f N;
+
+				if (intersectTriangle(vCamera, vLookDir, triTransformed.p[0], triTransformed.p[1], triTransformed.p[2], t_, u, v, N))
 				{
-					triProjected.p[0] = projectionMatrix * clipped[n].p[0];
-					triProjected.p[1] = projectionMatrix * clipped[n].p[1];
-					triProjected.p[2] = projectionMatrix * clipped[n].p[2];
-					//triProjected.colour = clipped[n].colour;
-					triProjected.hit = clipped[n].hit;
-					triProjected.t[0] = clipped[n].t[0];
-					triProjected.t[1] = clipped[n].t[1];
-					triProjected.t[2] = clipped[n].t[2];
-					triProjected.parent = clipped[n].parent;
+					Vec4f vHit = vCamera + (vLookDir * t_);
+					float dist = Vec4f::Distance(vCamera, vHit);
+					if (dist < distToObjectHit)
+					{
+						distToObjectHit = dist;
+						objectHit.fFistanceFromCamera = dist;
+						objectHit.objectHit = objectMesh;
+						objectHit.triangleHit = &tri;
+						objectHit.vPoint = vHit;
+						objectHit.vNormal = normal;
+
+						//triTransformed.colour = 0xff0000;
+						triTransformed.hit = true;
+					}
+				}
+
+				if (Vec4f::DotProduct(normal, vCameraRay) < 0.0f)
+				{
+					// Shade triangle
+					//Vec4f vLightDir = { 0.0f, 1.0f, -1.0f };
+					//vLightDir.Normalise();
+					//float dp = std::max(0.1f, Vec4f::DotProduct(vLightDir, normal));
+
+					//triCamera.colour = (colour_t)(((dp * 255.0f) * 3.0f) / 5.0f);
+					//triCamera.colour = triTransformed.colour;
+					triCamera.hit = triTransformed.hit;
+					triCamera.p[0] = matrixCamera * triTransformed.p[0];
+					triCamera.p[1] = matrixCamera * triTransformed.p[1];
+					triCamera.p[2] = matrixCamera * triTransformed.p[2];
+					triCamera.t[0] = triTransformed.t[0];
+					triCamera.t[1] = triTransformed.t[1];
+					triCamera.t[2] = triTransformed.t[2];
+					triCamera.parent = triTransformed.parent;
+
+					int nClippedTriangles = 0;
+					Triangle clipped[2];
+					nClippedTriangles = TriangleClipAgainstPlane({ 0.0f, 0.0f, 0.1f }, { 0.0f, 0.0f, 1.0f }, triCamera, clipped[0], clipped[1]);
+
+					for (int n = 0; n < nClippedTriangles; n++)
+					{
+						triProjected.p[0] = projectionMatrix * clipped[n].p[0];
+						triProjected.p[1] = projectionMatrix * clipped[n].p[1];
+						triProjected.p[2] = projectionMatrix * clipped[n].p[2];
+						//triProjected.colour = clipped[n].colour;
+						triProjected.hit = clipped[n].hit;
+						triProjected.t[0] = clipped[n].t[0];
+						triProjected.t[1] = clipped[n].t[1];
+						triProjected.t[2] = clipped[n].t[2];
+						triProjected.parent = clipped[n].parent;
 
 
-					triProjected.t[0].u /= triProjected.p[0].w;
-					triProjected.t[1].u /= triProjected.p[1].w;
-					triProjected.t[2].u /= triProjected.p[2].w;
+						triProjected.t[0].u /= triProjected.p[0].w;
+						triProjected.t[1].u /= triProjected.p[1].w;
+						triProjected.t[2].u /= triProjected.p[2].w;
 
-					triProjected.t[0].v /= triProjected.p[0].w;
-					triProjected.t[1].v /= triProjected.p[1].w;
-					triProjected.t[2].v /= triProjected.p[2].w;
+						triProjected.t[0].v /= triProjected.p[0].w;
+						triProjected.t[1].v /= triProjected.p[1].w;
+						triProjected.t[2].v /= triProjected.p[2].w;
 
-					triProjected.t[0].w = 1.0f / triProjected.p[0].w;
-					triProjected.t[1].w = 1.0f / triProjected.p[1].w;
-					triProjected.t[2].w = 1.0f / triProjected.p[2].w;
+						triProjected.t[0].w = 1.0f / triProjected.p[0].w;
+						triProjected.t[1].w = 1.0f / triProjected.p[1].w;
+						triProjected.t[2].w = 1.0f / triProjected.p[2].w;
 
 
-					triProjected.p[0] /= triProjected.p[0].w;
-					triProjected.p[1] /= triProjected.p[1].w;
-					triProjected.p[2] /= triProjected.p[2].w;
+						triProjected.p[0] /= triProjected.p[0].w;
+						triProjected.p[1] /= triProjected.p[1].w;
+						triProjected.p[2] /= triProjected.p[2].w;
 
-					// Invert
-					triProjected.p[0].x *= -1;
-					triProjected.p[1].x *= -1;
-					triProjected.p[2].x *= -1;
+						// Invert
+						triProjected.p[0].x *= -1;
+						triProjected.p[1].x *= -1;
+						triProjected.p[2].x *= -1;
 
-					Vec4f vOffsetView = { 1, 1, 0 };
-					triProjected.p[0] += vOffsetView;
-					triProjected.p[1] += vOffsetView;
-					triProjected.p[2] += vOffsetView;
-					triProjected.p[0].x *= 0.5f * (float)width;
-					triProjected.p[0].y *= 0.5f * (float)height;
-					triProjected.p[1].x *= 0.5f * (float)width;
-					triProjected.p[1].y *= 0.5f * (float)height;
-					triProjected.p[2].x *= 0.5f * (float)width;
-					triProjected.p[2].y *= 0.5f * (float)height;
+						Vec4f vOffsetView = { 1, 1, 0 };
+						triProjected.p[0] += vOffsetView;
+						triProjected.p[1] += vOffsetView;
+						triProjected.p[2] += vOffsetView;
+						triProjected.p[0].x *= 0.5f * (float)width;
+						triProjected.p[0].y *= 0.5f * (float)height;
+						triProjected.p[1].x *= 0.5f * (float)width;
+						triProjected.p[1].y *= 0.5f * (float)height;
+						triProjected.p[2].x *= 0.5f * (float)width;
+						triProjected.p[2].y *= 0.5f * (float)height;
 
-					trianglesToRaster.push_back(triProjected);
+						trianglesToRaster.push_back(triProjected);
+					}
 				}
 			}
 		}

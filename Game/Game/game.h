@@ -67,9 +67,9 @@ private:
 
 	//std::vector<Object*> worldObjects;
 
-	const int NUM_WORLD_OBJECTS_X	= 16;
-	const int NUM_WORLD_OBJECTS_Y	= 16;
-	const int NUM_WORLD_OBJECTS_Z	= 16;
+	const int NUM_WORLD_OBJECTS_X	= 5;
+	const int NUM_WORLD_OBJECTS_Y	= 5;
+	const int NUM_WORLD_OBJECTS_Z	= 5;
 	const int NUM_WORLD_CHUNKS_X	= 5;
 	const int NUM_WORLD_CHUNKS_Y	= 5;
 	const int NUM_WORLD_CHUNKS_Z	= 5;

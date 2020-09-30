@@ -638,10 +638,11 @@ bool Graphics::rasterTexturedTriangles(
 	const Vec4f& vCamera,
 	const Vec4f& vLookDir,
 	ObjectHit& objectHit,
+	const float maxObjectHitDistance,
 	const std::vector<Object*> meshes,
 	const colour_t* strokeColour)
 {
-	float distToObjectHit = MAX_OBJECT_DISTANCE;
+	float distToObjectHit = maxObjectHitDistance;
 
 	// Triangles
 	std::vector<Triangle> trianglesToRaster;
@@ -866,7 +867,7 @@ bool Graphics::rasterTexturedTriangles(
 		}
 	}
 
-	return (distToObjectHit < MAX_OBJECT_DISTANCE);
+	return (distToObjectHit < maxObjectHitDistance);
 }
 
 /**

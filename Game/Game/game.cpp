@@ -506,26 +506,33 @@ void Game::glInit()
 
 
 	// Populate world with objects
-	worldCoords = new Object*[NUM_WORLD_OBJECTS_X * NUM_WORLD_OBJECTS_Y * NUM_WORLD_OBJECTS_Z];
+	worldCoords = new Object*[game_settings.world_num_objects_x * game_settings.world_num_objects_y * game_settings.world_num_objects_z];
 
-	for (int z = 0; z < NUM_WORLD_OBJECTS_X; z++)
+	for (int z = 0; z < game_settings.world_num_objects_x; z++)
 	{
-		for (int y = 0; y < NUM_WORLD_OBJECTS_Y; y++)
+		for (int y = 0; y < game_settings.world_num_objects_y; y++)
 		{
-			for (int x = 0; x < NUM_WORLD_OBJECTS_X; x++)
+			for (int x = 0; x < game_settings.world_num_objects_x; x++)
 			{
 				// TODO cube / block classs
 				Object* o = new Object();
-				o->LoadTestCube("TODOreplaceme");
-				if (y < NUM_WORLD_OBJECTS_Y / 2)
+				std::string name;
+				if (y < game_settings.world_num_objects_y / 2)
+				{
+					name = "Stone";
 					o->pTexture = pTextureStone;
+				}
 				else
+				{
+					name = "Dirt";
 					o->pTexture = pTextureDirt;
+				}
+				o->LoadTestCube(name);
 				o->setPos((float)x, (float)y, (float)z);
-				//worldCoords[x + NUM_WORLD_OBJECTS_X * (y + NUM_WORLD_OBJECTS_Z * z)] = o;
+				//worldCoords[x + game_settings.world_num_objects_x * (y + game_settings.world_num_objects_z * z)] = o;
 				setWorldObject(o, x, y, z);
 
-				//int index = x + NUM_WORLD_OBJECTS_X * (y + NUM_WORLD_OBJECTS_Z * z);
+				//int index = x + game_settings.world_num_objects_x * (y + game_settings.world_num_objects_z * z);
 				//worldCoords[index].LoadTestCube("TODOreplaceme");
 				//worldCoords[index].pTexture = pObjectTexture2;
 				//worldCoords[index].setPos((float)x - 0.5f, (float)y - 0.5f, (float)z - 0.5f);
@@ -565,7 +572,7 @@ void Game::glDestroy()
 {
 	glInitialised = false;
 
-	for (int i = 0; i < NUM_WORLD_OBJECTS_X * NUM_WORLD_OBJECTS_Y * NUM_WORLD_OBJECTS_Z; i++)
+	for (int i = 0; i < game_settings.world_num_objects_x * game_settings.world_num_objects_y * game_settings.world_num_objects_z; i++)
 	{
 		delete worldCoords[i];
 		worldCoords[i] = nullptr;
@@ -847,7 +854,7 @@ void Game::glSimulate()
 							// If cannot place object in world put it back where it came from
 							player.inventory.push(oInventory);
 						}
-						//worldCoords[(int)vTranslated.x + NUM_WORLD_OBJECTS_X * ((int)vTranslated.y + NUM_WORLD_OBJECTS_Z * (int)vTranslated.z)] = oInventory;
+						//worldCoords[(int)vTranslated.x + game_settings.world_num_objects_x * ((int)vTranslated.y + game_settings.world_num_objects_z * (int)vTranslated.z)] = oInventory;
 					}
 				}
 			}
@@ -861,16 +868,16 @@ void Game::glSimulate()
 			Vec3f v = o->vPos;
 			player.inventory.push(o);
 			setWorldObject(nullptr, (int)v.x, (int)v.y, (int)v.z);
-			//worldCoords[(int)v.x + NUM_WORLD_OBJECTS_X * ((int)v.y + NUM_WORLD_OBJECTS_Z * (int)v.z)] = nullptr;
+			//worldCoords[(int)v.x + game_settings.world_num_objects_x * ((int)v.y + game_settings.world_num_objects_z * (int)v.z)] = nullptr;
 		}
 		break;
 	}
 
-	for (int z = 0; z < NUM_WORLD_OBJECTS_X; z++)
+	for (int z = 0; z < game_settings.world_num_objects_x; z++)
 	{
-		for (int y = 0; y < NUM_WORLD_OBJECTS_Y; y++)
+		for (int y = 0; y < game_settings.world_num_objects_y; y++)
 		{
-			for (int x = 0; x < NUM_WORLD_OBJECTS_X; x++)
+			for (int x = 0; x < game_settings.world_num_objects_x; x++)
 			{
 				Object* o = getWorldObject(x, y, z);
 				if (o == nullptr) continue;
@@ -898,11 +905,11 @@ void Game::glRender()
 
 	// Calculate visable objects
 	std::vector<Object*> objectsToRender;
-	for (int z = 0; z < NUM_WORLD_OBJECTS_X; z++)
+	for (int z = 0; z < game_settings.world_num_objects_x; z++)
 	{
-		for (int y = 0; y < NUM_WORLD_OBJECTS_Y; y++)
+		for (int y = 0; y < game_settings.world_num_objects_y; y++)
 		{
-			for (int x = 0; x < NUM_WORLD_OBJECTS_X; x++)
+			for (int x = 0; x < game_settings.world_num_objects_x; x++)
 			{
 				Object* o = getWorldObject(x, y, z);
 				if (o == nullptr) continue;
@@ -942,7 +949,7 @@ void Game::glRender()
 	player.isLookingAtObject = false;
 	colour_t colour = 0xff0000;
 	if (win.Gfx().rasterTexturedTriangles(projectionMatrix, player.getMCamera(), player.getVCamera(), 
-		player.getVLookDir(), player.objectVisable, objectsToRender, nullptr))
+		player.getVLookDir(), player.objectVisable, 5.0f, objectsToRender, nullptr))
 	{
 		// Object hit do something with info
 		player.isLookingAtObject = true;

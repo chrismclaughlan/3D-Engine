@@ -14,6 +14,29 @@
 #define MOV_DOWN		(0b100000)
 #define MOV_UD			(0b110000)
 
+#define PI				(3.14159f)
+
+
+struct PlayerSettings
+{
+	float max_reach						= 5.0f;
+	float movement_max_velocity			= 1.0f;
+	float movement_turning_speed		= 0.005f;
+	const int inventory_max_slots		= 10;
+	const int inventory_slots_max_items = 64;
+
+	//PlayerSettings& operator=(PlayerSettings& ps)
+	//{
+	//	PlayerSettings player_settings;
+	//	player_settings.max_reach = ps.max_reach;
+	//	player_settings.movement_max_velocity = ps.movement_max_velocity;
+	//	player_settings.movement_turning_speed = ps.movement_turning_speed;
+	//	player_settings.inventory_max_slots = ps.inventory_max_slots;
+	//	player_settings.inventory_slots_max_items = ps.inventory_slots_max_items;
+	//	return player_settings;
+	//}
+};
+
 
 enum class PlayerActions : uint8
 {
@@ -249,23 +272,38 @@ public:
 	ObjectHit objectVisable;
 	bool isLookingAtObject = false;
 
+	PlayerSettings player_settings;
+
 public:  // temp
 	float fYaw = 0.0f;
 	float fPitch = 0.0f;
 
+	void changeSettings(const PlayerSettings& settings)
+	{
+		// TODO check valid settings
+		player_settings.max_reach = settings.max_reach;
+		player_settings.movement_max_velocity = settings.movement_max_velocity;
+		player_settings.movement_turning_speed = settings.movement_turning_speed;
+
+		/* Handle constants */
+		//player_settings.inventory_max_slots = settings.inventory_max_slots;
+		//player_settings.inventory_slots_max_items = settings.inventory_slots_max_items;
+	}
+
 private:
 	// Camera control
-	float baseTurningSpeed = 0.005f;
-	float fMaxVelocity = 1.0f;
 
-	const Vec4f vUp;
+	const float maxPitch = PI / 2.0f;
 	Vec4f vCamera;
 	Vec4f vLookDir;
 	Vec4f vLookDirLeft;
+	Vec4f vLookDirUp;
 	Vec4f vForward;
 	Vec4f vLeft;
+	const Vec4f vUp			= { 0.0f, 1.0f, 0.0f };
+	const Vec4f vTarget		= { 0.0f, 0.0f, 1.0f };
 	const Vec4f vTargetLeft = { 1.0f, 0.0f, 0.0f };
-	Matrix4x4 mCameraRotation;
+	//Matrix4x4 mCameraRotation;
 	Matrix4x4 mCamera;
 
 	Vec4f vVelocity = { 0.0f, 0.0f, 0.0f };
@@ -328,9 +366,9 @@ private:
 
 		updateVelocity(vAcceleration * dt * 10.0f);
 
-		clampf(&vVelocity.x, -fMaxVelocity, fMaxVelocity);
-		clampf(&vVelocity.y, -fMaxVelocity, fMaxVelocity);
-		clampf(&vVelocity.z, -fMaxVelocity, fMaxVelocity);
+		clampf(&vVelocity.x, -player_settings.movement_max_velocity, player_settings.movement_max_velocity);
+		clampf(&vVelocity.y, -player_settings.movement_max_velocity, player_settings.movement_max_velocity);
+		clampf(&vVelocity.z, -player_settings.movement_max_velocity, player_settings.movement_max_velocity);
 	}
 
 	void updateVelocity(Vec4f v)
@@ -357,7 +395,6 @@ public:
 		vLookDirLeft.setZero();
 		vForward.setZero();
 		vLeft.setZero();
-		mCameraRotation.setZero();
 		mCamera.setZero();
 		vVelocity.setZero();
 		vAcceleration.setZero();
@@ -375,16 +412,20 @@ public:
 		updateMovement(dt);
 		//updatePhysics(dt);
 
-		Vec4f vTarget	= { 0.0f, 0.0f, 1.0f };
+		Matrix4x4 mCameraRotation;
+
 		vCamera			+= vVelocity.z * vLookDir;		// forward / backward
-		vCamera			+= vVelocity.x * vLookDirLeft;	// left / right
+		vCamera			-= vVelocity.x * vLookDirLeft;	// left / right
 		vCamera.y		+= vVelocity.y;					// up / down
-		mCameraRotation.MakeRotationX(fPitch);
-		mCameraRotation.MakeRotationY(fYaw);
-		vLookDir = mCameraRotation * vTarget;
-		vLookDirLeft = mCameraRotation * vTargetLeft;
-		vTarget = vCamera + vLookDir;
-		mCamera.MakePointAt(vCamera, vTarget, vUp);
+
+		vLookDir.x = cosf(fYaw + PI / 2.0f) * cosf(fPitch);
+		vLookDir.y = sinf(fPitch);
+		vLookDir.z = sinf(fYaw + PI / 2.0f) * cosf(fPitch);
+		
+		mCameraRotation.MakeRotationY(fYaw + PI / 2.0f);
+		vLookDirLeft = mCameraRotation * vTarget;
+
+		mCamera.MakePointAt(vCamera, vCamera + vLookDir, vUp);
 		mCamera.MakeQuickInverse();
 	}
 
@@ -398,23 +439,19 @@ public:
 
 	void lookX(const float d)
 	{
-		fYaw += d * baseTurningSpeed;
+		fYaw += d * player_settings.movement_turning_speed;
+
+		if (fYaw > PI)
+			fYaw = -PI;
+		else if (fYaw < -PI)
+			fYaw = PI;
 	}
 	
 	void lookY(const float d)
 	{
-		float maxPitch = 1.5f;
+		fPitch += d * player_settings.movement_turning_speed;
 
-		fPitch -= d * baseTurningSpeed;
-
-		if (fPitch > maxPitch)
-		{
-			fPitch = maxPitch;
-		}
-		else if (fPitch < -maxPitch)
-		{
-			fPitch = -maxPitch;
-		}
+		clampf(&fPitch, -maxPitch, maxPitch);
 	}
 
 	const bool isMovingForward()	{ return accelerationFlags & MOV_FORWARD; };

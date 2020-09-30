@@ -90,7 +90,7 @@ struct Vec4f
 	friend Vec4f operator+(const Vec4f& a, const Vec4f& b);
 	friend Vec4f operator-(const Vec4f& a, const Vec4f& b);
 	friend Vec4f operator*(const Vec4f& a, const float k);
-	friend Vec4f operator*(const float k, Vec4f& a) { return a * k; };
+	friend Vec4f operator*(const float k, const Vec4f& a) { return a * k; };
 	friend Vec4f operator/(const Vec4f& a, const float k);
 	friend Vec4f operator+=(Vec4f& a, const Vec4f& b);
 	friend Vec4f operator-=(Vec4f& a, const Vec4f& b);

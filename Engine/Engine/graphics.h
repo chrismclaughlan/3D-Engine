@@ -123,6 +123,7 @@ public:
 		const Vec4f& vCamera,
 		const Vec4f& vLookDir,  // new
 		ObjectHit& objectHit,
+		const float maxObjectHitDistance,
 		const std::vector<Object*> meshes,
 		const colour_t* strokeColour = nullptr);
 

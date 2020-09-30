@@ -20,9 +20,27 @@
 class Player;
 
 
+struct GameSettings
+{
+	/* Player Properties */
+	PlayerSettings player_settings;
+
+	/* World Properties */
+	const int world_num_objects_x = 5;
+	const int world_num_objects_y = 5;
+	const int world_num_objects_z = 5;
+	//const int world_num_chunks_x = 5;
+	//const int world_num_chunks_y = 5;
+	//const int world_num_chunks_z = 5;
+};
+
+
 class Game
 {
 private:
+	/* Game Settings */
+	GameSettings game_settings;
+
 	/* Game States */
 	std::stack<std::pair<void (Game::*)(int), int>> sGameStates;
 	const bool gsPush(void (Game::* func)(int), int flag);
@@ -67,19 +85,12 @@ private:
 
 	//std::vector<Object*> worldObjects;
 
-	const int NUM_WORLD_OBJECTS_X	= 5;
-	const int NUM_WORLD_OBJECTS_Y	= 5;
-	const int NUM_WORLD_OBJECTS_Z	= 5;
-	const int NUM_WORLD_CHUNKS_X	= 5;
-	const int NUM_WORLD_CHUNKS_Y	= 5;
-	const int NUM_WORLD_CHUNKS_Z	= 5;
-
 	Object** worldCoords = nullptr;
 	inline Object* getWorldObject(const int x, const int y, const int z) const
 	{
-		if ((x >= 0 && x < NUM_WORLD_OBJECTS_X) && (y >= 0 && y < NUM_WORLD_OBJECTS_Y) && (z >= 0 && z < NUM_WORLD_OBJECTS_Z))
+		if ((x >= 0 && x < game_settings.world_num_objects_x) && (y >= 0 && y < game_settings.world_num_objects_y) && (z >= 0 && z < game_settings.world_num_objects_z))
 		{
-			return worldCoords[x + NUM_WORLD_OBJECTS_X * (y + NUM_WORLD_OBJECTS_Z * z)];
+			return worldCoords[x + game_settings.world_num_objects_x * (y + game_settings.world_num_objects_z * z)];
 		}
 		else
 		{
@@ -89,9 +100,9 @@ private:
 
 	inline bool setWorldObject(Object* o, const int x, const int y, const int z)
 	{
-		if ((x >= 0 && x < NUM_WORLD_OBJECTS_X) && (y >= 0 && y < NUM_WORLD_OBJECTS_Y) && (z >= 0 && z < NUM_WORLD_OBJECTS_Z))
+		if ((x >= 0 && x < game_settings.world_num_objects_x) && (y >= 0 && y < game_settings.world_num_objects_y) && (z >= 0 && z < game_settings.world_num_objects_z))
 		{
-			worldCoords[x + NUM_WORLD_OBJECTS_X * (y + NUM_WORLD_OBJECTS_Z * z)] = o;
+			worldCoords[x + game_settings.world_num_objects_x * (y + game_settings.world_num_objects_z * z)] = o;
 			return true;
 		}
 		else

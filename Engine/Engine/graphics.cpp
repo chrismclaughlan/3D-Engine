@@ -682,7 +682,11 @@ bool Graphics::rasterTexturedTriangles(
 				vCameraRay = triTransformed.p[0] - vCamera;
 
 
-				/* Test collision with camera */
+				/* Check collision with camera */
+
+
+
+				/* Test collision with look direction vector */
 
 				triTransformed.hit = false;
 				float t_, u, v;

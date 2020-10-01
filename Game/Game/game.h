@@ -26,9 +26,9 @@ struct GameSettings
 	PlayerSettings player_settings;
 
 	/* World Properties */
-	const int world_num_objects_x = 5;
-	const int world_num_objects_y = 5;
-	const int world_num_objects_z = 5;
+	const int world_num_objects_x = 16;
+	const int world_num_objects_y = 16;
+	const int world_num_objects_z = 16;
 	//const int world_num_chunks_x = 5;
 	//const int world_num_chunks_y = 5;
 	//const int world_num_chunks_z = 5;

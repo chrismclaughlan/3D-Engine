@@ -488,6 +488,7 @@ void Game::glInit()
 	// Reset everything incase overwriting existing game
 
 	player.reset();
+	player.place(5.0f, 30.0f, 5.0f);
 
 	// Load GUI
 	guiChat = new GUIForm();
@@ -508,7 +509,7 @@ void Game::glInit()
 	// Populate world with objects
 	worldCoords = new Object*[game_settings.world_num_objects_x * game_settings.world_num_objects_y * game_settings.world_num_objects_z];
 
-	for (int z = 0; z < game_settings.world_num_objects_x; z++)
+	for (int z = 0; z < game_settings.world_num_objects_z; z++)
 	{
 		for (int y = 0; y < game_settings.world_num_objects_y; y++)
 		{
@@ -665,18 +666,23 @@ void Game::glInput()
 			if (disableMovement) break;  // disable movement
 
 			if (event.isPressed())
-				player.moveUpward();
-			else if (player.isMovingUpward() && event.isReleased())
-				player.moveUpward(false);
+				player.moveJump();
+			else if (player.isJumping() && event.isReleased())
+				player.moveJump(false);
+
+			//if (event.isPressed())
+			//	player.moveUpward();
+			//else if (player.isMovingUpward() && event.isReleased())
+			//	player.moveUpward(false);
 		} break;
 		case 16:  // 0x16 (shift key)
 		{
 			if (disableMovement) break;  // disable movement
 
-			if (event.isPressed())
-				player.moveDownward();
-			else if (player.isMovingDownward() && event.isReleased())
-				player.moveDownward(false);
+			//if (event.isPressed())
+			//	player.moveDownward();
+			//else if (player.isMovingDownward() && event.isReleased())
+			//	player.moveDownward(false);
 		} break;
 		case VK_UP:
 		{
@@ -814,9 +820,6 @@ void Game::glInput()
  */
 void Game::glSimulate()
 {
-	// Camera
-	player.updatePosition(win.lastDT);
-
 	// Update world objects
 	//fTheta += 0.001f;  // rotate world
 
@@ -882,10 +885,95 @@ void Game::glSimulate()
 				Object* o = getWorldObject(x, y, z);
 				if (o == nullptr) continue;
 				o->updatePosition(fTheta);
+
+				//Vec4f player_pos = player.getVCamera();
+				//if (player_pos.x >= o->vPos.x && player_pos.x <= o->vPos.x + 1.0f &&
+				//	player_pos.z >= o->vPos.z && player_pos.z <= o->vPos.z + 1.0f &&
+				//	player_pos.y >= o->vPos.y && player_pos.y <= o->vPos.y + 1.0f)
+				//{
+				//	stopPlayerFalling = true;
+				//	std::cerr << "player_pos=" << player_pos << " o pos=" << o->vPos << "\n";
+				//}
 			}
 		}
+	}	
+
+	player.updateMovement(win.lastDT);
+
+	float player_height = 1.75;
+	Vec4f player_pos = player.getVCamera();
+	Object* oGround = getWorldObject(player_pos.x, player_pos.y - player_height, player_pos.z);
+
+	Object* oFront = getWorldObject(player_pos.x, player_pos.y - player_height + 1.0f, player_pos.z + 1.0f);
+	Object* oFront2 = getWorldObject(player_pos.x, player_pos.y - player_height + 2.0f, player_pos.z + 1.0f);
+	Object* oBehind = getWorldObject(player_pos.x, player_pos.y - player_height + 1.0f, player_pos.z - 1.0f);
+	Object* oBehind2 = getWorldObject(player_pos.x, player_pos.y - player_height + 2.0f, player_pos.z - 1.0f);
+	Object* oLeft = getWorldObject(player_pos.x + 1.0f, player_pos.y - player_height + 1.0f, player_pos.z);
+	Object* oLeft2 = getWorldObject(player_pos.x + 1.0f, player_pos.y - player_height + 2.0f, player_pos.z);
+	Object* oRight = getWorldObject(player_pos.x - 1.0f, player_pos.y - player_height + 1.0f, player_pos.z);
+	Object* oRight2 = getWorldObject(player_pos.x - 1.0f, player_pos.y - player_height + 2.0f, player_pos.z);
+
+	Vec4f vGravity = { 0.0f, -1.0f, 0.0f };
+	player.updateVelocity(vGravity, win.lastDT);
+	if (oGround != nullptr)
+	{
+		player.updateVelocity(-vGravity, win.lastDT);  // reverse gravity
+		
+		// Allow player to jump
+		player.checkJump(win.lastDT);
 	}
 
+	//if (oBehind != nullptr)
+	//	std::cerr << "oBehind\n";
+	//if (oBehind != nullptr)
+	//	std::cerr << "oBehind\n";
+	//if (oLeft != nullptr)
+	//	std::cerr << "oLeft\n";
+	//if (oRight != nullptr)
+	//	std::cerr << "oRight\n";
+
+	// Camera
+	player.updatePosition(win.lastDT);
+
+	/* Front blocks */
+	if (oFront != nullptr)
+	{
+		clampf(&player.vCamera.z, player.vCamera.z - 10.0f, oFront->vPos.z - 0.2f);
+	}
+	else if (oFront2 != nullptr)
+	{
+		clampf(&player.vCamera.z, player.vCamera.z - 10.0f, oFront2->vPos.z - 0.2f);
+	}
+
+	/* Behind blocks */
+	if (oBehind != nullptr)
+	{
+		clampf(&player.vCamera.z, oBehind->vPos.z + 1.2f, player.vCamera.z + 10.0f);
+	}
+	else if (oBehind2 != nullptr)
+	{
+		clampf(&player.vCamera.z, oBehind2->vPos.z + 1.2f, player.vCamera.z + 10.0f);
+	}
+
+	/* Left blocks */
+	if (oLeft != nullptr)
+	{
+		clampf(&player.vCamera.x, player.vCamera.x - 10.0f, oLeft->vPos.x - 0.2f);
+	}
+	else if (oLeft2 != nullptr)
+	{
+		clampf(&player.vCamera.x, player.vCamera.x - 10.0f, oLeft2->vPos.x - 0.2f);
+	}
+
+	/* Right blocks */
+	if (oRight != nullptr)
+	{
+		clampf(&player.vCamera.x, oRight->vPos.x + 1.2f, player.vCamera.x + 10.0f);
+	}
+	else if (oRight2 != nullptr)
+	{
+		clampf(&player.vCamera.x, oRight2->vPos.x + 1.2f, player.vCamera.x + 10.0f);
+	}
 }
 
 /**

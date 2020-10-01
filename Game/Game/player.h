@@ -4,17 +4,18 @@
 #include <stack>
 #include <typeinfo>
 
-#define MOV_FORWARD		(0b000001)
-#define MOV_BACKWARD	(0b000010)
-#define MOV_FB			(0b000011)
-#define MOV_LEFT		(0b000100)
-#define MOV_RIGHT		(0b001000)
-#define MOV_LR			(0b001100)
-#define MOV_UP			(0b010000)
-#define MOV_DOWN		(0b100000)
-#define MOV_UD			(0b110000)
+#define MOV_FORWARD		(1 << 1)
+#define MOV_BACKWARD	(1 << 2)
+#define MOV_LEFT		(1 << 3)
+#define MOV_RIGHT		(1 << 4)
+#define MOV_UP			(1 << 5)
+#define MOV_DOWN		(1 << 6)
+
+#define MOV_JUMP		(1 << 7)
 
 #define PI				(3.14159f)
+
+#define WORLD_MAX_HEIGHT (64.0f)
 
 
 struct PlayerSettings
@@ -290,9 +291,8 @@ public:  // temp
 		//player_settings.inventory_slots_max_items = settings.inventory_slots_max_items;
 	}
 
-private:
+public:  // temp
 	// Camera control
-
 	const float maxPitch = PI / 2.0f;
 	Vec4f vCamera;
 	Vec4f vLookDir;
@@ -306,9 +306,32 @@ private:
 	//Matrix4x4 mCameraRotation;
 	Matrix4x4 mCamera;
 
+	Vec4f vGravity = { 0.0f, -1.0f, 0.0f };
 	Vec4f vVelocity = { 0.0f, 0.0f, 0.0f };
 	Vec4f vAcceleration = { 0.0f, 0.0f, 0.0f };
-	uint8 accelerationFlags = 0b000000;
+	uint16 accelerationFlags = 0b000000;
+
+	float maxAirTime = 2.0f;
+	float currentAirTime = 0.0f;
+
+public:
+	Player()
+		: vUp(0.0f, 1.0f, 0.0f)
+	{
+	}
+
+	void resetPosition()
+	{
+		vCamera.setZero();
+		vLookDir.setZero();
+		vLookDirLeft.setZero();
+		vForward.setZero();
+		vLeft.setZero();
+		mCamera.setZero();
+		vVelocity.setZero();
+		vAcceleration.setZero();
+		accelerationFlags = 0b0;
+	}
 
 	void updateMovement(const float dt)
 	{
@@ -346,6 +369,25 @@ private:
 				vVelocity.y = 0.0f;
 			}
 
+			if (accelerationFlags && MOV_JUMP)
+			{
+				if (currentAirTime > 0.0f)
+				{
+					// is jumping
+					if (currentAirTime >= maxAirTime)
+					{
+						// stop jumping
+						currentAirTime = 0.0f;
+					}
+					else
+					{
+						// continue jumping
+						vAcceleration.y = 2.0f;
+						currentAirTime += dt;
+					}
+				}
+			}
+
 			// x-axis
 			if ((accelerationFlags & MOV_LEFT) && !(accelerationFlags & MOV_RIGHT))
 			{
@@ -364,41 +406,23 @@ private:
 			vVelocity.setZero();
 		}
 
-		updateVelocity(vAcceleration * dt * 10.0f);
+		updateVelocity(vAcceleration, dt);
 
 		clampf(&vVelocity.x, -player_settings.movement_max_velocity, player_settings.movement_max_velocity);
 		clampf(&vVelocity.y, -player_settings.movement_max_velocity, player_settings.movement_max_velocity);
 		clampf(&vVelocity.z, -player_settings.movement_max_velocity, player_settings.movement_max_velocity);
 	}
 
-	void updateVelocity(Vec4f v)
+	void updateVelocity(Vec4f v, const float dt)
 	{
-		vVelocity += v;
+		vVelocity += v * dt * 9.8f;
 	}
 
-	void updatePhysics(const float dt)
+	void place(int x, int y, int z)
 	{
-		Vec4f vGravity = { 0.0f, -1.0f, 0.0f };
-		updateVelocity(vGravity * dt * 9.8f);
-	}
-
-public:
-	Player()
-		: vUp(0.0f, 1.0f, 0.0f)
-	{
-	}
-
-	void resetPosition()
-	{
-		vCamera.setZero();
-		vLookDir.setZero();
-		vLookDirLeft.setZero();
-		vForward.setZero();
-		vLeft.setZero();
-		mCamera.setZero();
-		vVelocity.setZero();
-		vAcceleration.setZero();
-		accelerationFlags = 0b0;
+		vCamera.x = x;
+		vCamera.y = y;
+		vCamera.z = z;
 	}
 
 	void reset()
@@ -407,13 +431,24 @@ public:
 		inventory.reset();
 	}
 
+	void checkJump(const float dt)
+	{
+		if (accelerationFlags & MOV_JUMP)
+		{
+			// Player jumping
+			if (currentAirTime == 0.0f)
+			{
+				// Start jump
+				currentAirTime += dt;
+			}
+		}
+	}
+
 	void updatePosition(const float dt)
 	{
-		updateMovement(dt);
-		//updatePhysics(dt);
-
 		Matrix4x4 mCameraRotation;
 
+		vLookDir.y = 0.0f;  // Ignore y value for movement
 		vCamera			+= vVelocity.z * vLookDir;		// forward / backward
 		vCamera			-= vVelocity.x * vLookDirLeft;	// left / right
 		vCamera.y		+= vVelocity.y;					// up / down
@@ -430,12 +465,14 @@ public:
 	}
 
 	// Movement
-	void moveForward(const bool b = true)	{ b ? accelerationFlags |= MOV_FORWARD	: accelerationFlags &= ~MOV_FORWARD; };
-	void moveBackward(const bool b = true)	{ b ? accelerationFlags |= MOV_BACKWARD	: accelerationFlags &= ~MOV_BACKWARD; };
-	void moveLeft(const bool b = true)		{ b ? accelerationFlags |= MOV_LEFT		: accelerationFlags &= ~MOV_LEFT; };
-	void moveRight(const bool b = true)		{ b ? accelerationFlags |= MOV_RIGHT	: accelerationFlags &= ~MOV_RIGHT; };
-	void moveUpward(const bool b = true)	{ b ? accelerationFlags |= MOV_UP		: accelerationFlags &= ~MOV_UP; };
-	void moveDownward(const bool b = true)	{ b ? accelerationFlags |= MOV_DOWN		: accelerationFlags &= ~MOV_DOWN; };
+	void moveForward(const bool b = true)	{ b ? accelerationFlags |= MOV_FORWARD	: accelerationFlags &= ~MOV_FORWARD; }
+	void moveBackward(const bool b = true)	{ b ? accelerationFlags |= MOV_BACKWARD	: accelerationFlags &= ~MOV_BACKWARD; }
+	void moveLeft(const bool b = true)		{ b ? accelerationFlags |= MOV_LEFT		: accelerationFlags &= ~MOV_LEFT; }
+	void moveRight(const bool b = true)		{ b ? accelerationFlags |= MOV_RIGHT	: accelerationFlags &= ~MOV_RIGHT; }
+	void moveUpward(const bool b = true)	{ b ? accelerationFlags |= MOV_UP		: accelerationFlags &= ~MOV_UP; }
+	void moveDownward(const bool b = true)	{ b ? accelerationFlags |= MOV_DOWN		: accelerationFlags &= ~MOV_DOWN; }
+	void moveJump(const bool b = true)		{ b ? accelerationFlags |= MOV_JUMP		: accelerationFlags &= ~MOV_JUMP; }
+
 
 	void lookX(const float d)
 	{
@@ -460,6 +497,7 @@ public:
 	const bool isMovingDownward()	{ return accelerationFlags & MOV_DOWN; };
 	const bool isMovingLeft()		{ return accelerationFlags & MOV_LEFT; };
 	const bool isMovingRight()		{ return accelerationFlags & MOV_RIGHT; };
+	const bool isJumping()			{ return accelerationFlags & MOV_JUMP; };
 
 	const float getYaw() { return fYaw; }
 	const float getPitch() { return fPitch; }
@@ -467,5 +505,5 @@ public:
 	const uint8 getAcceleration() { return accelerationFlags; };
 	const Vec4f getVCamera() { return vCamera; };
 	const Matrix4x4 getMCamera() { return mCamera; };
-	const Vec4f getVLookDir() { return vLookDir; }
+	const Vec4f getVLookDir() { return vLookDir; };
 };

@@ -684,22 +684,6 @@ void Game::glInput()
 			//else if (player.isMovingDownward() && event.isReleased())
 			//	player.moveDownward(false);
 		} break;
-		case VK_UP:
-		{
-			//object1->vPos.y += 0.1f;
-		} break;
-		case VK_DOWN:
-		{
-			//object1->vPos.y -= 0.1f;
-		} break;
-		case VK_LEFT:
-		{
-			//object1->vPos.x += 0.1f;
-		} break;
-		case VK_RIGHT:
-		{
-			//object1->vPos.x -= 0.1f;
-		} break;
 		case 0x49:
 		{
 			std::cerr << player.inventory << "\n";
@@ -922,15 +906,6 @@ void Game::glSimulate()
 		// Allow player to jump
 		player.checkJump(win.lastDT);
 	}
-
-	//if (oBehind != nullptr)
-	//	std::cerr << "oBehind\n";
-	//if (oBehind != nullptr)
-	//	std::cerr << "oBehind\n";
-	//if (oLeft != nullptr)
-	//	std::cerr << "oLeft\n";
-	//if (oRight != nullptr)
-	//	std::cerr << "oRight\n";
 
 	// Camera
 	player.updatePosition(win.lastDT);
